@@ -6,7 +6,7 @@ import serial
 import serial.tools.list_ports
 
 # SDR modules
-import commands
+import commands # functions for each terminal command
 
 #serialPortDir = '/dev/ttyUSB1'
 #baudrate = 9600
@@ -25,6 +25,6 @@ while(True):
     # Command prompt
     userin = input("> ")
 
-    # Execute command
+    # Parse and execute command
     commands.parseInput(userin)
 

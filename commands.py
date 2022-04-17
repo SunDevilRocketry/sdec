@@ -5,8 +5,6 @@
 
 # Standard Imports
 import sys
-from datetime import date
-import time
 import os
 
 # exitFunc -- quits the program
