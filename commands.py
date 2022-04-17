@@ -53,7 +53,7 @@ def parseInput(userin):
            return
 
     # User input doesn't correspond to a command
-    print("Unsupportred command")
+    print("Error: Unsupportred command")
     userin = input("> ")
     parseInput(userin)
 
