@@ -10,4 +10,9 @@ L0002: Liquid Engine Controller (Rev 3)
 L0005: Valve Controller (Rev 2)
 </p>
 
-<p><b>General Commands</b></p>
+<p><b>General Commands:</b></p>
+<ul>
+    <li>clear: clears the terminal window</li>
+    <li>help: displays the termincal control commands</li>
+    <li>exit: exits the program</li>
+</ul>
