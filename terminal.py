@@ -3,15 +3,28 @@
 # Library imports
 import time
 import serial
+import serial.tools.list_ports
 
-serialPortDir = '/dev/ttyUSB1'
-baudrate = 9600
-serialDataObj = serial.Serial(serialPortDir, baudrate=baudrate, timeout = 1)
-while True:
+# SDR modules
+import commands
+
+#serialPortDir = '/dev/ttyUSB1'
+#baudrate = 9600
+#serialDataObj = serial.Serial(serialPortDir, baudrate=baudrate, timeout = 1)
+#while True:
     #data = serialDataObj.readline()
     #data = data.decode("UTF-8")
     #data = data.strip()
     #if (data != ""):
     #    print(data)
-    serialDataObj.write(b'1');
-    time.sleep(1)
+#    serialDataObj.write(b'1');
+#    time.sleep(1)
+
+# Program Loop
+while(True):
+    # Command prompt
+    userin = input("> ")
+
+    # Execute command
+    commands.parseInput(userin)
+
