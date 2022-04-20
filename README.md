@@ -15,13 +15,16 @@ L0005: Valve Controller (Rev 2)
 <h2>General Commands:</h2>
 
 <h3>clear</h3>
-<p><b>Description:</b>clears the terminal window</p>
+<p>Description: clears the terminal window</p>
+
 <h3>help</h3>
-<p><b>Description:</b>displays the terminal control commands</p>
+<p>Description: displays the terminal control commands</p>
+
 <h3>exit</h3>
-<p><b>Description:</b>exits the program</p>
+<p>Description: exits the program</p>
+
 <h3>comports</h3>
-<p><b>Description:</b>allows the user to connect to a device over USB</p>
+<p>Description: allows the user to connect to a device over USB</p>
 
 <p>    options: 
                - l : list all available devices
