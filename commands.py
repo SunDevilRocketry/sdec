@@ -13,10 +13,10 @@ def exitFunc(Args):
 
 # helpFunc -- displays list of commands
 def helpFunc(Args):
-    print('Terminal Control Commands: \n')
-    print("\tclear: clears the terminal window\n")
-    print("\thelp: displays the termincal control commands\n")
-    print("\texit: exits the program\n")
+    with open('doc/manpage') as file: 
+        doc_lines = file.readlines()
+    for line in doc_lines:
+        print(line)
 
 # clearConsole -- clears the python terminal
 def clearConsole(Args):

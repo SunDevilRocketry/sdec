@@ -1,0 +1,4 @@
+Terminal Control Commands:
+	clear: clears the terminal window
+	help: displays the termincal control commands
+	exit: exits the program
