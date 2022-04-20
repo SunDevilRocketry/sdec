@@ -6,6 +6,7 @@
 # Standard Imports
 import sys
 import os
+import serial.tools.list_ports
 
 # exitFunc -- quits the program
 def exitFunc(Args):
@@ -30,7 +31,10 @@ def comports(Args):
     if (len(Args) == 0):
         print("Error: no options supplied to comports function")
     elif (Args[0] == "-l"):
-        print("list")
+        avail_ports = serial.tools.list_ports.comports()
+        print("Available COM ports: ")
+        for port_num,port in enumerate(avail_ports):
+            print("\t" + str(port_num) + ": " + port.device + " - " + port.description) 
     elif (Args[0] == "-h"):
         with open("doc/comports") as file:
             comports_doc_lines = file.readlines()
