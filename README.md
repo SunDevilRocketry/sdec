@@ -1,16 +1,18 @@
 <h1> Terminal-Control</h1>
 
-<p><b>Description:</b> The Terminal-Control program is a python-based terminal program which allows
+<h2>Description:</h2> 
+
+<p>The Terminal-Control program is a python-based terminal program which allows
 the user to access all functionality available on Sun Devil Rocketry PCBs.</p>
 
-<p><b>Supported Boards:</b></p>
+<h2>Supported Boards:</h2>
 <p>
 L0002: Liquid Engine Controller (Rev 3)
 
 L0005: Valve Controller (Rev 2)
 </p>
 
-<p><b>General Commands:</b></p>
+<h2>General Commands:</h2>
 <ul>
     <li>clear: clears the terminal window</li>
     <li>help: displays the termincal control commands</li>
