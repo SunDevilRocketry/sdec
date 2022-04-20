@@ -25,10 +25,30 @@ def clearConsole(Args):
         command = 'cls'
     os.system(command)
 
+# comports -- connects to a USB device or displays connectivity info
+def comports(Args):
+    if (len(Args) == 0):
+        print("Error: no options supplied to comports function")
+    elif (Args[0] == "-l"):
+        print("list")
+    elif (Args[0] == "-h"):
+        with open("doc/comports") as file:
+            comports_doc_lines = file.readlines()
+        for line in comports_doc_lines:
+            print(line, end='')
+    elif (Args[0] == "-c"):
+        print("connect")
+    elif (Args[0] == "-d"):
+        print("disconnect")
+    else:
+        print("Error: \""+Args[0]+"\" is an invalid option for comports")
+
+
 # Command List
 commands = { "exit": exitFunc,
              "help": helpFunc,
-             "clear": clearConsole
+             "clear": clearConsole,
+             "comports": comports
         }
 
 # parseInput -- checks user input against command list 

@@ -4,6 +4,7 @@ Terminal Control Commands:
 	exit: exits the program
 	comports -[OPTIONS] -[PORTNAME]: allows the user to connect to a device over USB
 		options: 
-			-l : list all available devices
 			-c [PORTNAME] : connect to port PORTNAME
 			-d : disconnect the device currently being used
+			-h : display comports usage information
+			-l : list all available devices

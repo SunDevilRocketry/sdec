@@ -36,8 +36,9 @@ refer to the board's firmware documentation </p>
 <p>Description: allows the user to connect to a device over USB</p>
 <p>Options: 
 <ul>
-    <li> -l : list all available devices</li>
     <li> -c [PORTNAME]: connect to port PORTNAME </li> 
     <li> -d : disconnect the device currently being used </li>
+    <li> -h : display comports options</li>
+    <li> -l : list all available devices</li>
 </ul>
 </p>

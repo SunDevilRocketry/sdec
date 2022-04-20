@@ -1,0 +1,9 @@
+COMPORTS: 
+
+USAGE: comports -[OPTIONS] -[PORT]
+
+OPTIONS: 
+	-c [PORT] : connection to port PORT 
+	-d : disconnect from comport
+	-h : display this help information
+	-l : list available serial ports
