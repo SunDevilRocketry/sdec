@@ -16,7 +16,10 @@ currently available for Windows and Linux operating systems. </p>
 L0002: Liquid Engine Controller (Rev 3)
 
 L0005: Valve Controller (Rev 2)
+
 </p>
+<p>For more information on usage of the above hardware with the Terminal-Control program, please
+refer to the board's firmware documentation </p>
 
 <h2>General Commands:</h2>
 
