@@ -8,6 +8,11 @@ import sys
 import os
 import serial.tools.list_ports
 
+# Global Variables
+serialPort = None
+baudrate = None
+timeout = 1
+
 # exitFunc -- quits the program
 def exitFunc(Args):
    sys.exit()
@@ -47,7 +52,7 @@ def comports(Args):
         port_supplied = True
     if (len(Args) == 3):
         try: 
-            baudrate = int(Args[2])
+            input_baudrate = int(Args[2])
             baudrate_supplied = True
         except ValueError:
             print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
@@ -98,13 +103,18 @@ def comports(Args):
             comports(["-l"])
             return
 
-        print("Connected to " + target_port)
+        # Set global variables
+        baudrate = input_baudrate
+        serialPort = target_port
+        print("Connected to port " + serialPort + " at " + str(baudrate) + " baud")
         return
 
 
     # Disconnect Option (-d): Disconnect a USB device
     elif (option == "-d"):
-        print("disconnect")
+        baudrate = None
+        serialPort = None
+        print("Disconnected from active serial port")
 
     # Invalid Option
     else:
