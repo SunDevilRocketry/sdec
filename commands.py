@@ -29,15 +29,29 @@ def clearConsole(Args):
 
 # comports -- connects to a USB device or displays connectivity info
 def comports(Args):
+
+    # Check that user has supplied correct amount of info
     if (len(Args) == 0):
         print("Error: no options supplied to comports function")
+        return
+    elif (len(Args) > 3):
+        print("Error: too many options/arguments supplied to comports function")
+        return
 
-    # Function Args:
+    # Function Args parsing:
     option = Args[0]
     port_supplied = False
-    if (len(Args) == 2):
+    baudrate_supplied = False
+    if (len(Args) >= 2):
         target_port = Args[1]
         port_supplied = True
+    if (len(Args) == 3):
+        try: 
+            baudrate = int(Args[2])
+            baudrate_supplied = True
+        except ValueError:
+            print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
+            return
 
     # List Option (-l): Scan available ports and display connections
     if (option == "-l"):
@@ -69,6 +83,9 @@ def comports(Args):
         # Check that port has been supplied
         if (not port_supplied):
             print("Error: no port supplied to comports function")
+            return
+        elif (not baudrate_supplied):
+            print("Error: no baudrate supplied to comports function")
             return
 
         # Check that inputed port is valid
