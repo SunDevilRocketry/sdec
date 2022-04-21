@@ -34,7 +34,14 @@ def comports(Args):
         avail_ports = serial.tools.list_ports.comports()
         print("Available COM ports: ")
         for port_num,port in enumerate(avail_ports):
-            print("\t" + str(port_num) + ": " + port.device + " - " + port.description) 
+            print("\t" + str(port_num) + ": " + port.device + " - ", end="") 
+            if (port.manufacturer != None):
+                print(port.manufacturer + ": ", end="")
+            if (port.description != None):
+                print(port.description)
+            else:
+                print("device info unavailable")
+
     elif (Args[0] == "-h"):
         with open("doc/comports") as file:
             comports_doc_lines = file.readlines()
