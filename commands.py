@@ -30,7 +30,16 @@ def clearConsole(Args):
 def comports(Args):
     if (len(Args) == 0):
         print("Error: no options supplied to comports function")
-    elif (Args[0] == "-l"):
+
+    # Function Args:
+    option = Args[0]
+    port_supplied = False
+    if (len(Args) == 2):
+        target_port = Args[1]
+        port_supplied = True
+
+    # List Option (-l): Scan available ports and display connections
+    if (option == "-l"):
         avail_ports = serial.tools.list_ports.comports()
         print("Available COM ports: ")
         for port_num,port in enumerate(avail_ports):
@@ -41,18 +50,44 @@ def comports(Args):
                 print(port.description)
             else:
                 print("device info unavailable")
+        return
 
-    elif (Args[0] == "-h"):
+    # Help Option (-h): Display all usage information for comports command
+    elif (option == "-h"):
         with open("doc/comports") as file:
             comports_doc_lines = file.readlines()
         for line in comports_doc_lines:
             print(line, end='')
-    elif (Args[0] == "-c"):
-        print("connect")
-    elif (Args[0] == "-d"):
+        return
+
+    # Connect Option (-c): Connect to a USB port
+    elif (option == "-c"):
+        # Check that port has been supplied
+        if (not port_supplied):
+            print("Error: no port supplied to comports function")
+            return
+
+        # Check that inputed port is valid
+        avail_ports = serial.tools.list_ports.comports()
+        avail_ports_devices = []
+        for port in avail_ports:
+            avail_ports_devices.append(port.device)
+        if (not (target_port in avail_ports_devices)):
+            print("Error: Invalid serial port\n")
+            comports(["-l"])
+            return
+
+        print("Connected to " + target_port)
+        return
+
+
+    # Disconnect Option (-d): Disconnect a USB device
+    elif (option == "-d"):
         print("disconnect")
+
+    # Invalid Option
     else:
-        print("Error: \""+Args[0]+"\" is an invalid option for comports")
+        print("Error: \"" + option + "\" is an invalid option for comports")
 
 
 # Command List
@@ -84,7 +119,7 @@ def parseInput(userin):
            return
 
     # User input doesn't correspond to a command
-    print("Error: Unsupportred command")
+    print("Error: Unsupported command")
     userin = input("> ")
     parseInput(userin)
 
