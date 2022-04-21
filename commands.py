@@ -58,8 +58,10 @@ def comports(Args):
     elif (option == "-h"):
         with open("doc/comports") as file:
             comports_doc_lines = file.readlines()
+        print()
         for line in comports_doc_lines:
             print(line, end='')
+        print()
         return
 
     # Connect Option (-c): Connect to a USB port

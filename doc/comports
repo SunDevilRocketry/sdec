@@ -1,9 +1,9 @@
 COMPORTS: 
 
-USAGE: comports -[OPTIONS] -[PORT]
+USAGE: comports -[OPTIONS] -[PORT] -[BAUD]
 
 OPTIONS: 
-	-c [PORT] : connection to port PORT 
+	-c [PORT] [BAUD] : connection to port [PORT] with baudrate [BAUD] 
 	-d : disconnect from comport
 	-h : display this help information
 	-l : list available serial ports
