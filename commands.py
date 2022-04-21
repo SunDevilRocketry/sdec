@@ -16,8 +16,9 @@ def exitFunc(Args):
 def helpFunc(Args):
     with open('doc/manpage') as file: 
         doc_lines = file.readlines()
+    print()
     for line in doc_lines:
-        print(line)
+        print(line, end="")
 
 # clearConsole -- clears the python terminal
 def clearConsole(Args):
@@ -41,7 +42,7 @@ def comports(Args):
     # List Option (-l): Scan available ports and display connections
     if (option == "-l"):
         avail_ports = serial.tools.list_ports.comports()
-        print("Available COM ports: ")
+        print("\nAvailable COM ports: ")
         for port_num,port in enumerate(avail_ports):
             print("\t" + str(port_num) + ": " + port.device + " - ", end="") 
             if (port.manufacturer != None):
@@ -50,6 +51,7 @@ def comports(Args):
                 print(port.description)
             else:
                 print("device info unavailable")
+        print()
         return
 
     # Help Option (-h): Display all usage information for comports command
@@ -91,36 +93,10 @@ def comports(Args):
 
 
 # Command List
-commands = { "exit": exitFunc,
-             "help": helpFunc,
-             "clear": clearConsole,
-             "comports": comports
-        }
-
-# parseInput -- checks user input against command list 
-#               options
-# input: userin: user inputed string
-#        pcbs: PCB bom object
-# output: none
-def parseInput(userin): 
-
-    # Get rid of any whitespace
-    userin.strip()
-
-    # Split the input into commands and arguments
-    userinSplit = userin.split() 
-    userCommand = userinSplit[0]
-    CommandArgs = userinSplit[1:] 
-
-    # Check if user input corresponds to a function
-    for command in commands: 
-        if userCommand == command:
-           commands[command](CommandArgs)
-           return
-
-    # User input doesn't correspond to a command
-    print("Error: Unsupported command")
-    userin = input("> ")
-    parseInput(userin)
+command_list = { "exit": exitFunc,
+                 "help": helpFunc,
+                 "clear": clearConsole,
+                 "comports": comports
+                }
 
 ### END OF FILE
