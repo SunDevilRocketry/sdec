@@ -8,3 +8,7 @@ Terminal Control Commands:
 			-d : disconnect the device currently being used
 			-h : display comports usage information
 			-l : list all available devices
+       ping -[OPTIONS] -[TIMEOUT]: transmits a byte over the serial port and awaits response from board
+       		options:
+                	-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
+	                -h : display ping options

@@ -47,7 +47,7 @@ refer to the board's firmware documentation </p>
 <p>Description: transmits a byte over the serial port and awaits response from board</p>
 <p>Options:
     <ul>
-        <li> -t [TIMEOUT]: set the timeout of the serial connection.</li>
+        <li> -t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].</li>
 	<li> -h : display ping options </li>
     </ul>
 </p>
