@@ -44,6 +44,7 @@ refer to the board's firmware documentation </p>
 </p>
 
 <h3>ping</h3>
+<p>Opcode: 0x01</p>
 <p>Description: transmits a byte over the serial port and awaits response from board</p>
 <p>Options:
     <ul>
