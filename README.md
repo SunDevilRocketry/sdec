@@ -43,5 +43,14 @@ refer to the board's firmware documentation </p>
 </ul>
 </p>
 
+<h3>ping</h3>
+<p>Description: transmits a byte over the serial port and awaits response from board</p>
+<p>Options:
+    <ul>
+        <li> -t [TIMEOUT]: set the timeout of the serial connection.</li>
+	<li> -h : display ping options </li>
+    </ul>
+</p>
+
 <h2> L0002 Liquid Engine Controller Commands: </h2>
 <h2> L0005 Valve Controller Commands: </h2>
