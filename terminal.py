@@ -37,7 +37,7 @@ def parseInput(userin):
 # Program Loop
 while(True):
     # Command prompt
-    userin = input("> ")
+    userin = input("SDR>> ")
 
     # Parse and eecute command
     parseInput(userin)

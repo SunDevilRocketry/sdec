@@ -120,6 +120,46 @@ def comports(Args):
     else:
         print("Error: \"" + option + "\" is an invalid option for comports")
 
+# ping - transmit a byte over an active USB connection and await respone from board
+def ping(Args):
+
+    # Check for an active serial port connection and valid options/arguments
+    if (serialPort == None):
+        print("Error: no active serial port connection. Run the comports -c command to connect to a device")
+        return
+    elif (len(Args) < 1):
+        print("Error: no options supplied to ping function")
+        return
+    elif (len(Args) > 2):
+        print("Error: too many options/arguments supplied to ping function")
+    else:
+
+        # Arguments parsing
+        Args[0] = option
+        timeout_supplied = False
+        if (len(Args) == 2):
+            input_timeout = Args[1]
+            timeout_supplied = True
+
+        # Help option
+        if (option == "-h"):
+            with open("doc/ping") as file:
+                comports_doc_lines = file.readlines()
+            print()
+            for line in comports_doc_lines:
+                print(line, end='')
+            print()
+            return
+
+        # Ping option
+        elif (option == "-t"):
+            print("Pinging ...")
+            return
+
+        # Ping option 
+        else:
+            print("Error: invalid option supplied to ping function")
+            return
 
 # Command List
 command_list = { "exit": exitFunc,
