@@ -104,7 +104,9 @@ def comports(Args):
             return
 
         # Set global variables
+        global baudrate
         baudrate = input_baudrate
+        global serialPort 
         serialPort = target_port
         print("Connected to port " + serialPort + " at " + str(baudrate) + " baud")
         return
@@ -135,7 +137,7 @@ def ping(Args):
     else:
 
         # Arguments parsing
-        Args[0] = option
+        option = Args[0]
         timeout_supplied = False
         if (len(Args) == 2):
             input_timeout = Args[1]
@@ -165,7 +167,8 @@ def ping(Args):
 command_list = { "exit": exitFunc,
                  "help": helpFunc,
                  "clear": clearConsole,
-                 "comports": comports
+                 "comports": comports,
+                 "ping": ping
                 }
 
 ### END OF FILE
