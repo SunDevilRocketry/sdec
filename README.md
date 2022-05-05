@@ -55,3 +55,7 @@ refer to the board's firmware documentation </p>
 
 <h2> L0002 Liquid Engine Controller Commands: </h2>
 <h2> L0005 Valve Controller Commands: </h2>
+
+<h3>acstat</h3>
+<p>Opcode: 0x50</p>
+<p>Description: Checks whether AC power is detected by the MCU. </p>
