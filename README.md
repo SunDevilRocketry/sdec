@@ -21,6 +21,11 @@ L0005: Valve Controller (Rev 2)
 <p>For more information on usage of the above hardware with the Terminal-Control program, please
 refer to the board's firmware documentation </p>
 
+<h2>Developer Information:</h2>
+<p>Commands which communicate with an embedded board inlcude a 1 byte opcode, which is the first byte
+   transmitted to the board when a command is issued. Opcode 0x00 is reserved as the nop command. Nop commands 
+   are ignored by the embedded board.</p>
+
 <h2>General Commands:</h2>
 
 <h3>clear</h3>
