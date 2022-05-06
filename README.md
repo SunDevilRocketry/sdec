@@ -58,4 +58,4 @@ refer to the board's firmware documentation </p>
 
 <h3>acstat</h3>
 <p>Opcode: 0x50</p>
-<p>Description: Checks whether AC power is detected by the MCU. </p>
+<p>Description: Checks whether AC power for solenoid actuation is detected by the MCU. </p>
