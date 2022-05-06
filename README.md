@@ -83,3 +83,7 @@ refer to the board's firmware documentation </p>
 	<li> -h : display soloff options </li>
     </ul>
 </p>
+
+<h3>solreset</h3>
+<p>Opcode: 0x53</p>
+<p>Description: Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed.</p>
