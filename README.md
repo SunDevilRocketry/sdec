@@ -59,3 +59,15 @@ refer to the board's firmware documentation </p>
 <h3>acstat</h3>
 <p>Opcode: 0x50</p>
 <p>Description: Checks whether AC power for solenoid actuation is detected by the MCU. </p>
+
+<h3>solon</h3>
+<p>Opcode: 0x51</p>
+<p>Description: Asserts the acutate solenoid signal of the MCU to actuate the solenoid. The open/close state of
+                the solenoid depends on whether the attached solenoid is normally open or closed. </p>
+<p>Options:
+    <ul>
+        <li> -n [SOLENOID]: Assert the SOL[SOLENOID] signal. Actuates solenoid number [SOLENOID]. Valid [SOLENOID]
+             inputs range from 1 to 6.</li>
+	<li> -h : display solon options </li>
+    </ul>
+</p>
