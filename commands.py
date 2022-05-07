@@ -67,7 +67,7 @@ def comports(Args):
             if (port.manufacturer != None):
                 print(port.manufacturer + ": ", end="")
             if (port.description != None):
-                print(port.description)
+                print(port.product)
             else:
                 print("device info unavailable")
         print()
