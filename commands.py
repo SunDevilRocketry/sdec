@@ -11,6 +11,10 @@ import time
 
 # Global Variables
 default_timeout = 1 # 1 second timeout
+ping_response_codes = [b'\x01']
+ping_responses = {
+                  b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)"
+                }
 
 # exitFunc -- quits the program
 def exitFunc(Args, serialObj):
@@ -183,14 +187,17 @@ def ping(Args, serialObj):
             ping_start_time = time.time()
             serialObj.sendByte(opcode)
             print("Pinging ...")
-            readData = serialObj.serialObj.read()
-            if (readData == b''):
+            pingData = serialObj.serialObj.read()
+            if (pingData == b''):
                 print("Timeout expired. No device response recieved.")
             else:
                 ping_recieve_time = time.time()
                 ping_time = ping_recieve_time - ping_start_time
                 ping_time *= 1000.0
-                print("Response recieved at {0:1.4f} ms".format(ping_time))
+                if (pingData in ping_response_codes):
+                    print("Response recieved at {0:1.4f} ms from {1}".format(ping_time, ping_responses[pingData]))
+                else:
+                    print("Response recieved at {0:1.4f} ms from an unknown device".format(ping_time))
             return serialObj
 
         # Ping option 
