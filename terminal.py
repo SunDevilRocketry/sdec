@@ -20,32 +20,43 @@ class terminalData:
         self.config_status = False 
 
     # Configure Serial Port
-    def configComport(baudrate, comport, timeout):
+    def configComport(self, baudrate, comport, timeout):
         self.baudrate = baudrate 
         self.comport = comport 
         self.timeout = timeout 
+        self.serialObj.baudrate = self.baudrate
+        self.serialObj.port = self.comport
+        self.serialObj.timeout = self.timeout
         self.config_status = True
 
     # Open the serial port
-    def openComport():
+    # returns a boolean variable indicating whether the port connection
+    # was sucessful
+    def openComport(self):
+
         # Ensure serial port has been properly configured 
         if(not self.config_status):
             print("Error: Cannot open serial port. Serial port has not been properly configured")
-            return
+            return False
 
         # open port
         self.serialObj.open()
+        return True
 
     # Close the serial port
-    def closeComport():
+    # Returns a boolean value indicating whether the port connection was 
+    # successfully closed
+    def closeComport(self):
         # check that the serial port is open
         if (not self.serialObj.is_open):
             print("No open serial port detected")
+            return False
         else:
             self.serialObj.close()
+            return True
 
     # Write a single Byte to the serial port
-    def sendByte(data):
+    def sendByte(self, data):
         if (not self.serialObj.is_open):
             print("Error: Could not transmit byte over serial port. No active" \
                    +"serial port connection")
@@ -53,7 +64,7 @@ class terminalData:
             self.serialObj.write(data)
 
     # Read a single Byte from the serial port
-    def readByte():
+    def readByte(self):
         if (not self.serialObj.is_open):
             print("Error: Could not read byte from serial port. No active" \
                    +"serial port connection")
@@ -72,26 +83,36 @@ def parseInput(userin):
     userin.strip()
 
     # Split the input into commands and arguments
-    userinSplit = userin.split() 
-    userCommand = userinSplit[0]
-    CommandArgs = userinSplit[1:] 
+    userin = userin.split() 
+    userCommand = userin[0]
+    CommandArgs = userin[1:] 
 
     # Check if user input corresponds to a function
     for command in commands.command_list: 
         if userCommand == command:
-           commands.command_list[command](CommandArgs)
-           return
+           #commands.command_list[command](CommandArgs)
+           return userin
 
     # User input doesn't correspond to a command
     print("Error: Unsupported command")
     userin = input("SDR>> ")
     parseInput(userin)
 
-# Program Loop
+## Program Loop
+
+# Initialize Serial Port Object
+terminalSerObj = terminalData()
+
 while(True):
     # Command prompt
     userin = input("SDR>> ")
 
-    # Parse and eecute command
-    parseInput(userin)
+    # Parse command
+    userin = parseInput(userin)
+    userCommand = userin[0]
+    userArgs = userin[1:]
+
+    # Execute Command
+    terminalSerObj = commands.command_list[userCommand](userArgs, terminalSerObj)
+
 

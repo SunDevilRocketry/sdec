@@ -1,7 +1,7 @@
 PING: 
 
-USAGE: ping -[OPTIONS] -[TIMEOUT] 
+USAGE: ping -[OPTIONS] [TIMEOUT] 
 
 OPTIONS: 
-	-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
+	-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT] (seconds).
 	-h : display this help information

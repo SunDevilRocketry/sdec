@@ -9,39 +9,40 @@ import os
 import serial.tools.list_ports
 
 # Global Variables
-serialPort = None
-baudrate = None
-timeout = 1
+default_timeout = 1 # 1 second timeout
 
 # exitFunc -- quits the program
-def exitFunc(Args):
+def exitFunc(Args, serialObj):
    sys.exit()
 
 # helpFunc -- displays list of commands
-def helpFunc(Args):
+def helpFunc(Args, serialObj):
     with open('doc/manpage') as file: 
         doc_lines = file.readlines()
     print()
     for line in doc_lines:
         print(line, end="")
+    return serialObj 
+    
 
 # clearConsole -- clears the python terminal
-def clearConsole(Args):
+def clearConsole(Args, serialObj):
     command = 'clear'
     if os.name in ('nt', 'dos'):
         command = 'cls'
     os.system(command)
+    return serialObj 
 
 # comports -- connects to a USB device or displays connectivity info
-def comports(Args):
+def comports(Args, serialObj):
 
     # Check that user has supplied correct amount of info
     if (len(Args) == 0):
         print("Error: no options supplied to comports function")
-        return
+        return serialObj
     elif (len(Args) > 3):
         print("Error: too many options/arguments supplied to comports function")
-        return
+        return serialObj
 
     # Function Args parsing:
     option = Args[0]
@@ -52,11 +53,11 @@ def comports(Args):
         port_supplied = True
     if (len(Args) == 3):
         try: 
-            input_baudrate = int(Args[2])
+            baudrate = int(Args[2])
             baudrate_supplied = True
         except ValueError:
             print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
-            return
+            return serialObj
 
     # List Option (-l): Scan available ports and display connections
     if (option == "-l"):
@@ -71,7 +72,7 @@ def comports(Args):
             else:
                 print("device info unavailable")
         print()
-        return
+        return serialObj
 
     # Help Option (-h): Display all usage information for comports command
     elif (option == "-h"):
@@ -81,17 +82,17 @@ def comports(Args):
         for line in comports_doc_lines:
             print(line, end='')
         print()
-        return
+        return serialObj
 
     # Connect Option (-c): Connect to a USB port
     elif (option == "-c"):
         # Check that port has been supplied
         if (not port_supplied):
             print("Error: no port supplied to comports function")
-            return
+            return serialObj
         elif (not baudrate_supplied):
             print("Error: no baudrate supplied to comports function")
-            return
+            return serialObj
 
         # Check that inputed port is valid
         avail_ports = serial.tools.list_ports.comports()
@@ -101,37 +102,45 @@ def comports(Args):
         if (not (target_port in avail_ports_devices)):
             print("Error: Invalid serial port\n")
             comports(["-l"])
-            return
+            return serialObj
 
-        # Set global variables
-        global baudrate
-        baudrate = input_baudrate
-        global serialPort 
-        serialPort = target_port
-        print("Connected to port " + serialPort + " at " + str(baudrate) + " baud")
-        return
+        # Configure Serial Port
+        serialObj.configComport(baudrate, target_port, default_timeout)
+
+        # Connect to serial port
+        connection_status = serialObj.openComport()
+        if(connection_status):
+            print("Connected to port " + target_port + " at " + str(baudrate) + " baud")
+
+        return serialObj
 
 
     # Disconnect Option (-d): Disconnect a USB device
     elif (option == "-d"):
-        baudrate = None
-        serialPort = None
-        print("Disconnected from active serial port")
+        connection_status = serialObj.closeComport()
+        if (connection_status):
+            print("Disconnected from active serial port")
+            return serialObj
+        else: 
+            print("An error ocurred while closing port " + target_port)
+            return serialObj
 
     # Invalid Option
     else:
         print("Error: \"" + option + "\" is an invalid option for comports")
 
+    return serialObj
+
 # ping - transmit a byte over an active USB connection and await respone from board
-def ping(Args):
+def ping(Args, serialObj):
 
     # Check for an active serial port connection and valid options/arguments
     if (serialPort == None):
         print("Error: no active serial port connection. Run the comports -c command to connect to a device")
-        return
+        return serialObj
     elif (len(Args) < 1):
         print("Error: no options supplied to ping function")
-        return
+        return serialObj
     elif (len(Args) > 2):
         print("Error: too many options/arguments supplied to ping function")
     else:
@@ -151,17 +160,17 @@ def ping(Args):
             for line in comports_doc_lines:
                 print(line, end='')
             print()
-            return
+            return serialObj
 
         # Ping option
         elif (option == "-t"):
             print("Pinging ...")
-            return
+            return serialObj
 
         # Ping option 
         else:
             print("Error: invalid option supplied to ping function")
-            return
+            return serialObj
 
 # Command List
 command_list = { "exit": exitFunc,
