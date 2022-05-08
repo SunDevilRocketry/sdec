@@ -135,7 +135,7 @@ def comports(Args, serialObj):
 def ping(Args, serialObj):
 
     # Check for an active serial port connection and valid options/arguments
-    if (serialPort == None):
+    if (not serialObj.serialObj.is_open):
         print("Error: no active serial port connection. Run the comports -c command to connect to a device")
         return serialObj
     elif (len(Args) < 1):
@@ -149,8 +149,12 @@ def ping(Args, serialObj):
         option = Args[0]
         timeout_supplied = False
         if (len(Args) == 2):
-            input_timeout = Args[1]
-            timeout_supplied = True
+            try:
+                input_timeout = float(Args[1])
+                timeout_supplied = True
+            except ValueError:
+                print("Error: Invalid ping timeout.")
+                return serialObj
 
         # Help option
         if (option == "-h"):
@@ -164,6 +168,8 @@ def ping(Args, serialObj):
 
         # Ping option
         elif (option == "-t"):
+            # Set timeout
+            serialObj.timeout = input_timeout
             print("Pinging ...")
             return serialObj
 
