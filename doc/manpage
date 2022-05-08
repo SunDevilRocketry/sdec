@@ -1,14 +1,14 @@
 Terminal Control Commands:
 	clear: clears the terminal window
-	help: displays the termincal control commands
+	help: displays the terminal control commands
 	exit: exits the program
-	comports -[OPTIONS] -[PORTNAME] -[BAUD]: allows the user to connect to a device over USB
+	comports -[OPTIONS] [PORTNAME] [BAUD]: allows the user to connect to a device over USB
 		options: 
-			-c [PORTNAME] -[BAUD]: connect to port [PORTNAME] with baudrate [BAUD]
+			-c [PORTNAME] [BAUD]: connect to port [PORTNAME] with baudrate [BAUD]
 			-d : disconnect the device currently being used
 			-h : display comports usage information
 			-l : list all available devices
-       ping -[OPTIONS] -[TIMEOUT]: transmits a byte over the serial port and awaits response from board
+       ping -[OPTIONS] [TIMEOUT]: transmits a byte over the serial port and awaits response from board
        		options:
                 	-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
 	                -h : display ping options

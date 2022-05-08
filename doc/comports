@@ -1,6 +1,6 @@
 COMPORTS: 
 
-USAGE: comports -[OPTIONS] -[PORT] -[BAUD]
+USAGE: comports -[OPTIONS] [PORT] [BAUD]
 
 OPTIONS: 
 	-c [PORT] [BAUD] : connection to port [PORT] with baudrate [BAUD] 
