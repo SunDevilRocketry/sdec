@@ -84,19 +84,23 @@ def parseInput(userin):
 
     # Split the input into commands and arguments
     userin = userin.split() 
-    userCommand = userin[0]
-    CommandArgs = userin[1:] 
+    try:
+        userCommand = userin[0]
+        CommandArgs = userin[1:] 
+    except TypeError:
+        print("Error: Unsupported command")
+        userin = input("SDR>> ")
+        parseInput(userin)
 
     # Check if user input corresponds to a function
     for command in commands.command_list: 
         if userCommand == command:
-           #commands.command_list[command](CommandArgs)
            return userin
 
     # User input doesn't correspond to a command
     print("Error: Unsupported command")
     userin = input("SDR>> ")
-    parseInput(userin)
+    return parseInput(userin)
 
 ## Program Loop
 
@@ -108,9 +112,9 @@ while(True):
     userin = input("SDR>> ")
 
     # Parse command
-    userin = parseInput(userin)
-    userCommand = userin[0]
-    userArgs = userin[1:]
+    userin_clean = parseInput(userin)
+    userCommand = userin_clean[0]
+    userArgs = userin_clean[1:]
 
     # Execute Command
     terminalSerObj = commands.command_list[userCommand](userArgs, terminalSerObj)
