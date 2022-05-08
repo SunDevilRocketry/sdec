@@ -7,6 +7,7 @@
 import sys
 import os
 import serial.tools.list_ports
+import time
 
 # Global Variables
 default_timeout = 1 # 1 second timeout
@@ -104,8 +105,8 @@ def comports(Args, serialObj):
             comports(["-l"])
             return serialObj
 
-        # Configure Serial Port
-        serialObj.configComport(baudrate, target_port, default_timeout)
+        # Initialize Serial Port
+        serialObj.initComport(baudrate, target_port, default_timeout)
 
         # Connect to serial port
         connection_status = serialObj.openComport()
@@ -135,10 +136,10 @@ def comports(Args, serialObj):
 def ping(Args, serialObj):
 
     # Check for an active serial port connection and valid options/arguments
-    if (not serialObj.serialObj.is_open):
-        print("Error: no active serial port connection. Run the comports -c command to connect to a device")
-        return serialObj
-    elif (len(Args) < 1):
+#    if (not serialObj.serialObj.is_open):
+#        print("Error: no active serial port connection. Run the comports -c command to connect to a device")
+#        return serialObj
+    if (len(Args) < 1):
         print("Error: no options supplied to ping function")
         return serialObj
     elif (len(Args) > 2):
@@ -168,9 +169,28 @@ def ping(Args, serialObj):
 
         # Ping option
         elif (option == "-t"):
+            # Check for valid serial port connection
+            if (not serialObj.serialObj.is_open):
+                print("Error: no active serial port connection. Run the comports -c command to connect to a device")
+                return serialObj
+
             # Set timeout
             serialObj.timeout = input_timeout
+            serialObj.configComport()
+
+            # Ping
+            opcode = b'\x01'
+            ping_start_time = time.time()
+            serialObj.sendByte(opcode)
             print("Pinging ...")
+            readData = serialObj.serialObj.read()
+            if (readData == b''):
+                print("Timeout expired. No device response recieved.")
+            else:
+                ping_recieve_time = time.time()
+                ping_time = ping_recieve_time - ping_start_time
+                ping_time *= 1000.0
+                print("Response recieved at {0:1.4f} ms".format(ping_time))
             return serialObj
 
         # Ping option 

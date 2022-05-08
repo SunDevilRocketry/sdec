@@ -19,8 +19,8 @@ class terminalData:
         self.serialObj = serial.Serial()
         self.config_status = False 
 
-    # Configure Serial Port
-    def configComport(self, baudrate, comport, timeout):
+    # Initialize Serial Port
+    def initComport(self, baudrate, comport, timeout):
         self.baudrate = baudrate 
         self.comport = comport 
         self.timeout = timeout 
@@ -28,6 +28,12 @@ class terminalData:
         self.serialObj.port = self.comport
         self.serialObj.timeout = self.timeout
         self.config_status = True
+
+    # Configure Serial port from class attributes
+    def configComport(self):
+        self.serialObj.baudrate = self.baudrate
+        self.serialObj.port = self.comport
+        self.serialObj.timeout = self.timeout
 
     # Open the serial port
     # returns a boolean variable indicating whether the port connection
