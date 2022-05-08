@@ -31,7 +31,7 @@ def parseInput(userin):
 
     # User input doesn't correspond to a command
     print("Error: Unsupported command")
-    userin = input("> ")
+    userin = input("SDR>> ")
     parseInput(userin)
 
 # Program Loop
