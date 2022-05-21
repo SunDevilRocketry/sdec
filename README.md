@@ -69,8 +69,7 @@ refer to the board's firmware documentation </p>
 
 <h3>sol</h3>
 <p>Opcode: 0x51</p>
-<p>Description: Asserts the acutate solenoid signal of the MCU to actuate the solenoid. The open/close state of
-                the solenoid depends on whether the attached solenoid is normally open or closed. </p>
+<p>Description: Actuates a solenoid. </p>
 <p>Usage: sol [SUBCOMMAND] -[OPTION] [INPUTS]</p>
 <p>Options:
     <ul>
