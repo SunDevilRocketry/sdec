@@ -39,6 +39,7 @@ refer to the board's firmware documentation </p>
 
 <h3>comports</h3>
 <p>Description: allows the user to connect to a device over USB</p>
+<p>Usage: comports -[OPTION] [INPUTS]</p>
 <p>Options: 
 <ul>
     <li> -c [PORTNAME] [BAUD]: connect to port [PORTNAME] with baudrate [BAUD] </li> 
