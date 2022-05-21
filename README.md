@@ -29,16 +29,16 @@ refer to the board's firmware documentation </p>
 <h2>General Commands:</h2>
 
 <h3>clear</h3>
-<p>clears the terminal window</p>
+<p>Description: clears the terminal window</p>
 
 <h3>help</h3>
-<p>displays all terminal control commands and options</p>
+<p>Description: displays all terminal control commands and options</p>
 
 <h3>exit</h3>
-<p>exits the program</p>
+<p>Description: exits the program</p>
 
 <h3>comports</h3>
-<p>allows the user to connect to a device over USB</p>
+<p>Description: allows the user to connect to a device over USB</p>
 <p>Usage: comports -[OPTION] [INPUTS]</p>
 <p>Options: 
 <ul>
@@ -52,6 +52,7 @@ refer to the board's firmware documentation </p>
 <h3>ping</h3>
 <p>Opcode: 0x01</p>
 <p>Description: transmits a byte over the serial port and awaits response from board</p>
+<p>Usage: ping -[OPTION] [INPUTS]</p>
 <p>Options:
     <ul>
         <li> -t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].</li>
