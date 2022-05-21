@@ -90,5 +90,12 @@ refer to the board's firmware documentation </p>
 	<li> -h : display soloff options </li>
     </ul>
 </p>
+<p>sol toggle</p>
+<p>Options:
+    <ul>
+        <li> -n [SOLENOID]: Toggle the SOL[SOLENOID] signal. Changes the solenoid number [SOLENOID] state. Valid [SOLENOID] inputs range from 1 to 6.</li>
+	<li> -h : display soloff options </li>
+    </ul>
+</p>
 <p>sol reset</p>
 <p>Description: Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed.</p>
