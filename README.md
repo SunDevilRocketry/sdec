@@ -29,16 +29,16 @@ refer to the board's firmware documentation </p>
 <h2>General Commands:</h2>
 
 <h3>clear</h3>
-<p>Description: clears the terminal window</p>
+<p>clears the terminal window</p>
 
 <h3>help</h3>
-<p>Description: displays all terminal control commands and options</p>
+<p>displays all terminal control commands and options</p>
 
 <h3>exit</h3>
-<p>Description: exits the program</p>
+<p>exits the program</p>
 
 <h3>comports</h3>
-<p>Description: allows the user to connect to a device over USB</p>
+<p>allows the user to connect to a device over USB</p>
 <p>Usage: comports -[OPTION] [INPUTS]</p>
 <p>Options: 
 <ul>
