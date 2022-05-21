@@ -90,19 +90,5 @@ refer to the board's firmware documentation </p>
 	<li> -h : display soloff options </li>
     </ul>
 </p>
-
-<h3>soloff</h3>
-<p>Opcode: 0x52</p>
-<p>Description: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state. The open/close 
-                state of the solenoid depends on whether the attached solenoid is normally open or closed. </p>
-<p>Options:
-    <ul>
-        <li> -n [SOLENOID]: Deassert the SOL[SOLENOID] signal. Returns solenoid number [SOLENOID] to its default state. Valid [SOLENOID]
-             inputs range from 1 to 6.</li>
-	<li> -h : display soloff options </li>
-    </ul>
-</p>
-
-<h3>solreset</h3>
-<p>Opcode: 0x53</p>
+<p>sol reset</p>
 <p>Description: Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed.</p>
