@@ -78,7 +78,7 @@ refer to the board's firmware documentation </p>
     <ul>
         <li> -n [SOLENOID]: Assert the SOL[SOLENOID] signal. Actuates solenoid number [SOLENOID]. Valid [SOLENOID]
              inputs range from 1 to 6.</li>
-	<li> -h : display solon options </li>
+	<li> -h : display sol on options </li>
     </ul>
 </p>
 <p>sol off </p>
@@ -87,14 +87,14 @@ refer to the board's firmware documentation </p>
     <ul>
         <li> -n [SOLENOID]: Deassert the SOL[SOLENOID] signal. Returns solenoid number [SOLENOID] to its default state. Valid [SOLENOID]
              inputs range from 1 to 6.</li>
-	<li> -h : display soloff options </li>
+	<li> -h : display sol off options </li>
     </ul>
 </p>
 <p>sol toggle</p>
 <p>Options:
     <ul>
         <li> -n [SOLENOID]: Toggle the SOL[SOLENOID] signal. Changes the solenoid number [SOLENOID] state. Valid [SOLENOID] inputs range from 1 to 6.</li>
-	<li> -h : display soloff options </li>
+	<li> -h : display sol off options </li>
     </ul>
 </p>
 <p>sol reset</p>
