@@ -72,31 +72,13 @@ refer to the board's firmware documentation </p>
 <p>Description: Actuates a solenoid. </p>
 <p>Usage: sol [SUBCOMMAND] -[OPTION] [INPUTS]</p>
 <p>Subcommands: </p>
-<p>sol on </p>
-<p>Description: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.ctuates a solenoid. </p>
+<p>sol on : Asserts the acutate solenoid signal of the MCU to supply power to the solenoid. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
+<p>sol off : Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
+<p>sol toggle : Changes the solenoid state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
+<p>sol reset : Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed.</p>
 <p>Options:
     <ul>
-        <li> -n [SOLENOID]: Assert the SOL[SOLENOID] signal. Actuates solenoid number [SOLENOID]. Valid [SOLENOID]
-             inputs range from 1 to 6.</li>
-	<li> -h : display sol on options </li>
+        <li> -n [SOLENOID]: operate on solenoid [SOLENOID]. Valid [SOLENOID] inputs range from 1 to 6.</li>
+		<li> -h : display sol off options </li>
     </ul>
 </p>
-<p>sol off </p>
-<p>Description: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed. </p>
-<p>Options:
-    <ul>
-        <li> -n [SOLENOID]: Deassert the SOL[SOLENOID] signal. Returns solenoid number [SOLENOID] to its default state. Valid [SOLENOID]
-             inputs range from 1 to 6.</li>
-	<li> -h : display sol off options </li>
-    </ul>
-</p>
-<p>sol toggle</p>
-<p>Description: Changes the solenoid state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed. </p>
-<p>Options:
-    <ul>
-        <li> -n [SOLENOID]: Toggle the SOL[SOLENOID] signal. Changes the solenoid number [SOLENOID] state. Valid [SOLENOID] inputs range from 1 to 6.</li>
-	<li> -h : display sol off options </li>
-    </ul>
-</p>
-<p>sol reset</p>
-<p>Description: Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed.</p>
