@@ -1,4 +1,4 @@
-### Commands.py -- module with all command line functions 
+### Commands.py -- module with general command line functions 
 ### Author: Colton Acosta
 ### Date: 4/16/2021
 ### Sun Devil Rocketry Avionics
@@ -206,13 +206,5 @@ def ping(Args, serialObj):
         else:
             print("Error: invalid option supplied to ping function")
             return serialObj
-
-# Command List
-command_list = { "exit": exitFunc,
-                 "help": helpFunc,
-                 "clear": clearConsole,
-                 "comports": comports,
-                 "ping": ping
-                }
 
 ### END OF FILE

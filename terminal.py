@@ -7,6 +7,7 @@ import serial.tools.list_ports
 
 # SDR modules
 import commands # functions for each terminal command
+import valveController # functions for valve controller commands
 
 # Serial Port Object
 # Used to access a serial port and pass serial information
@@ -77,6 +78,14 @@ class terminalData:
         else:
              return self.serialObj.read()
 
+# Command List
+command_list = { "exit": commands.exitFunc,
+                 "help": commands.helpFunc,
+                 "clear": commands.clearConsole,
+                 "comports": commands.comports,
+                 "ping": commands.ping,
+                 "sol": valveController.sol
+                }
 
 # parseInput -- checks user input against command list 
 #               options
@@ -99,7 +108,7 @@ def parseInput(userin):
         parseInput(userin)
 
     # Check if user input corresponds to a function
-    for command in commands.command_list: 
+    for command in command_list: 
         if userCommand == command:
            return userin
 
@@ -123,6 +132,6 @@ while(True):
     userArgs = userin_clean[1:]
 
     # Execute Command
-    terminalSerObj = commands.command_list[userCommand](userArgs, terminalSerObj)
+    terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
 
-
+### END OF FILE
