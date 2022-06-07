@@ -6,9 +6,8 @@ SUBCOMMANDS:
 	sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
 	sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
     sol toggle: Changes the solenoid state
+	sol reset: Resets all solenoids to the default state
 
 OPTIONS: 
-	-c [PORT] [BAUD] : connection to port [PORT] with baudrate [BAUD] 
-	-d : disconnect from comport
-	-h : display this help information
-	-l : list available serial ports
+	-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
+	-h : display subcommand options
