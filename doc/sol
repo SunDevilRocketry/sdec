@@ -3,7 +3,9 @@ SOL:
 USAGE: sol [SUBCOMMAND] -[OPTIONS] [INPUTS]
 
 SUBCOMMANDS:
-	sol on: 
+	sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
+	sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
+    sol toggle: Changes the solenoid state
 
 OPTIONS: 
 	-c [PORT] [BAUD] : connection to port [PORT] with baudrate [BAUD] 

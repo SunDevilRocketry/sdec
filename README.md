@@ -91,6 +91,7 @@ refer to the board's firmware documentation </p>
     </ul>
 </p>
 <p>sol toggle</p>
+<p>Description: Changes the solenoid state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed. </p>
 <p>Options:
     <ul>
         <li> -n [SOLENOID]: Toggle the SOL[SOLENOID] signal. Changes the solenoid number [SOLENOID] state. Valid [SOLENOID] inputs range from 1 to 6.</li>
