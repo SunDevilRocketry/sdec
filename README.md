@@ -73,7 +73,7 @@ refer to the board's firmware documentation </p>
 <p>Usage: sol [SUBCOMMAND] -[OPTION] [INPUTS]</p>
 <p>Subcommands: </p>
 <p>sol on </p>
-<p>Description: Asserts the acutate solenoid signal of the MCU to return the solenoid to its default state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.ctuates a solenoid. </p>
+<p>Description: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.ctuates a solenoid. </p>
 <p>Options:
     <ul>
         <li> -n [SOLENOID]: Assert the SOL[SOLENOID] signal. Actuates solenoid number [SOLENOID]. Valid [SOLENOID]

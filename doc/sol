@@ -1,0 +1,12 @@
+SOL: 
+
+USAGE: sol [SUBCOMMAND] -[OPTIONS] [INPUTS]
+
+SUBCOMMANDS:
+	sol on: 
+
+OPTIONS: 
+	-c [PORT] [BAUD] : connection to port [PORT] with baudrate [BAUD] 
+	-d : disconnect from comport
+	-h : display this help information
+	-l : list available serial ports
