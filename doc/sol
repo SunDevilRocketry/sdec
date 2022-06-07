@@ -10,4 +10,4 @@ SUBCOMMANDS:
 
 OPTIONS: 
 	-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
-	-h : display subcommand options
+	-h : display solenoid options

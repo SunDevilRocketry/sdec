@@ -1,14 +1,30 @@
 Terminal Control Commands:
+
 	clear: clears the terminal window
+
 	help: displays the terminal control commands
+
 	exit: exits the program
+
 	comports -[OPTIONS] [PORTNAME] [BAUD]: allows the user to connect to a device over USB
 		options: 
 			-c [PORTNAME] [BAUD]: connect to port [PORTNAME] with baudrate [BAUD]
 			-d : disconnect the device currently being used
 			-h : display comports usage information
 			-l : list all available devices
-       ping -[OPTIONS] [TIMEOUT]: transmits a byte over the serial port and awaits response from board
-       		options:
-                	-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
-	                -h : display ping options
+
+	ping -[OPTIONS] [TIMEOUT]: transmits a byte over the serial port and awaits response from board
+		options:
+			-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
+			-h : display ping options
+
+	sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
+		subcommands:
+			sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
+			sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
+			sol toggle: Changes the solenoid state
+			sol reset: Resets all solenoids to the default state
+
+	options: 
+		-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
+		-h : display solenoid options
