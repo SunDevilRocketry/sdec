@@ -11,10 +11,12 @@ import time
 
 # Global Variables
 default_timeout = 1 # 1 second timeout
-ping_response_codes = [b'\x01']
+ping_response_codes = [b'\x01', b'\x02']
 ping_responses = {
-                  b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)"
-                }
+                  b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
+                  b'\x02': "Valve Controller (L0005 Rev 2.0)"
+                 }
+
 
 # exitFunc -- quits the program
 def exitFunc(Args, serialObj):
