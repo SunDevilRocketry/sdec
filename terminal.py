@@ -79,12 +79,13 @@ class terminalData:
              return self.serialObj.read()
 
 # Command List
-command_list = { "exit": commands.exitFunc,
-                 "help": commands.helpFunc,
-                 "clear": commands.clearConsole,
-                 "comports": commands.comports,
-                 "ping": commands.ping,
-                 "sol": valveController.sol
+command_list = { "exit"     : commands.exitFunc,
+                 "help"     : commands.helpFunc,
+                 "clear"    : commands.clearConsole,
+                 "comports" : commands.comports,
+                 "ping"     : commands.ping,
+				 "connect"  : commands.connect,
+                 "sol"      : valveController.sol
                 }
 
 # parseInput -- checks user input against command list 
