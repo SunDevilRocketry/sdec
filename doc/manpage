@@ -18,6 +18,12 @@ Terminal Control Commands:
 			-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
 			-h : display ping options
 
+	connect -[OPTIONS] [INPUTS]: establishes a serial connection with an SDR supported board. A connection
+                                 must be established before running any controller-specific commands
+		options:
+			-p [PORT]: establish a connection using serial port [PORT].
+			-h : display connect options
+
 	sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
 		subcommands:
 			sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
