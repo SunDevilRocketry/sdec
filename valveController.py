@@ -3,7 +3,7 @@
 # valveController.py -- module with valve controller specific #
 #                        command line functions               # 
 # Author: Colton Acosta                                       #
-# Date: 4/16/2021                                             #
+# Date: 4/16/2022                                             #
 # Sun Devil Rocketry Avionics                                 #
 #                                                             #
 ###############################################################
@@ -12,7 +12,15 @@
 # Standard Imports
 import serial.tools.list_ports
 
-# sol -- control solenoids states
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		sol                                                   #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		control the actuation state of solenoids              #
+#                                                             #
+###############################################################
 def sol(Args, serialObj):
 	###########################################################
 	# local variables                                         #
@@ -68,7 +76,8 @@ def sol(Args, serialObj):
 		return serialObj
 
 	# not connected to valve controller
-	elif ()
+	elif ():
+		pass
 		# solenoid number out of bounds
 
     # Help option

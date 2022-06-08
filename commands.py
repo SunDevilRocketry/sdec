@@ -1,28 +1,58 @@
-### Commands.py -- module with general command line functions 
-### Author: Colton Acosta
-### Date: 4/16/2021
-### Sun Devil Rocketry Avionics
+###############################################################
+#                                                             #
+# Commands.py -- module with general command line functions   #
+# Author: Colton Acosta                                       #
+# Date: 4/16/2022                                             #
+# Sun Devil Rocketry Avionics                                 #
+#                                                             #
+###############################################################
 
-# Standard Imports
+
+###############################################################
+# Standard Imports                                            #
+###############################################################
 import sys
 import os
 import serial.tools.list_ports
 import time
 
-# Global Variables
+
+###############################################################
+# Global Variables                                            #
+###############################################################
 default_timeout = 1 # 1 second timeout
-ping_response_codes = [b'\x01', b'\x02']
+ping_response_codes = [ \
+                      b'\x01', \
+                      b'\x02'  \
+                      ]
 ping_responses = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"
                  }
 
 
-# exitFunc -- quits the program
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		exit                                                  #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		quits the program                                     #
+#                                                             #
+###############################################################
 def exitFunc(Args, serialObj):
    sys.exit()
 
-# helpFunc -- displays list of commands
+
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		help                                                  #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		displays command info from manpage                    #
+#                                                             #
+###############################################################
 def helpFunc(Args, serialObj):
     with open('doc/manpage') as file: 
         doc_lines = file.readlines()
@@ -32,6 +62,15 @@ def helpFunc(Args, serialObj):
     return serialObj 
     
 
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		clear                                                 #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		clears the python terminal                            #
+#                                                             #
+###############################################################
 # clearConsole -- clears the python terminal
 def clearConsole(Args, serialObj):
     command = 'clear'
@@ -40,7 +79,17 @@ def clearConsole(Args, serialObj):
     os.system(command)
     return serialObj 
 
-# comports -- connects to a USB device or displays connectivity info
+
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		comports                                              #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		connects to a USB device or displays connectivity     #
+#       info                                                  #
+#                                                             #
+###############################################################
 def comports(Args, serialObj):
 
     # Check that user has supplied correct amount of info
@@ -138,13 +187,23 @@ def comports(Args, serialObj):
 
     return serialObj
 
-# ping - transmit a byte over an active USB connection and await respone from board
+
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		ping                                                  #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		transmit a byte over an active USB connection and     #
+#       await response from board                             #
+#                                                             #
+###############################################################
 def ping(Args, serialObj):
 
     # Check for an active serial port connection and valid options/arguments
-#    if (not serialObj.serialObj.is_open):
-#        print("Error: no active serial port connection. Run the comports -c command to connect to a device")
-#        return serialObj
+    if (not serialObj.serialObj.is_open):
+        print("Error: no active serial port connection. Run the comports -c command to connect to a device")
+        return serialObj
     if (len(Args) < 1):
         print("Error: no options supplied to ping function")
         return serialObj
@@ -206,5 +265,18 @@ def ping(Args, serialObj):
         else:
             print("Error: invalid option supplied to ping function")
             return serialObj
+
+
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		connect                                               #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		establish a serial connection with an SDR board       #
+#                                                             #
+###############################################################
+def connect(Args, serialObj):
+	return
 
 ### END OF FILE
