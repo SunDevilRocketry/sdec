@@ -21,15 +21,108 @@ import time
 # Global Variables                                            #
 ###############################################################
 default_timeout = 1 # 1 second timeout
-ping_response_codes = [ \
-                      b'\x01', \
-                      b'\x02'  \
+ping_response_codes = [ 
+                      b'\x01', # Engine Controller, Rev 3.0
+                      b'\x02'  # Valve Controller, Rev 2.0 
                       ]
 ping_responses = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"
                  }
 
+
+###############################################################
+# Shared Routines                                             #
+###############################################################
+
+# parseArgs -- run basic checks on command inputs, outputs a 
+#              boolean indicating whether the user input
+#              passes the parse tests
+def parseArgs(
+             Args,                         # function arguments
+			 num_Args,                     # number of function
+#                                            arguments
+             supported_subcommands,        # list of subcommands
+             supported_options,            # list of options
+			 supported_option_descriptions # dictionary of option
+#                                            descriptions
+             ):
+
+	###########################################################
+	# Local Variables                                         #
+	###########################################################
+
+	# Error code returns
+	parse_pass = True
+	parse_fail = False
+
+	# subcommand support
+	if (supported_subcommands == None):
+		subcommand_func = False
+	else:
+		subcommand_func = True
+
+
+	###########################################################
+	# Input Tests                                             #
+	###########################################################
+
+	# no subcommands/options
+	if (subcommand_func):
+		if (len(Args) == 0): # no subcommand
+			print('Error: No subcommand supplied. Valid subcommands include: ')
+			for subcommand in supported_subcommands:
+				print('\t' + subcommand)
+			print()
+			return parse_fail
+		elif (len(Args) == 1): # no option
+			print('Error: No options supplied. Valid options include: ')
+			for option in supported_options:
+				print('\t' + option + '\t' + supported_option_descriptions[option]) 
+			print()
+			return parse_fail
+	else:
+		if (len(Args == 0)): # no options
+			print('Error: No options supplied. Valid options include: ')
+			for option in supported_options:
+				print('\t' + option + '\t' + supported_option_descriptions[option]) 
+			print()
+			return parse_fail
+
+	# too many inputs
+	if (len(Args) > num_Args): 
+		print('Error: To many inputs.')
+		return parse_fail
+
+	# unrecognized subcommand
+	if (subcommand_func):
+		subcommand = Args[0]
+		if (not (subcommand in subcommands)): 
+			print('Error: Unrecognized subcommand. Valid subcommands include: ')
+			for entry in subcommands:
+				print('\t' + entry)
+			print()
+			return parse_fail
+
+	# unrecognized option	
+	if (subcommand_func):
+		option = Args[1]
+		if (not(option in options)): 
+			print('Error: Unrecognized option. Valid options include: ')
+			for option in options:
+				print('\t' + option + '\t' + option_descriptions[option]) 
+			print()
+			return parse_fail
+	else:
+		option = Args[0]
+		if (not(option in options)): 
+			print('Error: Unrecognized option. Valid options include: ')
+			for option in options:
+				print('\t' + option + '\t' + option_descriptions[option]) 
+			print()
+			return parse_fail
+	
+	return parse_pass
 
 ###############################################################
 #                                                             #
@@ -277,6 +370,14 @@ def ping(Args, serialObj):
 #                                                             #
 ###############################################################
 def connect(Args, serialObj):
+	###########################################################
+	# local variables                                         #
+    ###########################################################
+	opcode = b'\x01'
+
+	###########################################################
+	# function inputs parsing                                 #
+    ###########################################################
 	return
 
 ### END OF FILE

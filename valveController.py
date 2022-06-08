@@ -9,8 +9,17 @@
 ###############################################################
 
 
-# Standard Imports
+###############################################################
+# Standard Imports                                            #
+###############################################################
 import serial.tools.list_ports
+
+
+###############################################################
+# Project Modules                                             #
+###############################################################
+import commands
+
 
 ###############################################################
 #                                                             #
@@ -45,7 +54,17 @@ def sol(Args, serialObj):
 	###########################################################
 	# function inputs parsing                                 #
     ###########################################################
-
+	parse_check = commands.parseArgs(
+                                    Args,
+                                    len(Args),
+                                    subcommands,
+                                    options,
+                                    option_descriptions
+                                    )
+	if (not parse_check):
+		return serialObj # user inputs failed parse tests
+	return serialObj
+'''
 	# no subcommands/options
 	if (len(Args) == 0):
 		print('Error: No subcommand supplied. Valid subcommands include: ')
@@ -89,4 +108,4 @@ def sol(Args, serialObj):
     # sol toggle
 
 	# sol reset
-	return
+'''
