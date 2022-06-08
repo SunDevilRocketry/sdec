@@ -60,6 +60,18 @@ refer to the board's firmware documentation </p>
     </ul>
 </p>
 
+<h3>connect</h3>
+<p>Opcode: 0x02</p>
+<p>Description: Establishes a serial connection with an SDR supported board. A connection must
+be established before running any controller-specific commands.</p>
+<p>Usage: connect -[OPTION] [INPUTS]</p>
+<p>Options:
+    <ul>
+    <li> -p [PORT]: establish a connection using serial port [PORT].</li>
+	<li> -h : display connect options </li>
+    </ul>
+</p>
+
 <h2> L0002 Liquid Engine Controller Commands: </h2>
 <h2> L0005 Valve Controller Commands: </h2>
 
