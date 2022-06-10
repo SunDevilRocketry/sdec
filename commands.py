@@ -39,13 +39,10 @@ ping_responses = {
 #              boolean indicating whether the user input
 #              passes the parse tests
 def parseArgs(
-             Args,                         # function arguments
-			 num_Args,                     # number of function
-#                                            arguments
-             supported_subcommands,        # list of subcommands
-             supported_options,            # list of options
-			 supported_option_descriptions # dictionary of option
-#                                            descriptions
+             Args,          # function arguments
+			 max_num_Args,  # maximum number of function arguments
+             Args_dic,      # dictionary of supported inputs
+             command_type,  # indicates if command has subcommands
              ):
 
 	###########################################################
@@ -57,71 +54,78 @@ def parseArgs(
 	parse_fail = False
 
 	# subcommand support
-	if (supported_subcommands == None):
-		subcommand_func = False
-	else:
+	if (command_type == 'subcommand'):
 		subcommand_func = True
+	else:
+		subcommand_func = False
 
 
 	###########################################################
 	# Input Tests                                             #
 	###########################################################
 
-	# no subcommands/options
+	# No Subcommands/Options
 	if (subcommand_func):
 		if (len(Args) == 0): # no subcommand
 			print('Error: No subcommand supplied. Valid subcommands include: ')
-			for subcommand in supported_subcommands:
+			for subcommand in Args_dic:
 				print('\t' + subcommand)
 			print()
 			return parse_fail
-		elif (len(Args) == 1): # no option
-			print('Error: No options supplied. Valid options include: ')
-			for option in supported_options:
-				print('\t' + option + '\t' + supported_option_descriptions[option]) 
-			print()
-			return parse_fail
+		user_subcommand = Args[0]
 	else:
-		if (len(Args == 0)): # no options
+		if (len(Args) == 0): # no options
 			print('Error: No options supplied. Valid options include: ')
-			for option in supported_options:
-				print('\t' + option + '\t' + supported_option_descriptions[option]) 
+			for option in Args_dic:
+				print('\t' + option + '\t' + Args_dic[option]) 
 			print()
 			return parse_fail
+		user_option = Args[0]
 
-	# too many inputs
-	if (len(Args) > num_Args): 
+	# Too Many Inputs
+	if (len(Args) > max_num_Args): 
 		print('Error: To many inputs.')
 		return parse_fail
 
-	# unrecognized subcommand
+	# Unrecognized Subcommand
 	if (subcommand_func):
-		subcommand = Args[0]
-		if (not (subcommand in subcommands)): 
+		if (not (user_subcommand in Args_dic)): 
 			print('Error: Unrecognized subcommand. Valid subcommands include: ')
-			for entry in subcommands:
-				print('\t' + entry)
+			for subcommand in Args_dic:
+				print('\t' + subcommand)
+			print()
+			return parse_fail
+		num_options = len(Args_dic[user_subcommand])
+		# No option supplied after subcommand
+		if ( (len(Args) == 1) and (num_options != 0) ):
+			print('Error: No options supplied. Valid options include: ')
+			for option in Args_dic[user_subcommand]:
+				print('\t' + option + '\t' + Args_dic[user_subcommand][option]) 
+			print()
+			return parse_fail
+		# Subcommand valid, exit if subcommand has no options
+		if (num_options == 0):
+			return parse_pass
+		else: 
+			user_option = Args[1]
+
+	# Unrecognized Option	
+	if (subcommand_func): #subcommand supported
+		if (not(user_option in Args_dic[user_subcommand])): 
+			print('Error: Unrecognized option. Valid options include: ')
+			for option in Args_dic[user_subcommand]:
+				print('\t' + option + '\t' + Args_dic[user_subcommand][option]) 
+			print()
+			return parse_fail
+	else: # subcommand not supported 
+		if (not(user_option in Args_dic)): 
+			print('Error: Unrecognized option. Valid options include: ')
+			for option in Args_dic:
+				print('\t' + option + '\t' + Args_dic[option]) 
 			print()
 			return parse_fail
 
-	# unrecognized option	
-	if (subcommand_func):
-		option = Args[1]
-		if (not(option in options)): 
-			print('Error: Unrecognized option. Valid options include: ')
-			for option in options:
-				print('\t' + option + '\t' + option_descriptions[option]) 
-			print()
-			return parse_fail
-	else:
-		option = Args[0]
-		if (not(option in options)): 
-			print('Error: Unrecognized option. Valid options include: ')
-			for option in options:
-				print('\t' + option + '\t' + option_descriptions[option]) 
-			print()
-			return parse_fail
-	
+	# User input passes all checks	
 	return parse_pass
 
 ###############################################################
@@ -185,100 +189,121 @@ def clearConsole(Args, serialObj):
 ###############################################################
 def comports(Args, serialObj):
 
-    # Check that user has supplied correct amount of info
-    if (len(Args) == 0):
-        print("Error: no options supplied to comports function")
-        return serialObj
-    elif (len(Args) > 3):
-        print("Error: too many options/arguments supplied to comports function")
-        return serialObj
+	###########################################################
+	# local variables                                         #
+    ###########################################################
 
-    # Function Args parsing:
-    option = Args[0]
-    port_supplied = False
-    baudrate_supplied = False
-    if (len(Args) >= 2):
-        target_port = Args[1]
-        port_supplied = True
-    if (len(Args) == 3):
-        try: 
-            baudrate = int(Args[2])
-            baudrate_supplied = True
-        except ValueError:
-            print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
-            return serialObj
+	# Options Dictionary
+	comports_inputs = { 
+					   '-h' : 'Display help info',
+					   '-l' : 'List available serial ports',
+					   '-c' : 'Connect to a serial port',
+					   '-d' : 'Disconnect from a serial port'
+                      }
+    
+	# Maximum number of arguments
+	max_args = 3
 
-    # List Option (-l): Scan available ports and display connections
-    if (option == "-l"):
-        avail_ports = serial.tools.list_ports.comports()
-        print("\nAvailable COM ports: ")
-        for port_num,port in enumerate(avail_ports):
-            print("\t" + str(port_num) + ": " + port.device + " - ", end="") 
-            if (port.manufacturer != None):
-                print(port.manufacturer + ": ", end="")
-            if (port.description != None):
-                print(port.product)
-            else:
-                print("device info unavailable")
-        print()
-        return serialObj
+	# Command type -- subcommand function
+	command_type = 'default'
 
-    # Help Option (-h): Display all usage information for comports command
-    elif (option == "-h"):
-        with open("doc/comports") as file:
-            comports_doc_lines = file.readlines()
-        print()
-        for line in comports_doc_lines:
-            print(line, end='')
-        print()
-        return serialObj
+	###########################################################
+	# Basic inputs parsing                                    #
+    ###########################################################
+	parse_check = parseArgs(
+                            Args,
+                            max_args,
+                            comports_inputs,
+                            command_type 
+                           )
+	if (not parse_check):
+		return serialObj # user inputs failed parse tests
 
-    # Connect Option (-c): Connect to a USB port
-    elif (option == "-c"):
-        # Check that port has been supplied
-        if (not port_supplied):
-            print("Error: no port supplied to comports function")
-            return serialObj
-        elif (not baudrate_supplied):
-            print("Error: no baudrate supplied to comports function")
-            return serialObj
+	###########################################################
+	# Command Specific Parsing                                #
+    ###########################################################
+	option = Args[0]
+	port_supplied = False
+	baudrate_supplied = False
+	if (len(Args) >= 2):
+		target_port = Args[1]
+		port_supplied = True
+	# Check for valid baudrate
+	if (len(Args) == 3):
+		try: 
+			baudrate = int(Args[2])
+			baudrate_supplied = True
+		except ValueError:
+			print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
+			return serialObj
 
-        # Check that inputed port is valid
-        avail_ports = serial.tools.list_ports.comports()
-        avail_ports_devices = []
-        for port in avail_ports:
-            avail_ports_devices.append(port.device)
-        if (not (target_port in avail_ports_devices)):
-            print("Error: Invalid serial port\n")
-            comports(["-l"])
-            return serialObj
+	# List Option (-l): Scan available ports and display connections
+	if (option == "-l"):
+		avail_ports = serial.tools.list_ports.comports()
+		print("\nAvailable COM ports: ")
+		for port_num,port in enumerate(avail_ports):
+			print("\t" + str(port_num) + ": " + port.device + " - ", end="") 
+			if (port.manufacturer != None):
+				print(port.manufacturer + ": ", end="")
+			if (port.description != None):
+				print(port.product)
+			else:
+				print("device info unavailable")
+		print()
+		return serialObj
 
-        # Initialize Serial Port
-        serialObj.initComport(baudrate, target_port, default_timeout)
+	# Help Option (-h): Display all usage information for comports command
+	elif (option == "-h"):
+		with open("doc/comports") as file:
+			comports_doc_lines = file.readlines()
+		print()
+		for line in comports_doc_lines:
+			print(line, end='')
+		print()
+		return serialObj
 
-        # Connect to serial port
-        connection_status = serialObj.openComport()
-        if(connection_status):
-            print("Connected to port " + target_port + " at " + str(baudrate) + " baud")
+	# Connect Option (-c): Connect to a USB port
+	elif (option == "-c"):
+		# Check that port has been supplied
+		if (not port_supplied):
+			print("Error: no port supplied to comports function")
+			return serialObj
+		elif (not baudrate_supplied):
+			print("Error: no baudrate supplied to comports function")
+			return serialObj
 
-        return serialObj
+		# Check that inputed port is valid
+		avail_ports = serial.tools.list_ports.comports()
+		avail_ports_devices = []
+		for port in avail_ports:
+			avail_ports_devices.append(port.device)
+		if (not (target_port in avail_ports_devices)):
+			print("Error: Invalid serial port\n")
+			comports(["-l"])
+			return serialObj
+
+		# Initialize Serial Port
+		serialObj.initComport(baudrate, target_port, default_timeout)
+
+		# Connect to serial port
+		connection_status = serialObj.openComport()
+		if(connection_status):
+			print("Connected to port " + target_port + " at " + str(baudrate) + " baud")
+
+		return serialObj
 
 
-    # Disconnect Option (-d): Disconnect a USB device
-    elif (option == "-d"):
-        connection_status = serialObj.closeComport()
-        if (connection_status):
-            print("Disconnected from active serial port")
-            return serialObj
-        else: 
-            print("An error ocurred while closing port " + target_port)
-            return serialObj
+	# Disconnect Option (-d): Disconnect a USB device
+	elif (option == "-d"):
+		connection_status = serialObj.closeComport()
+		if (connection_status):
+			print("Disconnected from active serial port")
+			return serialObj
+		else: 
+			print("An error ocurred while closing port " + target_port)
+			return serialObj
 
-    # Invalid Option
-    else:
-        print("Error: \"" + option + "\" is an invalid option for comports")
-
-    return serialObj
+	return serialObj
 
 
 ###############################################################
