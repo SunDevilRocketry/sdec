@@ -5,8 +5,9 @@ USAGE: sol [SUBCOMMAND] -[OPTIONS] [INPUTS]
 SUBCOMMANDS:
 	sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
 	sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
-    sol toggle: Changes the solenoid state
+	sol toggle: Changes the solenoid state
 	sol reset: Resets all solenoids to the default state
+	sol help: Displays solenoid help information
 
 OPTIONS: 
 	-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 

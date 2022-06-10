@@ -32,7 +32,7 @@ import commands
 ###############################################################
 def sol(Args, serialObj):
 	###########################################################
-	# local variables                                         #
+	# Local Variables                                         #
     ###########################################################
 
 	# Subcommand and Options Dictionary
@@ -50,11 +50,9 @@ def sol(Args, serialObj):
 							'-n' : 'Specify a solenoid number'
 						 },
 			   'reset':  {
-							'-h' : 'Display help info',
-							'-n' : 'Specify a solenoid number'
 						 },
 			   'help':   {
-						 },
+						 }
                        
                  }
     
@@ -65,7 +63,7 @@ def sol(Args, serialObj):
 	command_type = 'subcommand'
 
 	###########################################################
-	# function inputs parsing                                 #
+	# Basic Inputs Parsing                                    #
     ###########################################################
 	parse_check = commands.parseArgs(
                                     Args,
@@ -73,8 +71,89 @@ def sol(Args, serialObj):
                                     sol_inputs,
                                     command_type 
                                     )
-	if (not parse_check):
-		return serialObj # user inputs failed parse tests
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
 
-	# User input passed parse checks
+	# Set subcommand and option
+	user_subcommand = Args[0]
+	if ( len(Args) != 1 ):
+		user_option = Args[1]
+
+	###########################################################
+	# Command-Specific Checks                                 #
+    ###########################################################
+
+	###########################################################
+	# Subcommand: sol help                                    #
+    ###########################################################
+	if (user_subcommand == "help"):
+		with open("doc/sol") as file:
+			sol_doc_lines = file.readlines()
+		print()
+		for line in sol_doc_lines:
+			print(line, end='')
+		print()
+		return serialObj
+
+	###########################################################
+	# Subcommand: sol on                                      #
+    ###########################################################
+	elif (user_subcommand == "on"):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			with open("doc/sol") as file:
+				sol_doc_lines = file.readlines()
+			print()
+			for line in sol_doc_lines:
+				print(line, end='')
+			print()
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			print("Solenoid on")
+
+	###########################################################
+	# Subcommand: sol off                                     #
+    ###########################################################
+	elif (user_subcommand == "off"):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			with open("doc/sol") as file:
+				sol_doc_lines = file.readlines()
+			print()
+			for line in sol_doc_lines:
+				print(line, end='')
+			print()
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			print("Solenoid off")
+
+	###########################################################
+	# Subcommand: sol toggle                                  #
+    ###########################################################
+	elif (user_subcommand == "toggle"):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			with open("doc/sol") as file:
+				sol_doc_lines = file.readlines()
+			print()
+			for line in sol_doc_lines:
+				print(line, end='')
+			print()
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			print("Solenoid toggle")
+
+	###########################################################
+	# Subcommand: sol reset                                   #
+    ###########################################################
+	elif (user_subcommand == "reset"):
+		print("Reset solenoids")
+
 	return serialObj
