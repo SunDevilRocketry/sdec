@@ -5,3 +5,4 @@ USAGE: connect -[OPTIONS] [INPUTS]
 OPTIONS: 
 	-p [PORT]: establish a connection using serial port [PORT].
 	-h : display this help information
+	-d : disconnect from active serial port connection

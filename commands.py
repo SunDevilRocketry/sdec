@@ -400,9 +400,35 @@ def connect(Args, serialObj):
     ###########################################################
 	opcode = b'\x01'
 
+	# Options Dictionary
+	connect_inputs = { 
+					   '-h' : 'Display help info',
+					   '-p' : 'Specify the connection serial port',
+					   '-d' : 'Disconnect from active serial port'
+                      }
+    
+	# Maximum number of arguments
+	max_args = 2
+
+	# Command type -- subcommand function
+	command_type = 'default'
+
 	###########################################################
-	# function inputs parsing                                 #
+	# Basic inputs parsing                                    #
     ###########################################################
+	parse_check = parseArgs(
+                            Args,
+                            max_args,
+                            connect_inputs,
+                            command_type 
+                           )
+	if (not parse_check):
+		return serialObj # user inputs failed parse tests
+
+	###########################################################
+	# Command-Specific Inputs Parsing                         #
+    ###########################################################
+	# Check for valid serial port
 	return
 
 ### END OF FILE

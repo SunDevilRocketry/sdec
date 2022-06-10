@@ -69,6 +69,7 @@ be established before running any controller-specific commands.</p>
     <ul>
     <li> -p [PORT]: establish a connection using serial port [PORT].</li>
 	<li> -h : display connect options </li>
+	<li> -d : disconnect from active serial port </li>
     </ul>
 </p>
 

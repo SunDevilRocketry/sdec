@@ -23,6 +23,7 @@ Terminal Control Commands:
 		options:
 			-p [PORT]: establish a connection using serial port [PORT].
 			-h : display connect options
+			-d : disconnect from active serial port
 
 	sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
 		subcommands:
@@ -31,6 +32,6 @@ Terminal Control Commands:
 			sol toggle: Changes the solenoid state
 			sol reset: Resets all solenoids to the default state
 
-	options: 
-		-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
-		-h : display solenoid options
+		options: 
+			-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
+			-h : display solenoid options
