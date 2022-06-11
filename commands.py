@@ -21,11 +21,11 @@ import time
 # Global Variables                                            #
 ###############################################################
 default_timeout = 1 # 1 second timeout
-ping_response_codes = [ 
+controller_codes = [ 
                       b'\x01', # Engine Controller, Rev 3.0
                       b'\x02'  # Valve Controller, Rev 2.0 
                       ]
-ping_responses = {
+controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"
                  }
@@ -407,8 +407,8 @@ def ping(Args, serialObj):
                 ping_recieve_time = time.time()
                 ping_time = ping_recieve_time - ping_start_time
                 ping_time *= 1000.0
-                if (pingData in ping_response_codes):
-                    print("Response recieved at {0:1.4f} ms from {1}".format(ping_time, ping_responses[pingData]))
+                if (pingData in controller_codes):
+                    print("Response recieved at {0:1.4f} ms from {1}".format(ping_time, controller_descriptions[pingData]))
                 else:
                     print("Response recieved at {0:1.4f} ms from an unknown device".format(ping_time))
             return serialObj
@@ -432,7 +432,7 @@ def connect(Args, serialObj):
 	###########################################################
 	# local variables                                         #
     ###########################################################
-	opcode = b'\x01'
+	opcode = b'\x02'
 
 	# Options Dictionary
 	connect_inputs = { 
@@ -466,11 +466,14 @@ def connect(Args, serialObj):
 	# Command-Specific Inputs Parsing                         #
     ###########################################################
 	# Check if there is an active serial port
-	if (serialObj.is_active() and user_option == '-c'):
-		print("Error: Serial port" + serialObj.comport + 
+	if (serialObj.is_active() and user_option == '-p'):
+		print("Error: Serial port " + serialObj.comport + 
                "is active. Disconnect from the active" +
-               "serial port before connecting" )
+               " serial port before connecting" )
 		return serialObj	
+	elif ((not serialObj.is_active()) and user_option == '-d'):
+		print('Error: No active serial port to disconnect from')
+		return serialObj
 
 	# Check for valid serial port
 	if (len(Args) > 1):
@@ -478,7 +481,7 @@ def connect(Args, serialObj):
 		if (not (user_port in available_ports)):
 			print("Error: Invalid serial port. Valid ports:")
 			for port_num, port in enumerate(available_ports):
-				print("\t" + port, end="")
+				print("\t" + port)
 			return serialObj
 
     ###########################################################
@@ -492,14 +495,26 @@ def connect(Args, serialObj):
     # Port Option (-p)                                        #
     ###########################################################
 	elif (user_option == '-p'):
-		print("port")
-		return serialObj
+		serialObj = comports(['-c', user_port, '9600'], serialObj)
+		serialObj.sendByte(opcode)
+		controller_response = serialObj.readByte()
+		if ((controller_response == b'') or
+            (not (controller_response in controller_codes))):
+			print("Controller connection was unsuccessful.")
+			serialObj = comports(['-d'], serialObj)
+			return serialObj
+		else:
+			print("Connection established with " + 
+                   controller_descriptions[controller_response])
+			return serialObj
+		
 
     ###########################################################
     # Disconnect Option (-d)                                  #
     ###########################################################
 	elif (user_option == '-d'):
-		print("disconnect")
+		serialObj = comports(['-d'], serialObj)
+		serialObj.reset_SDR_controller()
 		return serialObj
 
     ###########################################################

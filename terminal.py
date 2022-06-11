@@ -19,6 +19,7 @@ class terminalData:
         self.timeout = None
         self.serialObj = serial.Serial()
         self.config_status = False 
+        self.controller = None
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):
@@ -89,6 +90,14 @@ class terminalData:
                    +"serial port connection")
         else:
              return self.serialObj.read()
+
+	# Set the SDR controller to enable board-specific commands
+    def set_SDR_controller(self, controller_name):
+        self.controller = controller_name
+
+	# Reset the SDR controller to disable board-specific commands
+    def reset_SDR_controller(self):
+        self.controller = None
 
 # Command List
 command_list = { "exit"     : commands.exitFunc,
