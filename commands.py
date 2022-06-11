@@ -506,6 +506,7 @@ def connect(Args, serialObj):
 		else:
 			print("Connection established with " + 
                    controller_descriptions[controller_response])
+			serialObj.set_SDR_controller(controller_descriptions[controller_response])
 			return serialObj
 		
 
