@@ -1,17 +1,52 @@
-# Python terminal program for SDR PCBs 
+###############################################################
+#                                                             #
+# terminal.py -- main terminal program. Contains main program #
+#                loop and global objects                      # 
+#                                                             #
+# Author: Colton Acosta                                       #
+# Date: 4/16/2022                                             #
+# Sun Devil Rocketry Avionics                                 #
+#                                                             #
+###############################################################
 
-# Library imports
+
+###############################################################
+# Standard Imports                                            #
+###############################################################
 import time
 import serial
 import serial.tools.list_ports
 
-# SDR modules
+
+###############################################################
+# Project Modules                                             #
+###############################################################
 import commands # functions for each terminal command
 import valveController # functions for valve controller commands
 
-# Serial Port Object
-# Used to access a serial port and pass serial information
-# to terminal command functions
+
+###############################################################
+# Global Variables                                            #
+###############################################################
+command_list = { "exit"     : commands.exitFunc,
+                 "help"     : commands.helpFunc,
+                 "clear"    : commands.clearConsole,
+                 "comports" : commands.comports,
+                 "ping"     : commands.ping,
+				 "connect"  : commands.connect,
+                 "sol"      : valveController.sol
+                }
+
+###############################################################
+#                                                             #
+# OBJECT:                                                     #
+# 		terminalData                                          #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		serial port user API and handler for passing data     #
+#       between command functions                             #
+#                                                             #
+###############################################################
 class terminalData:
     def __init__(self):
         self.baudrate = None
@@ -38,13 +73,14 @@ class terminalData:
         self.serialObj.timeout = self.timeout
 
     # Open the serial port
-    # returns a boolean variable indicating whether the port connection
-    # was sucessful
+    # returns a boolean variable indicating whether the port
+    # connection was sucessful
     def openComport(self):
 
         # Ensure serial port has been properly configured 
         if(not self.config_status):
-            print("Error: Cannot open serial port. Serial port has not been properly configured")
+            print("Error: Cannot open serial port. Serial " +
+                  "port has not been properly configured")
             return False
 
         # open port
@@ -99,21 +135,16 @@ class terminalData:
     def reset_SDR_controller(self):
         self.controller = None
 
-# Command List
-command_list = { "exit"     : commands.exitFunc,
-                 "help"     : commands.helpFunc,
-                 "clear"    : commands.clearConsole,
-                 "comports" : commands.comports,
-                 "ping"     : commands.ping,
-				 "connect"  : commands.connect,
-                 "sol"      : valveController.sol
-                }
 
-# parseInput -- checks user input against command list 
-#               options
-# input: userin: user inputed string
-#        pcbs: PCB bom object
-# output: none
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		parseInput                                            #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		checks user input against command list options        #
+#                                                             #
+###############################################################
 def parseInput(userin): 
 
     # Get rid of any whitespace
@@ -139,7 +170,9 @@ def parseInput(userin):
     userin = input("SDR>> ")
     return parseInput(userin)
 
-## Program Loop
+###############################################################
+# Application Entry Point                                     #
+###############################################################
 
 # Initialize Serial Port Object
 terminalSerObj = terminalData()
