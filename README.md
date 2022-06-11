@@ -93,6 +93,6 @@ be established before running any controller-specific commands.</p>
 <p>Options:
     <ul>
         <li> -n [SOLENOID]: operate on solenoid [SOLENOID]. Valid [SOLENOID] inputs range from 1 to 6.</li>
-		<li> -h : display sol off options </li>
+		<li> -h : display sol usage information </li>
     </ul>
 </p>

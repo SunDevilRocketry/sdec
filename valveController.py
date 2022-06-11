@@ -79,10 +79,16 @@ def sol(Args, serialObj):
 	user_subcommand = Args[0]
 	if ( len(Args) != 1 ):
 		user_option = Args[1]
+		options_command = True
+	else:
+		options_command = False
 
 	###########################################################
 	# Command-Specific Checks                                 #
     ###########################################################
+	# No solenoid number entered
+	# Solenoid number not a number
+	# Solenoid number out of range
 
 	###########################################################
 	# Subcommand: sol help                                    #
