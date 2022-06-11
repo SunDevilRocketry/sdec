@@ -1,7 +1,7 @@
-###############################################################
-#                                                             #
-# Commands.py -- module with general command line functions   #
-# Author: Colton Acosta                                       #
+############################################################### 
+#                                                             # 
+# Commands.py -- module with general command line functions   # 
+# Author: Colton Acosta                                       # 
 # Date: 4/16/2022                                             #
 # Sun Devil Rocketry Avionics                                 #
 #                                                             #
@@ -9,7 +9,7 @@
 
 
 ###############################################################
-# Standard Imports                                            #
+# Standard Imports                                            # 
 ###############################################################
 import sys
 import os
@@ -32,12 +32,53 @@ ping_responses = {
 
 
 ###############################################################
-# Shared Routines                                             #
+# Shared Procedures                                           #
 ###############################################################
 
-# parseArgs -- run basic checks on command inputs, outputs a 
-#              boolean indicating whether the user input
-#              passes the parse tests
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		display_help_info                                     #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		displays a command's help info from its doc file      #
+#                                                             #
+###############################################################
+def display_help_info(command):
+	with open("doc/" + command) as file:
+		doc_lines = file.readlines()
+	print()
+	for line in doc_lines:
+		print(line, end='')
+	print()
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		error_msg                                             #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		displays a general software failure error message     #
+#                                                             #
+###############################################################
+def error_msg():
+	print("Something went wrong. Report this issue to " + 
+              "the Sun Devil Rocketry development team")	
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		parseArgs                                             #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		runs basic checks on command inputs and outputs a     #
+#       boolean indicating if the user input passes the       #
+#       checks                                                #
+#                                                             #
+###############################################################
 def parseArgs(
              Args,          # function arguments
 			 max_num_Args,  # maximum number of function arguments
@@ -151,11 +192,7 @@ def exitFunc(Args, serialObj):
 #                                                             #
 ###############################################################
 def helpFunc(Args, serialObj):
-    with open('doc/manpage') as file: 
-        doc_lines = file.readlines()
-    print()
-    for line in doc_lines:
-        print(line, end="")
+    display_help_info('manpage')
     return serialObj 
     
 
@@ -237,7 +274,9 @@ def comports(Args, serialObj):
 			print("Error: invalid baudrate. Check that baudrate is in bits/s and is an integer")
 			return serialObj
 
-	# List Option (-l): Scan available ports and display connections
+    ###########################################################
+    # List Option (-l)                                        #
+    ###########################################################
 	if (option == "-l"):
 		avail_ports = serial.tools.list_ports.comports()
 		print("\nAvailable COM ports: ")
@@ -252,17 +291,16 @@ def comports(Args, serialObj):
 		print()
 		return serialObj
 
-	# Help Option (-h): Display all usage information for comports command
+    ###########################################################
+    # Help Option (-h)                                        #
+    ###########################################################
 	elif (option == "-h"):
-		with open("doc/comports") as file:
-			comports_doc_lines = file.readlines()
-		print()
-		for line in comports_doc_lines:
-			print(line, end='')
-		print()
+		display_help_info('comports')
 		return serialObj
 
-	# Connect Option (-c): Connect to a USB port
+    ###########################################################
+    # Connect Option (-c)                                     #
+    ###########################################################
 	elif (option == "-c"):
 		# Check that port has been supplied
 		if (not port_supplied):
@@ -292,8 +330,9 @@ def comports(Args, serialObj):
 
 		return serialObj
 
-
-	# Disconnect Option (-d): Disconnect a USB device
+    ###########################################################
+    # Disconnect Option (-d)                                  #
+    ###########################################################
 	elif (option == "-d"):
 		connection_status = serialObj.closeComport()
 		if (connection_status):
@@ -342,12 +381,7 @@ def ping(Args, serialObj):
 
         # Help option
         if (option == "-h"):
-            with open("doc/ping") as file:
-                comports_doc_lines = file.readlines()
-            print()
-            for line in comports_doc_lines:
-                print(line, end='')
-            print()
+            display_help_info('ping')
             return serialObj
 
         # Ping option
@@ -424,11 +458,56 @@ def connect(Args, serialObj):
                            )
 	if (not parse_check):
 		return serialObj # user inputs failed parse tests
+	user_option = Args[0]
+	if (len(Args) > 1):
+		user_port = Args[1]
 
 	###########################################################
 	# Command-Specific Inputs Parsing                         #
     ###########################################################
+	# Check if there is an active serial port
+	if (serialObj.is_active() and user_option == '-c'):
+		print("Error: Serial port" + serialObj.comport + 
+               "is active. Disconnect from the active" +
+               "serial port before connecting" )
+		return serialObj	
+
 	# Check for valid serial port
-	return
+	if (len(Args) > 1):
+		available_ports = serialObj.list_ports()
+		if (not (user_port in available_ports)):
+			print("Error: Invalid serial port. Valid ports:")
+			for port_num, port in enumerate(available_ports):
+				print("\t" + port, end="")
+			return serialObj
+
+    ###########################################################
+    # Help Option (-h)                                        #
+    ###########################################################
+	if (user_option == '-h'):
+		display_help_info("connect")
+		return serialObj
+
+    ###########################################################
+    # Port Option (-p)                                        #
+    ###########################################################
+	elif (user_option == '-p'):
+		print("port")
+		return serialObj
+
+    ###########################################################
+    # Disconnect Option (-d)                                  #
+    ###########################################################
+	elif (user_option == '-d'):
+		print("disconnect")
+		return serialObj
+
+    ###########################################################
+    # Unknown Option                                          #
+    ###########################################################
+	else:
+		print("Error: unknown option passed to connect function")	
+		error_msg()
+		return serialObj
 
 ### END OF FILE

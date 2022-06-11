@@ -88,12 +88,7 @@ def sol(Args, serialObj):
 	# Subcommand: sol help                                    #
     ###########################################################
 	if (user_subcommand == "help"):
-		with open("doc/sol") as file:
-			sol_doc_lines = file.readlines()
-		print()
-		for line in sol_doc_lines:
-			print(line, end='')
-		print()
+		display_help_info('sol')
 		return serialObj
 
 	###########################################################

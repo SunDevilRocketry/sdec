@@ -62,6 +62,18 @@ class terminalData:
             self.serialObj.close()
             return True
 
+	# Check if serial port is active
+    def is_active(self):
+        return self.serialObj.is_open
+
+	# List available serial port connections
+    def list_ports(self):
+	    available_ports = serial.tools.list_ports.comports()
+	    available_port_names = []
+	    for port in available_ports:
+		    available_port_names.append(port.device)
+	    return available_port_names
+
     # Write a single Byte to the serial port
     def sendByte(self, data):
         if (not self.serialObj.is_open):
