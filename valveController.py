@@ -76,7 +76,7 @@ def sol(Args, serialObj):
 	sol_on_base_code     = b'\x00'
 	sol_off_base_code    = b'\x08'
 	sol_toggle_base_code = b'\x10'
-	sol_reset_code       = b'\x10'
+	sol_reset_code       = b'\x18'
 
 	# Subcommand codes as integers
 	sol_on_base_code_int     = ord( b'\x00' )
