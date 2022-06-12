@@ -1,8 +1,8 @@
-<h1> Terminal-Control</h1>
+<h1> Sun Devil Embedded Control (sdec)</h1>
 
 <h2>Description:</h2> 
 
-<p>The Terminal-Control program is a python-based terminal program which allows
+<p>sdec is a python-based terminal program which allows
 the user to access all functionality available on Sun Devil Rocketry PCBs.</p>
 
 <h2>Installation:</h2>
