@@ -74,6 +74,16 @@ be established before running any controller-specific commands.</p>
 </p>
 
 <h2> L0002 Liquid Engine Controller Commands: </h2>
+
+<h3>ignition</h3>
+<p>Opcode: 0x20</p>
+<p>Description: Direct control of the ignition system. </p>
+<p>Usage: ignition [SUBCOMMAND]</p>
+<p>Subcommands: </p>
+<p>fire: Triggers the engine ignition ematch</p>
+<p>cont: Displays continuity information on ignition components</p>
+<p>help: Shows supported subcommands and descriptions</p>
+
 <h2> L0005 Valve Controller Commands: </h2>
 
 <h3>acstat</h3>
