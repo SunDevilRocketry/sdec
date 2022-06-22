@@ -1,0 +1,8 @@
+IGNITE: 
+
+USAGE: ignite [SUBCOMMAND]
+
+SUBCOMMANDS:
+	ignite fire: Fires the engine controller's ignition ematch
+	ignite cont: Displays continuity information on the engine controller's ignition system 
+	ignite help: Displays subcommand information

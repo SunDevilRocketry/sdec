@@ -35,3 +35,9 @@ Terminal Control Commands:
 		options: 
 			-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
 			-h : display solenoid options
+
+	ignite [SUBCOMMAND]: provides control to the engine controller's ignition system
+        subcommands:
+			ignite fire: Fires the engine controller's ignition ematch
+			ignite cont: Displays continuity information on the engine controller's ignition system 
+			ignite help: Displays subcommand information
