@@ -23,12 +23,14 @@ import time
 default_timeout = 1 # 1 second timeout
 controller_codes = [ 
                       b'\x01', # Engine Controller, Rev 3.0
-                      b'\x02'  # Valve Controller, Rev 2.0 
+                      b'\x02', # Valve Controller , Rev 2.0 
+                      b'\x03'  # Engine Controller, Rev 4.0 
                       ]
 controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
-                  b'\x02': "Valve Controller (L0005 Rev 2.0)"
-                 }
+                  b'\x02': "Valve Controller (L0005 Rev 2.0)",
+                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)"
+                          }
 
 
 ###############################################################

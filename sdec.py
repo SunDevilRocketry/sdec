@@ -21,20 +21,23 @@ import serial.tools.list_ports
 ###############################################################
 # Project Modules                                             #
 ###############################################################
-import commands # functions for each terminal command
-import valveController # functions for valve controller commands
+import commands         # general terminal commands
+import valveController  # valve controller commands
+import engineController # engine controller commands
 
 
 ###############################################################
 # Global Variables                                            #
 ###############################################################
-command_list = { "exit"     : commands.exitFunc,
-                 "help"     : commands.helpFunc,
-                 "clear"    : commands.clearConsole,
-                 "comports" : commands.comports,
-                 "ping"     : commands.ping,
-				 "connect"  : commands.connect,
-                 "sol"      : valveController.sol
+command_list = { 
+                 "exit"     : commands.exitFunc      ,
+                 "help"     : commands.helpFunc      ,
+                 "clear"    : commands.clearConsole  ,
+                 "comports" : commands.comports      ,
+                 "ping"     : commands.ping          ,
+				 "connect"  : commands.connect       ,
+                 "sol"      : valveController.sol    ,
+                 "ignite"   : engineController.ignite
                 }
 
 ###############################################################
