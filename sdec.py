@@ -1,7 +1,7 @@
 ###############################################################
 #                                                             #
-# terminal.py -- main terminal program. Contains main program #
-#                loop and global objects                      # 
+# sdec.py -- main terminal program. Contains main program     #
+#            loop and global objects                          # 
 #                                                             #
 # Author: Colton Acosta                                       #
 # Date: 4/16/2022                                             #

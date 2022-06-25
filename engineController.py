@@ -62,12 +62,11 @@ def ignite(Args, serialObj):
 	opcode = b'\x20' 
 
 	# Subcommand codes
-	ignite_fire_code     = b'\x00'
-	ignite_cont_code     = b'\x01'
+	ignite_fire_code     = b'\x01'
+	ignite_cont_code     = b'\x02'
 
-	# Subcommand codes as integers
-	ignite_fire_code_int = ord( b'\x00' )
-	ignite_cont_code_int = ord( b'\x01' )
+    # Response codes
+	ignite_fire_success_code = b'\x08'
 
 	###########################################################
 	# Basic Inputs Parsing                                    #
@@ -115,7 +114,19 @@ def ignite(Args, serialObj):
 		# Send subcommand code
 		serialObj.sendByte(ignite_fire_code)
 
-        # Exit
+		# Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Display ignition status
+		if (ign_status == ignite_fire_success_code):
+			print("Ignition successful")
+		elif (ign_status == b''):
+			print('Ignition unsuccessful. No response ' +
+				  'code recieved from engine controller' )
+		else:
+			print("Ignition unsuccessful")
+
+		# Exit
 		return serialObj
 
 	###########################################################
@@ -128,6 +139,30 @@ def ignite(Args, serialObj):
 
 		# Send subcommand code
 		serialObj.sendByte(ignite_cont_code)
+
+        # Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Parse response code
+		ign_status_int = ord(ign_status)
+
+		# Ematch and switch continuity
+		if ((ign_status_int >> 0) & 1):
+			print("Ematch and Switch:     Connected")
+		else: 
+			print("Ematch and Switch:     Disconnected")
+
+		# Solid propellant wire continuity
+		if ((ign_status_int >> 1) & 1):
+			print("Solid Propellant Wire: Connected")
+		else: 
+			print("Solid Propellant Wire: Disconnected")
+
+		# Nozzle wire continuity
+		if ((ign_status_int >> 2) & 1):
+			print("Nozzle Wire:           Connected")
+		else: 
+			print("Nozzle Wire:           Disconnected")
 
         # Exit
 		return serialObj
