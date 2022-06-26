@@ -65,8 +65,11 @@ def ignite(Args, serialObj):
 	ignite_fire_code     = b'\x01'
 	ignite_cont_code     = b'\x02'
 
-    # Response codes
-	ignite_fire_success_code = b'\x08'
+	# Response codes
+	ignite_fire_success_code =     b'\x40'
+	ignite_fire_fail_ematch_code = b'\x08'
+	ignite_fire_fail_power_code =  b'\x10'
+	ignite_fire_fail_code =        b'\x20'
 
 	###########################################################
 	# Basic Inputs Parsing                                    #
@@ -118,11 +121,37 @@ def ignite(Args, serialObj):
 		ign_status = serialObj.readByte()
 
 		# Display ignition status
+
+        # Succesful ignition
 		if (ign_status == ignite_fire_success_code):
 			print("Ignition successful")
+
+		# No response code received
 		elif (ign_status == b''):
 			print('Ignition unsuccessful. No response ' +
 				  'code recieved from engine controller' )
+
+        # No continuity in ematch and/or arming switch
+		elif (ign_status == ignite_fire_fail_ematch_code):
+			print('Ignition unsuccessful. No continuity ' +
+				  'in ematch and/or arming switch. '      +
+				  'Ensure an ematch is connected and the '+
+				  'switch is armed')
+
+		# No power supply
+		elif (ign_status == ignite_fire_fail_power_code):
+			print('Ignition unsuccessful. The device is ' +
+                  'currently being powered via USB. The ' +
+                  'engine controller must be powered via '+
+                  'the 12V jack or power connector to '   +
+                  'trigger to light the ematch.' ) 
+
+        # Ematch continuity is not disrupted after asserting
+        # the ignition signal
+		elif (ign_status == ignite_fire_fail_code):
+			print('Ignition unsuccessful. The ignite signal ' +
+                  'was asserted but the ematch was not lit')
+
 		else:
 			print("Ignition unsuccessful")
 

@@ -62,8 +62,8 @@ refer to the board's firmware documentation </p>
 
 <h3>connect</h3>
 <p>Opcode: 0x02</p>
-<p>Description: Establishes a serial connection with an SDR supported board. A connection must
-be established before running any controller-specific commands.</p>
+<p>Description: Establishes a serial connection with an SDR supported board. A 
+connection must be established before running any controller-specific commands.</p>
 <p>Usage: connect -[OPTION] [INPUTS]</p>
 <p>Options:
     <ul>
@@ -77,12 +77,21 @@ be established before running any controller-specific commands.</p>
 
 <h3>ignite</h3>
 <p>Opcode: 0x20</p>
-<p>Description: Direct control of the ignition system. Requires and active connection
+<p>Description: Direct control of the ignition system. Requires an active connection
 to the engine controller. </p>
 <p>Usage: ignition [SUBCOMMAND]</p>
 <p>Subcommands: </p>
 <p>fire: Triggers the engine ignition ematch</p>
 <p>cont: Displays continuity information on ignition components</p>
+<p>help: Shows supported subcommands and descriptions</p>
+
+<h3>power</h3>
+<p>Opcode: 0x21</p>
+<p>Description: Direct control of the engine controller power supply. Requires an 
+active connection to the engine controller. </p>
+<p>Usage: power [SUBCOMMAND]</p>
+<p>Subcommands: </p>
+<p>source: Determines whether the MCU is being powered by the buck converter or USB</p>
 <p>help: Shows supported subcommands and descriptions</p>
 
 <h2> L0005 Valve Controller Commands: </h2>
