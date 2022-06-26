@@ -41,3 +41,8 @@ Terminal Control Commands:
 			ignite fire: Fires the engine controller's ignition ematch
 			ignite cont: Displays continuity information on the engine controller's ignition system 
 			ignite help: Displays subcommand information
+
+	power [SUBCOMMAND]: provides control to the engine controller's power supply system
+        subcommands:
+			power source: Displays the power supply source of the MCU
+			ignite help: Displays subcommand information

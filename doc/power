@@ -1,0 +1,7 @@
+POWER: 
+
+USAGE: power [SUBCOMMAND]
+
+SUBCOMMANDS:
+	power source: Displays the power supply source of the MCU 
+	ignite help: Displays subcommand information
