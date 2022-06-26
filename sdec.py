@@ -37,7 +37,8 @@ command_list = {
                  "ping"     : commands.ping          ,
 				 "connect"  : commands.connect       ,
                  "sol"      : valveController.sol    ,
-                 "ignite"   : engineController.ignite
+                 "ignite"   : engineController.ignite,
+                 "power"    : engineController.power 
                 }
 
 ###############################################################

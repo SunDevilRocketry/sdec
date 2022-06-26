@@ -238,7 +238,7 @@ def power(Args, serialObj):
 
 	# Response codes
 	pwr_buck_response_code = b'\x01'
-    pwr_usb_response_code =  b'\x02'
+	pwr_usb_response_code =  b'\x02'
 
 	###########################################################
 	# Basic Inputs Parsing                                    #
