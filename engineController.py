@@ -1,4 +1,4 @@
-###############################################################
+##############################################################
 #                                                             #
 # engineController.py -- module with valve controller         # 
 #                        specific command line functions      # 
