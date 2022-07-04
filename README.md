@@ -96,13 +96,26 @@ active connection to the engine controller. </p>
 
 <h3>flash</h3>
 <p>Opcode: 0x22</p>
-<p>Description: Read from and write to the external flash chip</p>
+<p>Description: Read from and write to the external flash chip. Requires an active
+connection to the engine controller.</p>
 <p>Usage: power [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
 <p>Subcommands: </p>
 <p>write: Write data to the flash chip</p>
 <p>read: Read data from the flash chip</p>
 <p>erase: Erase the entire flash chip</p>
 <p>help: Shows supported subcommands, options, and descriptions</p>
+<p>Options:
+    <ul>
+        <li> -b [BYTE]: Write byte [BYTE] to flash memory.</li>
+        <li> -s [STRING]: Write string [STRING] to flash memory.</li>
+        <li> -a [ADDRESS]: Use the address [ADDRESS] as the base address for
+                           write/read operations. </li>
+        <li> -f [FILENAME]: Use file [FILENAME] to record output read data or
+                            input write data. Files are stored in the input/
+                            output directories. </li>
+		<li> -h : display sol usage information </li>
+    </ul>
+</p>
 
 <h2> L0005 Valve Controller Commands: </h2>
 
