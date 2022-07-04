@@ -150,16 +150,17 @@ def parseArgs(
 		if (num_options == 0):
 			return parse_pass
 		else: 
-			user_option = Args[1]
+			user_options = Args[1:]
 
 	# Unrecognized Option	
 	if (subcommand_func): #subcommand supported
-		if (not(user_option in Args_dic[user_subcommand])): 
-			print('Error: Unrecognized option. Valid options include: ')
-			for option in Args_dic[user_subcommand]:
-				print('\t' + option + '\t' + Args_dic[user_subcommand][option]) 
-			print()
-			return parse_fail
+		for user_option in user_options:	
+			if (not(user_option in Args_dic[user_subcommand])): 
+				print('Error: Unrecognized option. Valid options include: ')
+				for option in Args_dic[user_subcommand]:
+					print('\t' + option + '\t' + Args_dic[user_subcommand][option]) 
+				print()
+				return parse_fail
 	else: # subcommand not supported 
 		if (not(user_option in Args_dic)): 
 			print('Error: Unrecognized option. Valid options include: ')

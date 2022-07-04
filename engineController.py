@@ -437,7 +437,14 @@ def flash(Args, serialObj):
 				# Verify input file exists
 				pass
 
-	
+	# Verify read and write subcommands have an address supplied	
+	if (   user_subcommand == 'write' 
+        or user_subcommand == 'read'):
+		if ('-a' not in user_options):
+			print('Error: The write and read operations ' +
+                  'require an address supplied by the '   +
+                  '-a option')
+			return serialObj
 
 	# Verify Engine Controller Connection
 	if (not (serialObj.controller in supported_boards)):
