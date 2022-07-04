@@ -374,30 +374,68 @@ def flash(Args, serialObj):
 	if ( not parse_check ):
 		return serialObj 
 
-	# Set subcommand and option
+	# Set subcommand, options, and input data
 	user_subcommand = Args[0]
 	if ( len(Args) != 1 ):
-		user_option = Args[1]
-		options_command = True
+
+		# Pull options from args
+		Args_options = Args[1:]
+
+		# Check that two options with input data were supplied
+		if ( len(Args_options) < 4):
+			print("Error: Not enough options/inputs")
+			return serialObj
+		else:
+			user_options = [Args_options[0], Args_options[2]]
+			user_inputs  = {
+                           user_options[0] : Args_options[1],
+                           user_options[1] : Args_options[3]
+                           }
+			options_command = True
 	else:
 		options_command = False
 
 	###########################################################
 	# Command-Specific Checks                                 #
     ###########################################################
+
+	# Check input data for each option
 	if (options_command):
-		if (user_option == '-n'):
-			pass
-			# No solenoid number entered
-			# Solenoid number not a number
-			# Solenoid number out of range
+		for user_option in user_options:
+
+			# -b option
+			if (user_option == '-b'):
+				# Check byte is formatted correctly
+				pass
+
+			# -s option
+			elif (user_option == '-s'):
+				# Currently no parse checks needed
+				pass
+
+			# -n option
+			elif (user_option == '-n'):
+				# Verify number of bytes is an integer
+				# Verify numbers of bytes is in range
+				pass
+
+			# -a option
+			elif (user_option == '-a'):
+				# Verify address is formatted correctly
+				pass
+
+			# -f option
+			elif (user_option == '-f'):
+				# Verify output file doesn't already exist 
+				# Verify input file exists
+				pass
 
 	# Verify Engine Controller Connection
 	if (not (serialObj.controller in supported_boards)):
 		print("Error: The ignite command requires a valid " + 
-              "serial connection to an engine controller "  + 
-              "device. Run the \"connect\" command to "     +
-              "establish a valid connection.")
+			  "serial connection to an engine controller "  + 
+			  "device. Run the \"connect\" command to "     +
+			  "establish a valid connection.")
 		return serialObj
 
 	###########################################################
