@@ -311,5 +311,150 @@ def power(Args, serialObj):
 
 
 ###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		flash                                                 #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		read and write data to the engine controller's flash  #
+#                                                             #
+###############################################################
+def flash(Args, serialObj):
+	###########################################################
+	# Local Variables                                         #
+	###########################################################
+
+	# Subcommand and Options Dictionary
+	flash_inputs= { 
+			   'write':  {
+							'-b' : 'Specify a byte to write to flash memory'  ,
+							'-s' : 'Specify a string to write to flash memory',
+							'-a' : 'Specify a memory address to write to'     ,
+							'-f' : 'Specify a file to use for input data'     ,
+							'-h' : 'Display help info'
+						 } ,
+			   'read' :  {
+							'-a' : 'Specify a memory address to read from',
+							'-n' : 'Specify a number of bytes to read from flash memory',
+							'-f' : 'Specify a file to use for output data',
+							'-h' : 'Display help info'
+						 } , 
+			   'erase':  {
+						 },
+			   'help':   {
+						 }
+                       
+                 }
+    
+	# Maximum number of arguments
+	max_args = 5
+
+	# Command type -- subcommand function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\x22' 
+
+	# Subcommand codes
+	flash_write_code     = b'\x00'
+	flash_read_code      = b'\x01'
+	flash_erase_code     = b'\x02'
+
+
+	###########################################################
+	# Basic Inputs Parsing                                    #
+    ###########################################################
+	parse_check = commands.parseArgs(
+                                    Args,
+                                    max_args,
+                                    flash_inputs,
+                                    command_type 
+                                    )
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set subcommand and option
+	user_subcommand = Args[0]
+	if ( len(Args) != 1 ):
+		user_option = Args[1]
+		options_command = True
+	else:
+		options_command = False
+
+	###########################################################
+	# Command-Specific Checks                                 #
+    ###########################################################
+	if (options_command):
+		if (user_option == '-n'):
+			pass
+			# No solenoid number entered
+			# Solenoid number not a number
+			# Solenoid number out of range
+
+	# Verify Engine Controller Connection
+	if (not (serialObj.controller in supported_boards)):
+		print("Error: The ignite command requires a valid " + 
+              "serial connection to an engine controller "  + 
+              "device. Run the \"connect\" command to "     +
+              "establish a valid connection.")
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash help                                  #
+    ###########################################################
+	if (user_subcommand == "help"):
+		display_help_info('flash')
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash write                                 #
+    ###########################################################
+	elif (user_subcommand == "write"):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			display_help_info('flash')
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			# Send solenoid opcode
+			# Send subcommand code
+			return serialObj
+
+
+	###########################################################
+	# Subcommand: flash read                                  #
+    ###########################################################
+	elif (user_subcommand == "read"):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			display_help_info('flash')
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			# Send solenoid opcode
+			# Send subcommand code
+			return serialObj
+
+
+	###########################################################
+	# Subcommand: flash erase                                 #
+    ###########################################################
+	elif (user_subcommand == "erase"):
+		# Send solenoid opcode
+		# Send subcommand code
+		return serialObj
+
+    ###########################################################
+    # Unknown Option                                          #
+    ###########################################################
+	else:
+		print("Error: unknown option passed to connect function")	
+		error_msg()
+		return serialObj
+
+###############################################################
 # END OF FILE                                                 #
 ###############################################################

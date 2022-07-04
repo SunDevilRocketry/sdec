@@ -38,7 +38,8 @@ command_list = {
 				 "connect"  : commands.connect       ,
                  "sol"      : valveController.sol    ,
                  "ignite"   : engineController.ignite,
-                 "power"    : engineController.power 
+                 "power"    : engineController.power ,
+                 "flash"    : engineController.flash
                 }
 
 ###############################################################
