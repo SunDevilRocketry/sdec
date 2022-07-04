@@ -94,6 +94,16 @@ active connection to the engine controller. </p>
 <p>source: Determines whether the MCU is being powered by the buck converter or USB</p>
 <p>help: Shows supported subcommands and descriptions</p>
 
+<h3>flash</h3>
+<p>Opcode: 0x22</p>
+<p>Description: Read from and write to the external flash chip</p>
+<p>Usage: power [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
+<p>Subcommands: </p>
+<p>write: Write data to the flash chip</p>
+<p>read: Read data from the flash chip</p>
+<p>erase: Erase the entire flash chip</p>
+<p>help: Shows supported subcommands, options, and descriptions</p>
+
 <h2> L0005 Valve Controller Commands: </h2>
 
 <h3>acstat</h3>
