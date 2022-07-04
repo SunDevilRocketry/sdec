@@ -98,7 +98,7 @@ active connection to the engine controller. </p>
 <p>Opcode: 0x22</p>
 <p>Description: Read from and write to the external flash chip. Requires an active
 connection to the engine controller.</p>
-<p>Usage: power [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
+<p>Usage: flash [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
 <p>Subcommands: </p>
 <p>write: Write data to the flash chip</p>
 <p>read: Read data from the flash chip</p>
