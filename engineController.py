@@ -411,6 +411,12 @@ def flash(Args, serialObj):
 	# Subcommand: flash write                                 #
     ###########################################################
 	elif (user_subcommand == "write"):
+		# TODO: Implement write subcommand and remove error
+        #       message
+		print("Error: The write subcommand has not yet been "+
+              "implemented. Try again later.")
+		return serialObj
+
 		# Option: -h                                          
 		if (user_option == '-h'):
 			display_help_info('flash')
@@ -427,6 +433,12 @@ def flash(Args, serialObj):
 	# Subcommand: flash read                                  #
     ###########################################################
 	elif (user_subcommand == "read"):
+		# TODO: Implement read subcommand and remove error
+        #       message
+		print("Error: The read subcommand has not yet been "+
+              "implemented. Try again later.")
+		return serialObj
+
 		# Option: -h                                          
 		if (user_option == '-h'):
 			display_help_info('flash')
@@ -443,6 +455,11 @@ def flash(Args, serialObj):
 	# Subcommand: flash erase                                 #
     ###########################################################
 	elif (user_subcommand == "erase"):
+		# TODO: Implement erase subcommand and remove error
+        #       message
+		print("Error: The erase subcommand has not yet been "+
+			  "implemented. Try again later.")
+		return serialObj
 		# Send solenoid opcode
 		# Send subcommand code
 		return serialObj

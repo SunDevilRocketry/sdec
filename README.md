@@ -106,10 +106,11 @@ connection to the engine controller.</p>
 <p>help: Shows supported subcommands, options, and descriptions</p>
 <p>Options:
     <ul>
-        <li> -b [BYTE]: Write byte [BYTE] to flash memory.</li>
-        <li> -s [STRING]: Write string [STRING] to flash memory.</li>
-        <li> -a [ADDRESS]: Use the address [ADDRESS] as the base address for
-                           write/read operations. </li>
+        <li> -b [BYTE]    : Write byte [BYTE] to flash memory.</li>
+        <li> -s [STRING]  : Write string [STRING] to flash memory.</li>
+        <li> -n [NUM]     : Read [NUM] bytes from flash memory. </li>
+        <li> -a [ADDRESS] : Use the address [ADDRESS] as the base address for
+                            write/read operations. </li>
         <li> -f [FILENAME]: Use file [FILENAME] to record output read data or
                             input write data. Files are stored in the input/
                             output directories. </li>
