@@ -113,7 +113,7 @@ connection to the engine controller.</p>
         <li> -f [FILENAME]: Use file [FILENAME] to record output read data or
                             input write data. Files are stored in the input/
                             output directories. </li>
-		<li> -h : display sol usage information </li>
+		<li> -h : display flash usage information </li>
     </ul>
 </p>
 

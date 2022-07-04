@@ -1,0 +1,19 @@
+FLASH:
+
+USAGE: flash [SUBCOMMAND] -[OPTIONS] [INPUTS]
+
+SUBCOMMANDS:
+	flash write: Writes data to the flash chip 
+	flash read : Reads data from the flash chip 
+	flash erase: Erases the entire flash chip 
+	flash help : Shows supported subcommands, options, 
+                 and descriptions
+
+OPTIONS: 
+	-b [BYTE]     : Write byte [BYTE] to flash memory 
+	-s [STRING]   : Write string [STRING] to flash memory 
+	-a [ADDRESS]  : Use address [ADDRESS] as the base address
+                    for write/read operations
+	-f [FILENAME] : Use file [FILENAME] to record output 
+                    read data for write/read operations 
+	-h            : display flash usage information 
