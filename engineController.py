@@ -401,6 +401,13 @@ def flash(Args, serialObj):
 
 	# Check input data for each option
 	if (options_command):
+
+		# Check for duplicate options
+		if (user_options[0] == user_options[1]):
+			print('Error: Duplicate option supplied')
+			return serialObj
+
+		# Perform option specific checks
 		for user_option in user_options:
 
 			# -b option
@@ -429,6 +436,8 @@ def flash(Args, serialObj):
 				# Verify output file doesn't already exist 
 				# Verify input file exists
 				pass
+
+	
 
 	# Verify Engine Controller Connection
 	if (not (serialObj.controller in supported_boards)):
