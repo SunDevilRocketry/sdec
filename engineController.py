@@ -413,7 +413,28 @@ def flash(Args, serialObj):
 			# -b option
 			if (user_option == '-b'):
 				# Check byte is formatted correctly
-				pass
+				# Format: 0xXX --> XX is a hex number
+
+				# Check length
+				if(len(user_inputs[user_option]) != 4):
+					print('Error: Invalid byte format.')
+					return serialObj
+				
+				# Check for 0x prefix
+				if(user_inputs[user_option][0:2] != '0x'):
+					print("Error: Invalid byte format. " +
+                          " Missing 0x prefix")
+
+				# Convert to integer
+				try:
+					byte_int = int(user_inputs[user_option], 0)
+				except ValueError:
+					print('Error: Invalid byte.')
+					return serialObj
+
+				# Convert to byte
+				byte = byte_int.to_bytes(1, 'big')
+				
 
 			# -s option
 			elif (user_option == '-s'):

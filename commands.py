@@ -150,7 +150,12 @@ def parseArgs(
 		if (num_options == 0):
 			return parse_pass
 		else: 
-			user_options = Args[1:]
+			# Organize user options into a list
+			user_options = []
+			for arg in Args[1:]:
+				if ('-' in arg):
+					user_options.append(arg)
+			
 
 	# Unrecognized Option	
 	if (subcommand_func): #subcommand supported
