@@ -1,4 +1,4 @@
-##############################################################
+###############################################################
 #                                                             #
 # engineController.py -- module with valve controller         # 
 #                        specific command line functions      # 
@@ -356,9 +356,19 @@ def flash(Args, serialObj):
 	opcode = b'\x22' 
 
 	# Subcommand codes
-	flash_write_code     = b'\x00'
-	flash_read_code      = b'\x01'
-	flash_erase_code     = b'\x02'
+	flash_write_base_code = b'\x00'
+	flash_read_base_code  = b'\x80'
+	flash_erase_base_code = b'\xFF'
+
+	# Subcommand codes as integers
+	flash_write_base_code_int = ord( b'\x00' )
+	flash_read_base_code_int  = ord( b'\x80' )
+	flash_erase_base_code_int = ord( b'\xFF' )
+
+	# flash write data
+	byte = None
+	string = None
+	file = None
 
 
 	###########################################################
@@ -382,7 +392,10 @@ def flash(Args, serialObj):
 		Args_options = Args[1:]
 
 		# Check that two options with input data were supplied
-		if ( len(Args_options) < 4):
+		if ( Args_options[0] == '-h'):
+			user_options = [Args_options[0]]
+			options_command = False
+		elif ( len(Args_options) < 4):
 			print("Error: Not enough options/inputs")
 			return serialObj
 		else:
@@ -410,7 +423,7 @@ def flash(Args, serialObj):
 		# Perform option specific checks
 		for user_option in user_options:
 
-			# -b option
+			################# -b option #######################
 			if (user_option == '-b'):
 				# Check byte is formatted correctly
 				# Format: 0xXX --> XX is a hex number
@@ -436,40 +449,60 @@ def flash(Args, serialObj):
 				byte = byte_int.to_bytes(1, 'big')
 				
 
-			# -s option
+			################# -s option #######################
 			elif (user_option == '-s'):
 				# Currently no parse checks needed
 				pass
 
-			# -n option
+			################# -n option #######################
 			elif (user_option == '-n'):
 				# Verify number of bytes is an integer
 				# Verify numbers of bytes is in range
 				pass
 
-			# -a option
+			################# -a option #######################
 			elif (user_option == '-a'):
-				# Verify address is formatted correctly
-				pass
+				# Check address is formatted correctly
+				# Format: 0xXXXXXX
 
-			# -f option
+				# Check length
+				if(len(user_inputs[user_option]) != 8):
+					print('Error: Invalid Address format.')
+					return serialObj
+				
+				# Check for 0x prefix
+				if(user_inputs[user_option][0:2] != '0x'):
+					print("Error: Invalid byte format. " +
+                          " Missing 0x prefix")
+
+				# Convert to integer
+				try:
+					address_int = int(user_inputs[user_option], 0)
+				except ValueError:
+					print('Error: Invalid Address.')
+					return serialObj
+
+				# Convert to byte
+				address_bytes = address_int.to_bytes(3, 'big')
+
+			################# -f option #######################
 			elif (user_option == '-f'):
 				# Verify output file doesn't already exist 
 				# Verify input file exists
 				pass
 
-	# Verify read and write subcommands have an address supplied	
-	if (   user_subcommand == 'write' 
-        or user_subcommand == 'read'):
-		if ('-a' not in user_options):
-			print('Error: The write and read operations ' +
-                  'require an address supplied by the '   +
-                  '-a option')
-			return serialObj
+		# Verify read and write subcommands have an address supplied	
+		if (   user_subcommand == 'write' 
+			or user_subcommand == 'read'):
+			if ('-a' not in user_options):
+				print('Error: The write and read operations ' +
+					  'require an address supplied by the '   +
+					  '-a option')
+				return serialObj
 
 	# Verify Engine Controller Connection
 	if (not (serialObj.controller in supported_boards)):
-		print("Error: The ignite command requires a valid " + 
+		print("Error: The flash command requires a valid " + 
 			  "serial connection to an engine controller "  + 
 			  "device. Run the \"connect\" command to "     +
 			  "establish a valid connection.")
@@ -486,21 +519,45 @@ def flash(Args, serialObj):
 	# Subcommand: flash write                                 #
     ###########################################################
 	elif (user_subcommand == "write"):
-		# TODO: Implement write subcommand and remove error
-        #       message
-		print("Error: The write subcommand has not yet been "+
-              "implemented. Try again later.")
-		return serialObj
 
-		# Option: -h                                          
-		if (user_option == '-h'):
+	    ################### -h option #########################
+		if (user_options[0] == '-h'):
 			display_help_info('flash')
 			return serialObj
 
-		# Option: -n                                          
-		elif(user_option == '-n'):
-			# Send solenoid opcode
-			# Send subcommand code
+	    ################### -b option #########################
+		elif (byte != None):
+			# Send flash opcode
+			serialObj.sendByte(opcode)
+
+			# Calculate operation code
+			num_bytes_to_send = 1
+			operation_code_int = (flash_write_base_code_int + 
+                                 num_bytes_to_send)
+			operation_code = operation_code_int.to_bytes(
+								   1, 
+					               byteorder = 'big',
+								   signed = False
+                                   ) 
+
+			# Send flash operation code
+			# Send base address
+			# Send byte to write to flash
+			return serialObj
+
+	    ################### -s option #########################
+		elif (string != None):
+			return serialObj
+
+	    ################### -f option #########################
+		elif (file != None):
+			return serialObj
+		
+	    ################# Unknown option #####################
+		else:
+			print("Error: Something went wrong. The flash "+ 
+                  "write command failed to find input "    +
+                  "to write to flash")
 			return serialObj
 
 
