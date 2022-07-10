@@ -326,24 +326,27 @@ def flash(Args, serialObj):
 
 	# Subcommand and Options Dictionary
 	flash_inputs= { 
-			   'write':  {
-							'-b' : 'Specify a byte to write to flash memory'  ,
-							'-s' : 'Specify a string to write to flash memory',
-							'-a' : 'Specify a memory address to write to'     ,
-							'-f' : 'Specify a file to use for input data'     ,
-							'-h' : 'Display help info'
-						 } ,
-			   'read' :  {
-							'-a' : 'Specify a memory address to read from',
-							'-n' : 'Specify a number of bytes to read from flash memory',
-							'-f' : 'Specify a file to use for output data',
-							'-h' : 'Display help info'
-						 } , 
-			   'erase':  {
-						 },
-			   'help':   {
-						 }
-                       
+    'enable' : {
+			   },
+    'disable': {
+			   },
+	'write'  : {
+			'-b' : 'Specify a byte to write to flash memory'  ,
+			'-s' : 'Specify a string to write to flash memory',
+			'-a' : 'Specify a memory address to write to'     ,
+			'-f' : 'Specify a file to use for input data'     ,
+			'-h' : 'Display help info'
+			   },
+	'read'   : {
+			'-a' : 'Specify a memory address to read from',
+			'-n' : 'Specify a number of bytes to read from flash memory',
+			'-f' : 'Specify a file to use for output data',
+			'-h' : 'Display help info'
+			   }, 
+	'erase'  : {
+			   },
+	'help'   : {
+			   }
                  }
     
 	# Maximum number of arguments
@@ -355,15 +358,25 @@ def flash(Args, serialObj):
 	# Command opcode
 	opcode = b'\x22' 
 
+    # Subcommand Data format
+	# SUBOP2 | SUBOP1 | SUBOP0 | BNUM4 | BNUM3 | BNUM2 | BNUM1 | BNUM0  
+	# SUBOP(0-2) Subcommand opcode bits specifies the subcommand to be
+	#            executed
+	# BNUM(0-4) Number of bytes to read/write (max 31)
+
 	# Subcommand codes
-	flash_write_base_code = b'\x00'
-	flash_read_base_code  = b'\x80'
-	flash_erase_base_code = b'\xFF'
+	flash_read_base_code    = b'\x00'  # SUBOP 000 -> 0000 0000
+	flash_enable_base_code  = b'\x20'  # SUBOP 001 -> 0010 0000
+	flash_disable_base_code = b'\x40'  # SUBOP 010 -> 0100 0000
+	flash_write_base_code   = b'\x60'  # SUBOP 011 -> 0110 0000
+	flash_erase_base_code   = b'\x80'  # SUBOP 100 -> 1000 0000
 
 	# Subcommand codes as integers
-	flash_write_base_code_int = ord( b'\x00' )
-	flash_read_base_code_int  = ord( b'\x80' )
-	flash_erase_base_code_int = ord( b'\xFF' )
+	flash_read_base_code_int    = ord( flash_read_base_code    )
+	flash_enable_base_code_int  = ord( flash_enable_base_code  )
+	flash_disable_base_code_int = ord( flash_disable_base_code )
+	flash_write_base_code_int   = ord( flash_write_base_code   )
+	flash_erase_base_code_int   = ord( flash_erase_base_code   )
 
 	# flash write data
 	byte = None
@@ -513,6 +526,30 @@ def flash(Args, serialObj):
     ###########################################################
 	if (user_subcommand == "help"):
 		display_help_info('flash')
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash enable                                #
+    ###########################################################
+	elif (user_subcommand == "enable"):
+		print('Enable')
+		# Send the flash Opcode
+
+		# Send the subcommand Opcode
+
+		# Recieve the status byte from the engine controller
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash disable                               #
+    ###########################################################
+	elif (user_subcommand == "disable"):
+		# Send the flash opcode
+
+		# Send the subcommand opcode
+
+		# Recieve the status byte from the engine controller
+
 		return serialObj
 
 	###########################################################
