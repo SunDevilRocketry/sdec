@@ -3,6 +3,10 @@ FLASH:
 USAGE: flash [SUBCOMMAND] -[OPTIONS] [INPUTS]
 
 SUBCOMMANDS:
+	flash enable: Disables the flash's write protection
+	              to allow data to be written to the chip 
+	flash enable: Enables the flash's write protection
+	              to make the chip read-only 
 	flash write: Writes data to the flash chip 
 	flash read : Reads data from the flash chip 
 	flash erase: Erases the entire flash chip 
