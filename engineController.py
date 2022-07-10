@@ -532,21 +532,27 @@ def flash(Args, serialObj):
 	# Subcommand: flash enable                                #
     ###########################################################
 	elif (user_subcommand == "enable"):
-		print('Enable')
+
 		# Send the flash Opcode
+		serialObj.sendByte(opcode)
 
 		# Send the subcommand Opcode
+		serialObj.sendByte(flash_enable_base_code)
 
 		# Recieve the status byte from the engine controller
+
 		return serialObj
 
 	###########################################################
 	# Subcommand: flash disable                               #
     ###########################################################
 	elif (user_subcommand == "disable"):
+
 		# Send the flash opcode
+		serialObj.sendByte(opcode)
 
 		# Send the subcommand opcode
+		serialObj.sendByte(flash_disable_base_code)
 
 		# Recieve the status byte from the engine controller
 

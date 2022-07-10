@@ -491,6 +491,11 @@ def connect(Args, serialObj):
 			for port_num, port in enumerate(available_ports):
 				print("\t" + port)
 			return serialObj
+	else:
+		if (user_option == '-p' and
+		    len(Args) == 1):
+			print("Error: No serial port supplied ")
+			return serialObj
 
     ###########################################################
     # Help Option (-h)                                        #
