@@ -54,12 +54,13 @@ command_list = {
 ###############################################################
 class terminalData:
     def __init__(self):
-        self.baudrate = None
-        self.comport = None
-        self.timeout = None
-        self.serialObj = serial.Serial()
-        self.config_status = False 
-        self.controller = None
+        self.baudrate            = None
+        self.comport             = None
+        self.timeout             = None
+        self.serialObj           = serial.Serial()
+        self.config_status       = False 
+        self.controller          = None
+        self.flash_write_enabled = False 
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):

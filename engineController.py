@@ -379,9 +379,9 @@ def flash(Args, serialObj):
 	flash_erase_base_code_int   = ord( flash_erase_base_code   )
 
 	# flash write data
-	byte = None
+	byte   = None
 	string = None
-	file = None
+	file   = None
 
 
 	###########################################################
@@ -540,6 +540,17 @@ def flash(Args, serialObj):
 		serialObj.sendByte(flash_enable_base_code)
 
 		# Recieve the status byte from the engine controller
+		return_code = serialObj.readByte()
+
+		# Parse return code
+		if (return_code == b''):
+			print("Error: No response code recieved")
+		elif (return_code == b'\x00'):
+			print("Flash write enable successful")
+			serialObj.flash_write_enabled = True
+		else:
+			print("Error: Unrecognised response code recieved")
+		
 
 		return serialObj
 
@@ -555,6 +566,16 @@ def flash(Args, serialObj):
 		serialObj.sendByte(flash_disable_base_code)
 
 		# Recieve the status byte from the engine controller
+		return_code = serialObj.readByte()
+
+		# Parse return code
+		if (return_code == b''):
+			print("Error: No response code recieved")
+		elif (return_code == b'\x00'):
+			print("Flash write disable successful")
+			serialObj.flash_write_enabled = False 
+		else:
+			print("Error: Unrecognised response code recieved")
 
 		return serialObj
 
@@ -562,6 +583,14 @@ def flash(Args, serialObj):
 	# Subcommand: flash write                                 #
     ###########################################################
 	elif (user_subcommand == "write"):
+
+		# Check if flash chip has writing operations enabled
+		if (not serialObj.flash_write_enabled
+            and not (user_options[0] == '-h')):
+			print("Error: Flash write has not been enabled."  +
+                  "Run flash write enable to enable writing " +
+                  "to the flash chip")
+			return serialObj
 
 	    ################### -h option #########################
 		if (user_options[0] == '-h'):
@@ -584,6 +613,8 @@ def flash(Args, serialObj):
                                    ) 
 
 			# Send flash operation code
+			serialObj.sendByte(operation_code)
+			
 			# Send base address
 			# Send byte to write to flash
 			return serialObj
