@@ -118,12 +118,21 @@ class terminalData:
 	    return available_port_names
 
     # Write a single Byte to the serial port
-    def sendByte(self, data):
+    def sendByte(self, byte):
         if (not self.serialObj.is_open):
             print("Error: Could not transmit byte over serial port. No active" \
                    +"serial port connection")
         else:
-            self.serialObj.write(data)
+            self.serialObj.write(byte)
+
+    # Write an array of bytes to the serial port 
+    def sendBytes(self, byte_array):
+        if (not self.serialObj.is_open):
+            print("Error: Could not transmit byte over serial port. No active" \
+                   +"serial port connection")
+        else:
+            for byte in byte_array:
+                self.serialObj.write(byte)
 
     # Read a single Byte from the serial port
     def readByte(self):
