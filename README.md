@@ -102,6 +102,7 @@ connection to the engine controller.</p>
 <p>Subcommands: </p>
 <p>enable: Disables the flash write-protection to allow writing to the chip</p>
 <p>disable: Enables the flash write-protection to make the chip read-only</p>
+<p>status: Displays the contents of the flash chip's status register</p>
 <p>write: Write data to the flash chip</p>
 <p>read: Read data from the flash chip</p>
 <p>erase: Erase the entire flash chip</p>
