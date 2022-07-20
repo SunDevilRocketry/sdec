@@ -73,6 +73,23 @@ connection must be established before running any controller-specific commands.<
     </ul>
 </p>
 
+<h3>sensor</h3>
+<p>Opcode: 0x03</p>
+<p>Description: Get readings from on-board sensors/ADCs. Requires an active
+connection to a Sun Devil Rocketry board.</p>
+<p>Usage: sensor [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
+<p>Subcommands: </p>
+<p>dump: Polls all onboard sensors and displays reading in console</p>
+<p>poll: Displays readings from a specified sensor(s) in real time</p>
+<p>list: Displays all sensors and associated codes for the currently connected board</p>
+<p>help: Shows supported subcommands, options, and descriptions</p>
+<p>Options:
+    <ul>
+        <li> -n [SENSOR NUM]: Specify a sensor for the sensor poll subcommand</li>
+		<li> -h : display sensor usage information </li>
+    </ul>
+</p>
+
 <h2> L0002 Liquid Engine Controller Commands: </h2>
 
 <h3>ignite</h3>
@@ -120,6 +137,7 @@ connection to the engine controller.</p>
 		<li> -h : display flash usage information </li>
     </ul>
 </p>
+
 
 <h2> L0005 Valve Controller Commands: </h2>
 
