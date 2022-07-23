@@ -39,7 +39,8 @@ command_list = {
                  "sol"      : valveController.sol    ,
                  "ignite"   : engineController.ignite,
                  "power"    : engineController.power ,
-                 "flash"    : engineController.flash
+                 "flash"    : engineController.flash ,
+                 "sensor"   : commands.sensor
                 }
 
 ###############################################################
