@@ -25,6 +25,19 @@ Terminal Control Commands:
 			-h : display connect options
 			-d : disconnect from active serial port
 
+	sensor [SUBCOMMAND] -[OPTIONS] [INPUTS]
+		subcommands:
+			sensor dump: Acquires readings for all onboard sensors once and 
+						 displays readings 
+			sensor poll: Displays continuous sensor readings in real-time 
+			sensor list: Lists all available sensors for the board 
+						 currently connected 
+			sensor help: Displays subcommand information
+
+		options: 
+			-n [SENSOR NUM] : specify a sensor for sensor poll
+			-h : display sensor usage information
+
 	sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
 		subcommands:
 			sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid

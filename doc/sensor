@@ -1,0 +1,15 @@
+SENSOR: 
+
+USAGE: SENSOR [SUBCOMMAND] -[OPTIONS] [INPUTS]
+
+SUBCOMMANDS:
+	sensor dump: Acquires readings for all onboard sensors once and 
+                 displays readings 
+	sensor poll: Displays continuous sensor readings in real-time 
+	sensor list: Lists all available sensors for the board 
+			     currently connected 
+	sensor help: Displays subcommand information
+
+OPTIONS:
+	-n [SENSOR NUM] : specify a sensor for sensor poll
+	-h : display sensor usage information
