@@ -52,6 +52,12 @@ controller_sensors = {
                            }
                      }
 
+sensor_dump_sizes = {
+                    # Engine Controller rev 4.0
+                    # 10 sensors, 2 bytes each
+                    controller_names[2]: (2*10)
+                    }
+
 
 ###############################################################
 # Shared Procedures                                           #
@@ -651,6 +657,9 @@ def sensor( Args, serialObj ):
 	# Command opcode 
     opcode = b'\x03'
 
+    # List of bytes containing sensor data
+    sensor_bytes_list = []
+
     ###########################################################
     # Basic Inputs Parsing                                    #
     ###########################################################
@@ -675,10 +684,6 @@ def sensor( Args, serialObj ):
 		# Extract inputs
         user_sensor_nums = Args[2:]
 
-    ###########################################################
-    # Command-Specific Checks                                 #
-    ###########################################################
-
 	# Verify connection to board with sensors
     if ( not (serialObj.controller in controller_sensors.keys()) ):
         print( "Error: The sensor command requires a valid " +
@@ -687,8 +692,17 @@ def sensor( Args, serialObj ):
                "establish a valid connection" )
         return serialObj
 
+    # Set sensor dump size
+    sensor_dump_size_bytes = sensor_dump_sizes[serialObj.controller]
+    
+
+    ###########################################################
+    # Command-Specific Checks                                 #
+    ###########################################################
+
+
 	# Verify sensor nums supplied are valid
-    elif ( user_subcommand == "poll" ):
+    if ( user_subcommand == "poll" ):
         if ( user_option == "-n" ):
 
 			# Throw error if no sensors were supplied
@@ -720,9 +734,18 @@ def sensor( Args, serialObj ):
     # Subcommand: sensor dump                                 #
     ###########################################################
     elif ( user_subcommand == "dump" ):
-        print( "Error: sensor poll has not yet been added " +
-               "to the sdec terminal by SDR developers. "   + 
-               "Try again later or contact SDR for assistance" )
+
+        # Send command opcode 
+        serialObj.sendByte( opcode )
+
+        # Recieve data from controller
+        for byteNum in range( sensor_dump_size_bytes ):
+            sensor_byte_list.append( serialObj.readByte() )
+
+        # print data to console
+        for byte in sensor_byte_list:
+            print( byte + ", ", end="" )
+
         return serialObj
 
     ###########################################################
