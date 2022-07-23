@@ -47,8 +47,8 @@ controller_sensors = {
 						   "pt5": "Pressure Transducer 5",
 						   "pt6": "Pressure Transducer 6",
 						   "pt7": "Pressure Transducer 7",
-						   "tc" : "Theromcouple"         ,
-						   "lc" : "Load Cell"            
+						   "tc ": "Theromcouple"         ,
+						   "lc ": "Load Cell"            
                            }
                      }
 
@@ -738,9 +738,15 @@ def sensor( Args, serialObj ):
     # Subcommand: sensor list                                 #
     ###########################################################
     elif ( user_subcommand == "list" ):
-        print( "Error: sensor poll has not yet been added " +
-               "to the sdec terminal by SDR developers. "   + 
-               "Try again later or contact SDR for assistance" )
+        # Identify current serial connection
+        print("Sensor numbers for " + serialObj.controller +
+               " :" )
+
+        # Loop over all sensors in list and print
+        for sensor_num in controller_sensors[serialObj.controller].keys():
+            print( "\t" + sensor_num + " : " +
+                    controller_sensors[serialObj.controller][sensor_num] 
+                 ) 
         return serialObj
 
     ###########################################################
