@@ -713,9 +713,7 @@ def sensor( Args, serialObj ):
     # Subcommand: sensor help                                 #
     ###########################################################
     if   ( user_subcommand == "help" ):
-        print( "Error: sensor poll has not yet been added " +
-               "to the sdec terminal by SDR developers. "   + 
-               "Try again later or contact SDR for assistance" )
+        display_help_info( "sensor" )
         return serialObj
 
     ###########################################################
