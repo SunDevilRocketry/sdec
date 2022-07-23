@@ -740,11 +740,14 @@ def sensor( Args, serialObj ):
 
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
-            sensor_byte_list.append( serialObj.readByte() )
+            sensor_bytes_list.append( serialObj.readByte() )
 
         # print data to console
-        for byte in sensor_byte_list:
-            print( byte + ", ", end="" )
+        print( "Sensor bytes" )
+        for byte in sensor_bytes_list:
+            print( byte, end="" )
+            print( ", ", end="" )
+        print()
 
         return serialObj
 
