@@ -630,6 +630,7 @@ def connect(Args, serialObj):
 #                                                             #
 ###############################################################
 def sensor( Args, serialObj ):
+
     ###########################################################
     # Local Variables                                         #
     ###########################################################
@@ -656,6 +657,12 @@ def sensor( Args, serialObj ):
 
 	# Command opcode 
     opcode = b'\x03'
+
+    # Subcommand codes
+    subcommand_codes = {
+                       'dump' : b'\x01',
+                       'poll' : b'\x02'
+                       }
 
     # List of bytes containing sensor data
     sensor_bytes_list = []
@@ -737,6 +744,9 @@ def sensor( Args, serialObj ):
 
         # Send command opcode 
         serialObj.sendByte( opcode )
+
+		# Send sensor dump subcommand code
+        serialObj.sendBye( subcommand_codes[user_subcommand] )
 
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
