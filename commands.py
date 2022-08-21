@@ -20,7 +20,7 @@ import time
 ###############################################################
 # Global Variables                                            #
 ###############################################################
-default_timeout = 1 # 1 second timeout
+default_timeout = 0.1 # 1 second timeout
 controller_codes = [ 
                   b'\x01', # Engine Controller, Rev 3.0
                   b'\x02', # Valve Controller , Rev 2.0 
@@ -51,12 +51,6 @@ controller_sensors = {
 						   "lc ": "Load Cell"            
                            }
                      }
-
-sensor_dump_sizes = {
-                    # Engine Controller rev 4.0
-                    # 10 sensors, 2 bytes each
-                    controller_names[2]: (2*10)
-                    }
 
 
 ###############################################################
@@ -699,10 +693,6 @@ def sensor( Args, serialObj ):
                "establish a valid connection" )
         return serialObj
 
-    # Set sensor dump size
-    sensor_dump_size_bytes = sensor_dump_sizes[serialObj.controller]
-    
-
     ###########################################################
     # Command-Specific Checks                                 #
     ###########################################################
@@ -746,7 +736,13 @@ def sensor( Args, serialObj ):
         serialObj.sendByte( opcode )
 
 		# Send sensor dump subcommand code
-        serialObj.sendBye( subcommand_codes[user_subcommand] )
+        serialObj.sendByte( subcommand_codes[user_subcommand] )
+
+		# Determine how many bytes are to be recieved
+        sensor_dump_size_bytes = serialObj.readByte()
+        sensor_dump_size_bytes = int.from_bytes( 
+                                     sensor_dump_size_bytes, 
+                                     "big" )
 
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
