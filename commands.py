@@ -47,8 +47,8 @@ controller_sensors = {
 						   "pt5": "Pressure Transducer 5",
 						   "pt6": "Pressure Transducer 6",
 						   "pt7": "Pressure Transducer 7",
-						   "tc ": "Theromcouple"         ,
-						   "lc ": "Load Cell"            
+						   "tc ": "Theromcouple         ",
+						   "lc ": "Load Cell            "            
                            }
                      }
 
@@ -658,8 +658,9 @@ def sensor( Args, serialObj ):
                        'poll' : b'\x02'
                        }
 
-    # List of bytes containing sensor data
+    # Lists of sensor data
     sensor_bytes_list = []
+    sensor_int_list   = []
 
     ###########################################################
     # Basic Inputs Parsing                                    #
@@ -748,12 +749,16 @@ def sensor( Args, serialObj ):
         for byteNum in range( sensor_dump_size_bytes ):
             sensor_bytes_list.append( serialObj.readByte() )
 
-        # print data to console
-        print( "Sensor bytes" )
-        for byte in sensor_bytes_list:
-            print( byte, end="" )
-            print( ", ", end="" )
-        print()
+        # Loop over all sensors in list and print
+        for i,sensor_num in enumerate( controller_sensors[serialObj.controller].keys() ):
+            sensor_val = 0
+            for j in range(4): # Hex to integer conversion
+                sensor_val += ( int.from_bytes( sensor_bytes_list[4*i + j], 'big') << 8*(3-j) )
+            sensor_int_list.append( sensor_val )
+            print(     
+                 controller_sensors[serialObj.controller][sensor_num] + 
+				 ": " + str( sensor_val )
+                 ) 
 
         return serialObj
 
