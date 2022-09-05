@@ -93,6 +93,23 @@ def error_msg():
 ###############################################################
 #                                                             #
 # PROCEDURE:                                                  #
+# 		adc_readout_to_voltage                                #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		displays a general software failure error message     #
+#                                                             #
+###############################################################
+def adc_readout_to_voltage( 
+                          readout, # ADC readout
+                          num_bits # number of bits in ADC readout
+                          ):
+	voltage_step = 3.3/float(2**(num_bits))
+	return readout*voltage_step 
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
 # 		parseArgs                                             #
 #                                                             #
 # DESCRIPTION:                                                #
@@ -754,10 +771,11 @@ def sensor( Args, serialObj ):
             sensor_val = 0
             for j in range(4): # Hex to integer conversion
                 sensor_val += ( int.from_bytes( sensor_bytes_list[4*i + j], 'big') << 8*(3-j) )
+            sensor_val = adc_readout_to_voltage( sensor_val, 16 )
             sensor_int_list.append( sensor_val )
             print(     
                  controller_sensors[serialObj.controller][sensor_num] + 
-				 ": " + str( sensor_val )
+				 ": " + "{:.2f}".format(sensor_val) + "V"
                  ) 
 
         return serialObj
