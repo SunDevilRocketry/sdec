@@ -24,8 +24,9 @@ default_timeout = 0.1 # 1 second timeout
 controller_codes = [ 
                   b'\x01', # Engine Controller, Rev 3.0
                   b'\x02', # Valve Controller , Rev 2.0 
-                  b'\x03'  # Engine Controller, Rev 4.0 
-                      ]
+                  b'\x03', # Engine Controller, Rev 4.0 
+				  b'\x04'  # Flight Computer,   Rev 1.0
+                   ]
 controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
