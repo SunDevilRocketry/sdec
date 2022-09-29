@@ -734,6 +734,129 @@ def flash(Args, serialObj):
 		error_msg()
 		return serialObj
 
+
+###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		sensor                                                #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		display sensor signal either once or realtime         #
+#                                                             #
+###############################################################
+def sensor(Args, serialObj):
+	###########################################################
+	# Local Variables                                         #
+	###########################################################
+
+	# Subcommand codes
+	sensor_dump_code     = b'\x01'
+	sensor_poll_code     = b'\x02'
+	sensor_list_code	 = b'\x03'
+	# Subcommand Dictionary
+	# Options Dictionary
+	sensor_inputs = { 
+                    'dump': {},
+                    'poll': {},
+                    'list': {},
+					'help': {}
+                    }
+    
+	# Maximum number of arguments
+	max_args = 1
+
+	# Command type -- subcommand function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\x03' 
+
+	###########################################################
+	# Basic Inputs Parsing                                    #
+    ###########################################################
+	parse_check = commands.parseArgs(
+                                    Args,
+                                    max_args,
+                                    sensor_inputs,
+                                    command_type 
+                                    )
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set subcommand
+	user_subcommand = Args[0]
+
+	###########################################################
+	# Command-Specific Checks                                 #
+    ###########################################################
+
+	# Verify Engine Controller Connection
+	if (not (serialObj.controller in supported_boards)):
+		print("Error: The sensor command requires a valid " + 
+              "serial connection to an engine controller "  + 
+              "device. Run the \"connect\" command to "     +
+              "establish a valid connection.")
+		return serialObj
+
+	###########################################################
+	# Subcommand: sensor help                                 #
+    ###########################################################
+	if (user_subcommand == "help"):
+		display_help_info('sensor')
+		return serialObj
+
+	###########################################################
+	# Subcommand: sensor dump                                 #
+    ###########################################################
+	elif (user_subcommand == "dump"):
+		
+		# Send sensor opcode
+		serialObj.sendByte(opcode)
+
+		# Send subcommand code
+		serialObj.sendByte(sensor_dump_code)
+
+		sensor_data = serialObj.readByte();
+
+		# Exit
+		return serialObj
+
+	###########################################################
+	# Subcommand: sensor poll                                 #
+    ###########################################################
+	elif (user_subcommand == "poll"):
+		# TODO implement poll function
+		# # Send sensor opcode
+		# serialObj.sendByte(opcode)
+
+		# # Send subcommand code
+		# serialObj.sendByte(sensor_poll_code)
+
+		# # Exit
+		return serialObj
+
+	elif (user_subcommand == "list"):
+		# TODO implement list function
+		# # Send sensor opcode
+		# serialObj.sendByte(opcode)
+
+		# # Send subcommand code
+		# serialObj.sendByte(sensor_list_code)
+
+		# # Exit
+		return serialObj
+    ###########################################################
+    # Unknown Subcommand                                      #
+    ###########################################################
+	else:
+		print("Error: unknown subcommand passed to ignite " +
+              "function")	
+		error_msg()
+		return serialObj
+
+
+
 ###############################################################
 # END OF FILE                                                 #
 ###############################################################
