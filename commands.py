@@ -30,12 +30,14 @@ controller_codes = [
 controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
-                   "Liquid Engine Controller (L0002 Rev 4.0)"
+                   "Liquid Engine Controller (L0002 Rev 4.0)",
+                   "Flight Controller (A0002 Rev 1.0)"
                    ]
 controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)",
-                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)"
+                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
+                  b'\x04': "Flight Controller (A0002 Rev 1.0)"
                           }
 controller_sensors = {
                   # Engine Controller rev 4.0
@@ -50,6 +52,18 @@ controller_sensors = {
 						   "pt7": "Pressure Transducer 7",
 						   "tc ": "Theromcouple         ",
 						   "lc ": "Load Cell            "            
+                           },
+                 # Flight Controller rev 1.0
+                 controller_names[3]: {
+                            "accel_x": "Acceleration X: ",
+                            "accel_y": "Acceleration Y: ",
+                            "accel_z": "Acceleration Z: ",
+                            "gyro_x" : "Gyroscope X: ",
+                            "gyro_y" : "Gyroscope Y: ",
+                            "gyro_z" : "Gyroscope Z: ",
+                            "mag_x"  : "Magnetometer X: ",
+                            "mag_y"  : "Magnetometer Y: ",
+                            "mag_z"  : "Magnetometer Z: ",
                            }
                      }
 
