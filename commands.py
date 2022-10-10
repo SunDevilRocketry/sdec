@@ -30,12 +30,14 @@ controller_codes = [
 controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
-                   "Liquid Engine Controller (L0002 Rev 4.0)"
+                   "Liquid Engine Controller (L0002 Rev 4.0)",
+				   "Flight Computer (A0002 Rev 1.0)"
                    ]
 controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
-                  b'\x02': "Valve Controller (L0005 Rev 2.0)",
-                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)"
+                  b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
+                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
+				  b'\x04': "Flight Computer (A0002 Rev 1.0)"
                           }
 controller_sensors = {
                   # Engine Controller rev 4.0
