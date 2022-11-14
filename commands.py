@@ -818,5 +818,431 @@ def sensor( Args, serialObj ):
 
 
 ###############################################################
+#                                                             #
+# COMMAND:                                                    #
+# 		flash                                                 #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		read and write data to a controller's extenral flash  #
+#                                                             #
+###############################################################
+def flash(Args, serialObj):
+	###########################################################
+	# Local Variables                                         #
+	###########################################################
+
+	# Subcommand and Options Dictionary
+	flash_inputs= { 
+    'enable' : {
+			   },
+    'disable': {
+			   },
+    'status' : {
+			   },
+	'write'  : {
+			'-b' : 'Specify a byte to write to flash memory'  ,
+			'-s' : 'Specify a string to write to flash memory',
+			'-a' : 'Specify a memory address to write to'     ,
+			'-f' : 'Specify a file to use for input data'     ,
+			'-h' : 'Display help info'
+			   },
+	'read'   : {
+			'-a' : 'Specify a memory address to read from',
+			'-n' : 'Specify a number of bytes to read from flash memory',
+			'-f' : 'Specify a file to use for output data',
+			'-h' : 'Display help info'
+			   }, 
+	'erase'  : {
+			   },
+	'help'   : {
+			   }
+                 }
+    
+	# Maximum number of arguments
+	max_args = 5
+
+	# Command type -- subcommand function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\x22' 
+
+    # Subcommand Data format
+	# SUBOP2 | SUBOP1 | SUBOP0 | BNUM4 | BNUM3 | BNUM2 | BNUM1 | BNUM0  
+	# SUBOP(0-2) Subcommand opcode bits specifies the subcommand to be
+	#            executed
+	# BNUM(0-4) Number of bytes to read/write (max 31)
+
+	# Subcommand codes
+	flash_read_base_code    = b'\x00'  # SUBOP 000 -> 0000 0000
+	flash_enable_base_code  = b'\x20'  # SUBOP 001 -> 0010 0000
+	flash_disable_base_code = b'\x40'  # SUBOP 010 -> 0100 0000
+	flash_write_base_code   = b'\x60'  # SUBOP 011 -> 0110 0000
+	flash_erase_base_code   = b'\x80'  # SUBOP 100 -> 1000 0000
+	flash_status_base_code  = b'\xa0'  # SUBOP 101 -> 1010 0000
+
+	# Subcommand codes as integers
+	flash_read_base_code_int    = ord( flash_read_base_code    )
+	flash_enable_base_code_int  = ord( flash_enable_base_code  )
+	flash_disable_base_code_int = ord( flash_disable_base_code )
+	flash_write_base_code_int   = ord( flash_write_base_code   )
+	flash_erase_base_code_int   = ord( flash_erase_base_code   )
+	flash_status_base_code_int  = ord( flash_status_base_code  )
+
+	# flash write data
+	byte   = None
+	string = None
+	file   = None
+
+	# Flash return data
+	status_register = None
+
+
+	###########################################################
+	# Basic Inputs Parsing                                    #
+    ###########################################################
+	parse_check = parseArgs(
+                            Args        ,
+                            max_args    ,
+                            flash_inputs,
+                            command_type 
+                            )
+
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set subcommand, options, and input data
+	user_subcommand = Args[0]
+	if ( len(Args) != 1 ):
+
+		# Pull options from args
+		Args_options = Args[1:]
+
+		# Check that two options with input data were supplied
+		if ( Args_options[0] == '-h'):
+			user_options = [Args_options[0]]
+			options_command = False
+		elif ( len(Args_options) < 4):
+			print("Error: Not enough options/inputs")
+			return serialObj
+		else:
+			user_options = [Args_options[0], Args_options[2]]
+			user_inputs  = {
+                           user_options[0] : Args_options[1],
+                           user_options[1] : Args_options[3]
+                           }
+			options_command = True
+	else:
+		options_command = False
+
+	###########################################################
+	# Command-Specific Checks                                 #
+    ###########################################################
+
+	# Check input data for each option
+	if (options_command):
+
+		# Check for duplicate options
+		if (user_options[0] == user_options[1]):
+			print('Error: Duplicate option supplied')
+			return serialObj
+
+		# Perform option specific checks
+		for user_option in user_options:
+
+			################# -b option #######################
+			if (user_option == '-b'):
+				# Check byte is formatted correctly
+				# Format: 0xXX --> XX is a hex number
+
+				# Check length
+				if(len(user_inputs[user_option]) != 4):
+					print('Error: Invalid byte format.')
+					return serialObj
+				
+				# Check for 0x prefix
+				if(user_inputs[user_option][0:2] != '0x'):
+					print("Error: Invalid byte format. " +
+                          " Missing 0x prefix")
+
+				# Convert to integer
+				try:
+					byte_int = int(user_inputs[user_option], 0)
+				except ValueError:
+					print('Error: Invalid byte.')
+					return serialObj
+
+				# Convert to byte
+				byte = byte_int.to_bytes(1, 'big')
+				
+
+			################# -s option #######################
+			elif (user_option == '-s'):
+				# Currently no parse checks needed
+				pass
+
+			################# -n option #######################
+			elif (user_option == '-n'):
+				# Verify number of bytes is an integer
+				# Verify numbers of bytes is in range
+				pass
+
+			################# -a option #######################
+			elif (user_option == '-a'):
+				# Check address is formatted correctly
+				# Format: 0xXXXXXX
+
+				# Check length
+				if(len(user_inputs[user_option]) != 8):
+					print('Error: Invalid Address format.')
+					return serialObj
+				
+				# Check for 0x prefix
+				if(user_inputs[user_option][0:2] != '0x'):
+					print("Error: Invalid byte format. " +
+                          " Missing 0x prefix")
+
+				# Convert to integer
+				try:
+					address_int = int(user_inputs[user_option], 0)
+				except ValueError:
+					print('Error: Invalid Address.')
+					return serialObj
+
+				# Convert to bytes
+				address_bytes = address_int.to_bytes(
+                                                    3, 
+                                                    byteorder='big',
+                                                    signed=False
+                                                    )
+
+			################# -f option #######################
+			elif (user_option == '-f'):
+				# Verify output file doesn't already exist 
+				# Verify input file exists
+				pass
+
+		# Verify read and write subcommands have an address supplied	
+		if (   user_subcommand == 'write' 
+			or user_subcommand == 'read'):
+			if ('-a' not in user_options):
+				print('Error: The write and read operations ' +
+					  'require an address supplied by the '   +
+					  '-a option')
+				return serialObj
+
+	# Verify Engine Controller Connection
+	if (not (serialObj.controller in supported_boards)):
+		print("Error: The flash command requires a valid " + 
+			  "serial connection to an engine controller "  + 
+			  "device. Run the \"connect\" command to "     +
+			  "establish a valid connection.")
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash help                                  #
+    ###########################################################
+	if (user_subcommand == "help"):
+		display_help_info('flash')
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash enable                                #
+    ###########################################################
+	elif (user_subcommand == "enable"):
+
+		# Send the flash Opcode
+		serialObj.sendByte(opcode)
+
+		# Send the subcommand Opcode
+		serialObj.sendByte(flash_enable_base_code)
+
+		# Recieve the status byte from the engine controller
+		return_code = serialObj.readByte()
+
+		# Parse return code
+		if (return_code == b''):
+			print("Error: No response code recieved")
+		elif (return_code == b'\x00'):
+			print("Flash write enable successful")
+			serialObj.flash_write_enabled = True
+		else:
+			print("Error: Unrecognised response code recieved")
+		
+
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash disable                               #
+    ###########################################################
+	elif (user_subcommand == "disable"):
+
+		# Send the flash opcode
+		serialObj.sendByte(opcode)
+
+		# Send the subcommand opcode
+		serialObj.sendByte(flash_disable_base_code)
+
+		# Recieve the status byte from the engine controller
+		return_code = serialObj.readByte()
+
+		# Parse return code
+		if (return_code == b''):
+			print("Error: No response code recieved")
+		elif (return_code == b'\x00'):
+			print("Flash write disable successful")
+			serialObj.flash_write_enabled = False 
+		else:
+			print("Error: Unrecognised response code recieved")
+
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash status                                #
+    ###########################################################
+	elif (user_subcommand == "status"):
+
+		# Send the flash opcode
+		serialObj.sendByte(opcode)
+
+		# Send the subcommand opcode
+		serialObj.sendByte(flash_status_base_code)
+
+		# Recieve the contents of the flash status register 
+		status_register     = serialObj.readByte()
+		status_register_int = ord( status_register     )
+
+		# Get the status code of the flash operation
+		flash_status_code = serialObj.readByte()
+
+		# Parse return code
+		if (status_register == b''):
+			print("Error: No response recieved from engine " +
+                  "controller")
+		else:
+			print("Status register contents: ", end="")
+			print( format( status_register_int, "b" ).zfill(8) )
+
+		return serialObj
+
+	###########################################################
+	# Subcommand: flash write                                 #
+    ###########################################################
+	elif (user_subcommand == "write"):
+
+		# Check if flash chip has writing operations enabled
+		if (not serialObj.flash_write_enabled
+            and not (user_options[0] == '-h')):
+			print("Error: Flash write has not been enabled."  +
+                  "Run flash write enable to enable writing " +
+                  "to the flash chip")
+			return serialObj
+
+	    ################### -h option #########################
+		if (user_options[0] == '-h'):
+			display_help_info('flash')
+			return serialObj
+
+	    ################### -b option #########################
+		elif (byte != None):
+			# Send flash opcode
+			serialObj.sendByte(opcode)
+
+			# Calculate operation code
+			num_bytes_to_send = 1
+			operation_code_int = (flash_write_base_code_int + 
+                                 num_bytes_to_send)
+			operation_code = operation_code_int.to_bytes(
+								   1, 
+					               byteorder = 'big',
+								   signed = False
+                                   ) 
+
+			# Send flash operation code
+			serialObj.sendByte(operation_code)
+			
+			# Send base address
+			serialObj.sendBytes(address_bytes)
+
+			# Send byte to write to flash
+			serialObj.sendBytes(byte)
+
+			# Recieve response code from engine controller
+			return_code = serialObj.readByte()
+
+			# Parse return code
+			if (return_code == b''):
+				print("Error: No response code recieved")
+			elif (return_code == b'\x00'):
+				print("Flash write successful")
+			else:
+				print("Error: Unrecognised response code recieved")
+
+			return serialObj
+
+	    ################### -s option #########################
+		elif (string != None):
+			print("Error: Option not yet supported")
+			return serialObj
+
+	    ################### -f option #########################
+		elif (file != None):
+			print("Error: Option not yet supported")
+			return serialObj
+		
+	    ################# Unknown option #####################
+		else:
+			print("Error: Something went wrong. The flash "+ 
+                  "write command failed to find input "    +
+                  "to write to flash")
+			return serialObj
+
+
+	###########################################################
+	# Subcommand: flash read                                  #
+    ###########################################################
+	elif (user_subcommand == "read"):
+		# TODO: Implement read subcommand and remove error
+        #       message
+		print("Error: The read subcommand has not yet been "+
+              "implemented. Try again later.")
+		return serialObj
+
+		# Option: -h                                          
+		if (user_option == '-h'):
+			display_help_info('flash')
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			# Send solenoid opcode
+			# Send subcommand code
+			return serialObj
+
+
+	###########################################################
+	# Subcommand: flash erase                                 #
+    ###########################################################
+	elif (user_subcommand == "erase"):
+		# TODO: Implement erase subcommand and remove error
+        #       message
+		print("Error: The erase subcommand has not yet been "+
+			  "implemented. Try again later.")
+		return serialObj
+		# Send solenoid opcode
+		# Send subcommand code
+		return serialObj
+
+    ###########################################################
+    # Unknown Option                                          #
+    ###########################################################
+	else:
+		print("Error: unknown option passed to connect function")	
+		error_msg()
+		return serialObj
+
+
+###############################################################
 # END OF FILE                                                 # 
 ###############################################################
