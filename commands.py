@@ -64,6 +64,22 @@ controller_sensors = {
 ###############################################################
 #                                                             #
 # PROCEDURE:                                                  #
+# 		get_bit                                               #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		extracts a specific bit from an integer               #
+#                                                             #
+###############################################################
+def get_bit( num, bit_index ):
+	if ( num & ( 1 << bit_index ) ):
+		return 1
+	else:	
+		return 0
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
 # 		display_help_info                                     #
 #                                                             #
 # DESCRIPTION:                                                #
@@ -890,12 +906,18 @@ def flash(Args, serialObj):
 	flash_status_base_code_int  = ord( flash_status_base_code  )
 
 	# flash write data
-	byte   = None
-	string = None
-	file   = None
+	byte            = None
+	string          = None
+	file            = None
 
 	# Flash return data
 	status_register = None
+
+	# Supported flash boards
+	flash_supported_boards = [
+                   "Liquid Engine Controller (L0002 Rev 4.0)",
+				   "Flight Computer (A0002 Rev 1.0)"
+							 ]
 
 
 	###########################################################
@@ -1033,11 +1055,14 @@ def flash(Args, serialObj):
 				return serialObj
 
 	# Verify Engine Controller Connection
-	if (not (serialObj.controller in supported_boards)):
+	if (not (serialObj.controller in flash_supported_boards) ):
 		print("Error: The flash command requires a valid " + 
-			  "serial connection to an engine controller "  + 
-			  "device. Run the \"connect\" command to "     +
-			  "establish a valid connection.")
+			  "serial connection to a controller with \n"    + 
+			  "external flash. This includes the following " +
+		      "boards: \n" )
+		for board in flash_supported_boards:
+			print( board )
+		print()
 		return serialObj
 
 	###########################################################
@@ -1121,8 +1146,16 @@ def flash(Args, serialObj):
 			print("Error: No response recieved from engine " +
                   "controller")
 		else:
-			print("Status register contents: ", end="")
-			print( format( status_register_int, "b" ).zfill(8) )
+			print("Status register contents: \n") 
+			print( "BUSY: ", get_bit( status_register_int, 0 ) )
+			print( "WEL : ", get_bit( status_register_int, 1 ) )
+			print( "BP0 : ", get_bit( status_register_int, 2 ) )
+			print( "BP1 : ", get_bit( status_register_int, 3 ) )
+			print( "BP2 : ", get_bit( status_register_int, 4 ) )
+			print( "BP3 : ", get_bit( status_register_int, 5 ) )
+			print( "AAI : ", get_bit( status_register_int, 6 ) )
+			print( "BPL : ", get_bit( status_register_int, 7 ) )
+			print( )
 
 		return serialObj
 
