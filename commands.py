@@ -9,36 +9,49 @@
 
 
 ###############################################################
-# Standard Imports                                            # 
+# Imports                                                     #  
 ###############################################################
+
+# Standard imports
 import sys
 import os
 import serial.tools.list_ports
 import time
+
+# Project imports
+import sensor_conv
 
 
 ###############################################################
 # Global Variables                                            #
 ###############################################################
 default_timeout = 0.1 # 1 second timeout
+
+# Controller identification codes
 controller_codes = [ 
                   b'\x01', # Engine Controller, Rev 3.0
                   b'\x02', # Valve Controller , Rev 2.0 
                   b'\x03', # Engine Controller, Rev 4.0 
 				  b'\x04'  # Flight Computer,   Rev 1.0
                    ]
+
+# Controller Names
 controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
                    "Liquid Engine Controller (L0002 Rev 4.0)",
 				   "Flight Computer (A0002 Rev 1.0)"
                    ]
+
+# Controller descriptions from identification codes
 controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
                   b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
 				  b'\x04': "Flight Computer (A0002 Rev 1.0)"
                           }
+
+# Lists of sensors on each controller
 controller_sensors = {
                   # Engine Controller rev 4.0
                   controller_names[2]: {
@@ -52,8 +65,87 @@ controller_sensors = {
 						   "pt7": "Pressure Transducer 7",
 						   "tc ": "Theromcouple         ",
 						   "lc ": "Load Cell            "            
-                           }
+                           },
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+						   "accX" : "Accelerometer X       ",
+                           "accY" : "Accelerometer Y       ",
+                           "accZ" : "Accelerometer Z       ",
+                           "gryoX": "Gryoscope X           ",
+                           "gryoY": "Gryoscope Y           ",
+                           "gryoZ": "Gryoscope Z           ",
+                           "magX" : "Magnetometer X        ",
+                           "magY" : "Magnetometer Y        ",
+                           "magZ" : "Magnetometer Z        ",
+                           "imut" : "IMU Die Temperature   ",
+                           "pres" : "Barometric Pressure   ",
+                           "temp" : "Barometric Temperature"
+						   }
                      }
+
+# Size of raw sensor readouts in bytes
+sensor_sizes = {
+                  # Engine Controller rev 4.0
+                  controller_names[2]: {
+						   "pt0": 4,
+						   "pt1": 4,
+						   "pt2": 4,
+						   "pt3": 4,
+						   "pt4": 4,
+						   "pt5": 4,
+						   "pt6": 4,
+						   "pt7": 4,
+						   "tc ": 4,
+						   "lc ": 4            
+                           },
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+						   "accX" : 2,
+                           "accY" : 2,
+                           "accZ" : 2,
+                           "gryoX": 2,
+                           "gryoY": 2,
+                           "gryoZ": 2,
+                           "magX" : 2,
+                           "magY" : 2,
+                           "magZ" : 2,
+                           "imut" : 2,
+                           "pres" : 4,
+                           "temp" : 4 
+						   }
+               }
+
+# Sensor raw readout conversion functions
+sensor_conv_funcs = {
+                  # Engine Controller rev 4.0
+                  controller_names[2]: {
+						   "pt0": sensor_conv.adc_readout_to_voltage,
+						   "pt1": sensor_conv.adc_readout_to_voltage,
+						   "pt2": sensor_conv.adc_readout_to_voltage,
+						   "pt3": sensor_conv.adc_readout_to_voltage,
+						   "pt4": sensor_conv.adc_readout_to_voltage,
+						   "pt5": sensor_conv.adc_readout_to_voltage,
+						   "pt6": sensor_conv.adc_readout_to_voltage,
+						   "pt7": sensor_conv.adc_readout_to_voltage,
+						   "tc ": sensor_conv.adc_readout_to_voltage,
+						   "lc ": sensor_conv.adc_readout_to_voltage            
+                           },
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+						   "accX" : None,
+                           "accY" : None,
+                           "accZ" : None,
+                           "gryoX": None,
+                           "gryoY": None,
+                           "gryoZ": None,
+                           "magX" : None,
+                           "magY" : None,
+                           "magZ" : None,
+                           "imut" : None,
+                           "pres" : None,
+                           "temp" : None 
+						   }
+	                }
 
 
 ###############################################################
@@ -75,6 +167,89 @@ def get_bit( num, bit_index ):
 		return 1
 	else:	
 		return 0
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		byte_array_to_int                                     #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		Returns an integer corresponding the hex number       #
+#       passed into the function as a byte array. Assumes     #
+#       most significant bytes are first                      #
+#                                                             #
+###############################################################
+def byte_array_to_int( byte_array ):
+	int_val   = 0 # Intermediate computation value
+	result    = 0 # Final result integer
+	num_bytes = len( byte_array )
+	for i, byte in enumerate( byte_array ):
+		int_val = int.from_bytes( byte, 'big')
+		int_val = int_val << 8*( (num_bytes-1) - i )
+		result += int_val
+	return result
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		get_raw_sensor_readouts                               #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		Converts an array of bytes into a dictionary          #
+#       containing the raw sensor readouts in integer format  #
+#                                                             #
+###############################################################
+def get_raw_sensor_readouts( controller, sensor_bytes ):
+
+	# Sensor readout sizes
+	sensor_size_dict = sensor_sizes[controller]
+
+	# Starting index of bytes corresponding to individual 
+	# sensor readout in sensor_bytes array
+	index = 0
+
+	# Result
+	readouts = {}
+	
+	# Convert each sensor readout 
+	for sensor in sensor_size_dict:
+		size             = sensor_size_dict[sensor]
+		readout_bytes    = sensor_bytes[index:index+size]
+		int_val          = byte_array_to_int( readout_bytes )
+		readouts[sensor] = int_val
+		index           += size 
+
+	return readouts
+
+
+###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		conv_raw_sensor_readouts                              #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		Converts raw sensor readouts in integer format into   #
+#       the appropriate format                                #
+#                                                             #
+###############################################################
+def conv_raw_sensor_readouts( controller, raw_readouts ):
+
+	# Conversion functions
+	conv_funcs = sensor_conv_funcs[controller]
+
+	# Result
+	readouts = {}
+
+	# Convert each readout
+	for sensor in conv_funcs:
+		if ( conv_funcs[sensor] != None ):
+			readouts[sensor] = conv_funcs[sensor]( raw_readouts[sensor] )
+		else:
+			readouts[sensor] = raw_readouts[sensor]
+	
+	return readouts
 
 
 ###############################################################
@@ -109,21 +284,6 @@ def error_msg():
               "the Sun Devil Rocketry development team" )	
 
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		adc_readout_to_voltage                                #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		displays a general software failure error message     #
-#                                                             #
-###############################################################
-def adc_readout_to_voltage( 
-                          readout, # ADC readout
-                          num_bits # number of bits in ADC readout
-                          ):
-	voltage_step = 3.3/float(2**(num_bits))
-	return readout*voltage_step 
 
 
 ###############################################################
@@ -785,17 +945,21 @@ def sensor( Args, serialObj ):
         for byteNum in range( sensor_dump_size_bytes ):
             sensor_bytes_list.append( serialObj.readByte() )
 
-        # Loop over all sensors in list and print
-        for i,sensor_num in enumerate( controller_sensors[serialObj.controller].keys() ):
-            sensor_val = 0
-            for j in range(4): # Hex to integer conversion
-                sensor_val += ( int.from_bytes( sensor_bytes_list[4*i + j], 'big') << 8*(3-j) )
-            sensor_val = adc_readout_to_voltage( sensor_val, 16 )
-            sensor_int_list.append( sensor_val )
-            print(     
-                 controller_sensors[serialObj.controller][sensor_num] + 
-				 ": " + "{:.2f}".format(sensor_val) + "V"
-                 ) 
+		# Get readouts from byte array
+        raw_sensor_readouts = get_raw_sensor_readouts( 
+				                        serialObj.controller,
+                                        sensor_bytes_list 
+                                                     )
+		# Convert raw readouts
+        sensor_readouts     = conv_raw_sensor_readouts(
+                                        serialObj.controller,
+                                        raw_sensor_readouts
+                                                      )
+
+		# Display Sensor readouts
+        for sensor in sensor_readouts:
+            print( sensor + ": " + str( sensor_readouts[sensor] ) )
+			
 
         return serialObj
 
