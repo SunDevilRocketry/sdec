@@ -132,12 +132,12 @@ sensor_conv_funcs = {
                            },
 				  # Flight Computer rev 1.0
 				  controller_names[3]: {
-						   "accX" : None,
-                           "accY" : None,
-                           "accZ" : None,
-                           "gryoX": None,
-                           "gryoY": None,
-                           "gryoZ": None,
+						   "accX" : sensor_conv.imu_accel,
+                           "accY" : sensor_conv.imu_accel,
+                           "accZ" : sensor_conv.imu_accel,
+                           "gryoX": sensor_conv.imu_gryo,
+                           "gryoY": sensor_conv.imu_gryo,
+                           "gryoZ": sensor_conv.imu_gryo,
                            "magX" : None,
                            "magY" : None,
                            "magZ" : None,
