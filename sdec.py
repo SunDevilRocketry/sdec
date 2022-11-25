@@ -132,8 +132,9 @@ class terminalData:
             print("Error: Could not transmit byte over serial port. No active" \
                    +"serial port connection")
         else:
-            for byte in byte_array:
-                self.serialObj.write(byte)
+            self.serialObj.write( byte_array )
+            #for byte in byte_array:
+            #    self.sendByte(byte)
 
     # Read a single Byte from the serial port
     def readByte(self):

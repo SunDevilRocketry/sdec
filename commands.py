@@ -888,6 +888,7 @@ def flash(Args, serialObj):
 	# SUBOP(0-2) Subcommand opcode bits specifies the subcommand to be
 	#            executed
 	# BNUM(0-4) Number of bytes to read/write (max 31)
+	max_num_bytes = 31
 
 	# Subcommand codes
 	flash_read_base_code    = b'\x00'  # SUBOP 000 -> 0000 0000
@@ -905,12 +906,13 @@ def flash(Args, serialObj):
 	flash_erase_base_code_int   = ord( flash_erase_base_code   )
 	flash_status_base_code_int  = ord( flash_status_base_code  )
 
-	# flash write data
+	# flash IO data
 	byte            = None
 	string          = None
 	file            = None
+	num_bytes       = None
 
-	# Flash return data
+	# Flash status register contents 
 	status_register = None
 
 	# Supported flash boards
@@ -1007,8 +1009,16 @@ def flash(Args, serialObj):
 			################# -n option #######################
 			elif (user_option == '-n'):
 				# Verify number of bytes is an integer
+				try:
+					num_bytes = int(user_inputs[user_option], 0)
+				except ValueError:
+					print('Error: Invalid number of bytes.')
+					return serialObj
+
 				# Verify numbers of bytes is in range
-				pass
+				if ( num_bytes <= 0 or num_bytes > max_num_bytes ): 
+					print( "Error: Invalid number of bytes." )
+					return serialObj
 
 			################# -a option #######################
 			elif (user_option == '-a'):
@@ -1199,7 +1209,7 @@ def flash(Args, serialObj):
 			serialObj.sendBytes(address_bytes)
 
 			# Send byte to write to flash
-			serialObj.sendBytes(byte)
+			serialObj.sendByte(byte)
 
 			# Recieve response code from engine controller
 			return_code = serialObj.readByte()
@@ -1207,7 +1217,7 @@ def flash(Args, serialObj):
 			# Parse return code
 			if (return_code == b''):
 				print("Error: No response code recieved")
-			elif (return_code == b'\x00'):
+			elif ( return_code == b'\x00' ):
 				print("Flash write successful")
 			else:
 				print("Error: Unrecognised response code recieved")
@@ -1236,21 +1246,54 @@ def flash(Args, serialObj):
 	# Subcommand: flash read                                  #
     ###########################################################
 	elif (user_subcommand == "read"):
-		# TODO: Implement read subcommand and remove error
-        #       message
-		print("Error: The read subcommand has not yet been "+
-              "implemented. Try again later.")
-		return serialObj
 
-		# Option: -h                                          
-		if (user_option == '-h'):
+	    ################### -h option #########################
+		if (user_options[0] == '-h'):
 			display_help_info('flash')
 			return serialObj
 
-		# Option: -n                                          
-		elif(user_option == '-n'):
-			# Send solenoid opcode
-			# Send subcommand code
+	    ################### -n option #########################
+		elif( num_bytes != None ):
+
+			# Send flash opcode
+			serialObj.sendByte(opcode)
+
+			# Calculate operation code
+			operation_code_int = ( flash_read_base_code_int + 
+                                 num_bytes )
+			operation_code = operation_code_int.to_bytes(
+								   1, 
+					               byteorder = 'big',
+								   signed = False
+                                   ) 
+
+			# Send flash operation code
+			serialObj.sendByte(operation_code)
+			
+			# Send base address
+			serialObj.sendBytes(address_bytes)
+
+			# Receive Bytes into a byte array
+			rx_bytes = []
+			for i in range( num_bytes ):
+				rx_bytes.append( serialObj.readByte() )
+
+			# Get flash status code
+			flash_read_status = serialObj.readByte() 
+			if ( flash_read_status != b'\x00' ):
+				print( "Error: Flash Read Unsuccessful" )
+
+			# Display Bytes on the terminal
+			print( "Received bytes: \n" )
+			for rx_byte in rx_bytes:
+				print( rx_byte, ", ", end = "" )
+			print()
+
+			return serialObj
+
+	    ################### -f option #########################
+		elif( file!= None ):
+			print("Error: Option not yet supported")
 			return serialObj
 
 
@@ -1258,13 +1301,20 @@ def flash(Args, serialObj):
 	# Subcommand: flash erase                                 #
     ###########################################################
 	elif (user_subcommand == "erase"):
-		# TODO: Implement erase subcommand and remove error
-        #       message
-		print("Error: The erase subcommand has not yet been "+
-			  "implemented. Try again later.")
-		return serialObj
-		# Send solenoid opcode
-		# Send subcommand code
+		
+		# Send flash opcode 
+		serialObj.sendByte( opcode )
+
+		# Send flash erase subcommand code 
+		serialObj.sendByte( flash_erase_base_code )
+
+		# Get and Display status of flash erase operation
+		flash_erase_status = serialObj.readByte()
+		if ( flash_erase_status == b'\x00'):
+			print( "Flash erase sucessful" )
+		else:
+			print( "Error: Flash erase unsuccessful" )
+
 		return serialObj
 
     ###########################################################
