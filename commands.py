@@ -25,7 +25,7 @@ import sensor_conv
 ###############################################################
 # Global Variables                                            #
 ###############################################################
-default_timeout = 0.1 # 1 second timeout
+default_timeout = 5 # 1 second timeout
 
 # Controller identification codes
 controller_codes = [ 
@@ -143,7 +143,7 @@ sensor_conv_funcs = {
                            "magZ" : None,
                            "imut" : None,
                            "pres" : None,
-                           "temp" : None 
+                           "temp" : sensor_conv.baro_temp 
 						   }
 	                }
 
@@ -1013,30 +1013,32 @@ def flash(Args, serialObj):
 
 	# Subcommand and Options Dictionary
 	flash_inputs= { 
-    'enable' : {
-			   },
-    'disable': {
-			   },
-    'status' : {
-			   },
-	'write'  : {
+    'enable'  : {
+			    },
+    'disable' : {
+			    },
+    'status'  : {
+			    },
+	'write'   : {
 			'-b' : 'Specify a byte to write to flash memory'  ,
 			'-s' : 'Specify a string to write to flash memory',
 			'-a' : 'Specify a memory address to write to'     ,
 			'-f' : 'Specify a file to use for input data'     ,
 			'-h' : 'Display help info'
-			   },
-	'read'   : {
+			    },
+	'read'    : {
 			'-a' : 'Specify a memory address to read from',
 			'-n' : 'Specify a number of bytes to read from flash memory',
 			'-f' : 'Specify a file to use for output data',
 			'-h' : 'Display help info'
-			   }, 
-	'erase'  : {
-			   },
-	'help'   : {
-			   }
-                 }
+			    }, 
+	'erase'   : {
+			    },
+	'help'    : {
+			    },
+	'extract' : {
+			    },
+                  }
     
 	# Maximum number of arguments
 	max_args = 5
@@ -1061,6 +1063,7 @@ def flash(Args, serialObj):
 	flash_write_base_code   = b'\x60'  # SUBOP 011 -> 0110 0000
 	flash_erase_base_code   = b'\x80'  # SUBOP 100 -> 1000 0000
 	flash_status_base_code  = b'\xa0'  # SUBOP 101 -> 1010 0000
+	flash_extract_base_code = b'\xc0'  # SUBOP 110 -> 1100 0000
 
 	# Subcommand codes as integers
 	flash_read_base_code_int    = ord( flash_read_base_code    )
@@ -1069,6 +1072,7 @@ def flash(Args, serialObj):
 	flash_write_base_code_int   = ord( flash_write_base_code   )
 	flash_erase_base_code_int   = ord( flash_erase_base_code   )
 	flash_status_base_code_int  = ord( flash_status_base_code  )
+	flash_extract_base_code_int = ord( flash_extract_base_code )
 
 	# flash IO data
 	byte            = None
@@ -1317,7 +1321,7 @@ def flash(Args, serialObj):
 
 		# Parse return code
 		if (status_register == b''):
-			print("Error: No response recieved from engine " +
+			print("Error: No response recieved from " +
                   "controller")
 		else:
 			print("Status register contents: \n") 
@@ -1480,6 +1484,31 @@ def flash(Args, serialObj):
 			print( "Error: Flash erase unsuccessful" )
 
 		return serialObj
+
+
+	###########################################################
+	# Subcommand: flash extract                               #
+    ###########################################################
+	elif ( user_subcommand == "extract" ):
+
+		# Send flash opcode 
+		serialObj.sendByte( opcode )
+
+		# Send flash extract subcommand code 
+		serialObj.sendByte( flash_extract_base_code )
+
+		# Recieve the status byte from the engine controller
+		return_code = serialObj.readByte()
+
+		# Parse return code
+		if (return_code == b''):
+			print("Error: No response code recieved")
+		elif (return_code == b'\x00'):
+			print("Flash extract successful")
+		else:
+			print("Error: Unrecognised response code recieved")
+		return serialObj
+
 
     ###########################################################
     # Unknown Option                                          #

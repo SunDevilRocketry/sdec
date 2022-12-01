@@ -93,5 +93,24 @@ def imu_gryo( readout ):
 
 
 ###############################################################
+#                                                             #
+# PROCEDURE:                                                  #
+# 		baro_temp                                             #
+#                                                             #
+# DESCRIPTION:                                                #
+# 		Converts a sensor readout from the baro temperature   #
+#       sensor from the raw integer format                    #
+#                                                             #
+###############################################################
+def baro_temp( readout ):
+	
+	# Convert to degrees C 
+	baro_temp_setting = 0.0012 # degrees C/ LSB 
+	
+	# Final conversion
+	return float(readout)*baro_temp_setting
+
+
+###############################################################
 # END OF FILE                                                 # 
 ###############################################################

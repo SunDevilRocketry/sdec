@@ -26,7 +26,9 @@ from   commands import display_help_info
 ###############################################################
 # Global Variables                                            #
 ###############################################################
-supported_boards = ["Liquid Engine Controller (L0002 Rev 4.0)"]
+supported_boards = ["Liquid Engine Controller (L0002 Rev 4.0)",
+				    "Flight Computer (A0002 Rev 1.0)"
+                    ]
 
 
 ###############################################################
