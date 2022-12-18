@@ -1,13 +1,13 @@
-###############################################################
-#                                                             #
-# sdec.py -- main terminal program. Contains main program     #
-#            loop and global objects                          # 
-#                                                             #
-# Author: Colton Acosta                                       #
-# Date: 4/16/2022                                             #
-# Sun Devil Rocketry Avionics                                 #
-#                                                             #
-###############################################################
+#################################################################################### 
+#                                                                                  #
+# sdec.py -- main terminal program. Contains main program                          #
+#            loop and global objects                                               # 
+#                                                                                  #
+# Author: Colton Acosta                                                            #
+# Date: 4/16/2022                                                                  #
+# Sun Devil Rocketry Avionics                                                      #
+#                                                                                  #
+####################################################################################
 
 
 ###############################################################
@@ -22,6 +22,7 @@ import serial.tools.list_ports
 # Project Modules                                             #
 ###############################################################
 import commands         # general terminal commands
+import hw_commands      # general hardware commands
 import valveController  # valve controller commands
 import engineController # engine controller commands
 
@@ -39,8 +40,8 @@ command_list = {
                  "sol"      : valveController.sol    ,
                  "ignite"   : engineController.ignite,
                  "power"    : engineController.power ,
-                 "flash"    : commands.flash         ,
-                 "sensor"   : commands.sensor
+                 "flash"    : hw_commands.flash      ,
+                 "sensor"   : hw_commands.sensor
                 }
 
 ###############################################################
