@@ -13,7 +13,9 @@ currently available for Windows and Linux operating systems. </p>
 
 <h2>Supported Boards:</h2>
 <p>
-L0002: Liquid Engine Controller (Rev 3)
+L0002: Liquid Engine Controller (Rev 3/Rev 4)
+
+A0002: Flight Computer (Rev 1)
 
 L0005: Valve Controller (Rev 2)
 
