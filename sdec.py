@@ -144,6 +144,17 @@ class terminalData:
         else:
              return self.serialObj.read()
 
+    # Read multiple bytes from the serial port
+    def readBytes( self, num_bytes ):
+        if (not self.serialObj.is_open):
+            print("Error: Could not read byte from serial port. No active" \
+                   +"serial port connection")
+        else:
+            rx_bytes = []
+            for i in range( num_bytes ):
+                rx_bytes.append( self.serialObj.read() )
+            return rx_bytes 
+
 	# Set the SDR controller to enable board-specific commands
     def set_SDR_controller(self, controller_name):
         self.controller = controller_name

@@ -1497,8 +1497,84 @@ def flash(Args, serialObj):
 		# Send flash extract subcommand code 
 		serialObj.sendByte( flash_extract_base_code )
 
+		# Recieve Data in 32 byte blocks
+		# Flash contains 4096 blocks of data
+		rx_byte_blocks = []
+		for i in range( 4096 ):
+			print( "Reading block " + str(i) + "..."  )
+			rx_byte_blocks.append( serialObj.readBytes( 32 ) )
+
 		# Recieve the status byte from the engine controller
 		return_code = serialObj.readByte()
+
+
+		# Convert the data into integer format
+		rx_int_blocks = []
+		for byte_block in rx_byte_blocks:
+			rx_int_block = []
+			for rx_byte in byte_block:
+				rx_int_block.append( ord(rx_byte) )
+			rx_int_blocks.append( rx_int_block )
+
+		# Combine bytes from the integer data
+		rx_comb_blocks = []
+		for int_block in rx_int_blocks:
+			rx_comb_block = []
+			time = ( ( int_block[0]       ) + 
+                     ( int_block[1] << 8  ) + 
+					 ( int_block[2] << 16 ) + 
+                     ( int_block[3] << 24 ) )
+			imu_a_x = ( ( int_block[4] ) + 
+                        ( int_block[5] << 8 ) )
+			imu_a_y = ( ( int_block[6] ) + 
+                        ( int_block[7] << 8 ) )
+			imu_a_z = ( ( int_block[8] ) + 
+                        ( int_block[9] << 8 ) )
+			imu_g_x = ( ( int_block[10] ) + 
+                        ( int_block[11] << 8 ) )
+			imu_g_y = ( ( int_block[12] ) + 
+                        ( int_block[13] << 8 ) )
+			imu_g_z = ( ( int_block[14] ) + 
+                        ( int_block[15] << 8 ) )
+			imu_m_x = ( ( int_block[16] ) + 
+                        ( int_block[17] << 8 ) )
+			imu_m_y = ( ( int_block[18] ) + 
+                        ( int_block[19] << 8 ) )
+			imu_m_z = ( ( int_block[20] ) + 
+                        ( int_block[21] << 8 ) )
+			imu_temp = ( ( int_block[22] ) + 
+                         ( int_block[23] << 8 ) )
+			baro_temp = ( ( int_block[24]       ) + 
+                          ( int_block[25] << 8  ) + 
+                          ( int_block[26] << 16 ) + 
+                          ( int_block[27] << 24 )  )
+			baro_press = ( ( int_block[28] ) + 
+                           ( int_block[29] << 8  ) + 
+                           ( int_block[30] << 16 ) + 
+                           ( int_block[31] << 24 ) )
+			rx_comb_block.append( time )
+			rx_comb_block.append( imu_a_x )
+			rx_comb_block.append( imu_a_y )
+			rx_comb_block.append( imu_a_z )
+			rx_comb_block.append( imu_g_x )
+			rx_comb_block.append( imu_g_y )
+			rx_comb_block.append( imu_g_z )
+			rx_comb_block.append( imu_m_x )
+			rx_comb_block.append( imu_m_y )
+			rx_comb_block.append( imu_m_z )
+			rx_comb_block.append( imu_temp )
+			rx_comb_block.append( baro_temp )
+			rx_comb_block.append( baro_press )
+			rx_comb_blocks.append( rx_comb_block )
+			
+
+		# Export the data to txt files
+		with open( "output/int_data.txt", 'w' ) as file:
+			for rx_comb_block in rx_comb_blocks:
+				for val in rx_comb_block:
+					file.write( str( val ) )
+					file.write( '\t')
+				file.write( '\n' )	
 
 		# Parse return code
 		if (return_code == b''):

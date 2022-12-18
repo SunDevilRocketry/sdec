@@ -73,6 +73,20 @@ connection must be established before running any controller-specific commands.<
     </ul>
 </p>
 
+<h2>General Hardware Commands:</h2>
+
+<h3>ignite</h3>
+<p>Opcode: 0x20</p>
+<p>Description: Direct control of ematch ignition circuitry. Requires an active connection
+to the engine controller or flight computer. </p>
+<p>Usage: ignition [SUBCOMMAND]</p>
+<p>Subcommands: </p>
+<p>fire:   Triggers the engine ignition ematch (Engine Controller)</p>
+<p>main:   Triggers the main parachute deployment ematch (Flight Computer)</p>
+<p>drogue: Triggers the drogue parachute deployment ematch (Flight Computer)</p>
+<p>cont:   Displays continuity information on ignition components</p>
+<p>help:   Shows supported subcommands and descriptions</p>
+
 <h3>sensor</h3>
 <p>Opcode: 0x03</p>
 <p>Description: Get readings from on-board sensors/ADCs. Requires an active
@@ -91,16 +105,6 @@ connection to a Sun Devil Rocketry board.</p>
 </p>
 
 <h2> L0002 Liquid Engine Controller Commands: </h2>
-
-<h3>ignite</h3>
-<p>Opcode: 0x20</p>
-<p>Description: Direct control of the ignition system. Requires an active connection
-to the engine controller. </p>
-<p>Usage: ignition [SUBCOMMAND]</p>
-<p>Subcommands: </p>
-<p>fire: Triggers the engine ignition ematch</p>
-<p>cont: Displays continuity information on ignition components</p>
-<p>help: Shows supported subcommands and descriptions</p>
 
 <h3>power</h3>
 <p>Opcode: 0x21</p>
