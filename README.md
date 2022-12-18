@@ -104,21 +104,10 @@ connection to a Sun Devil Rocketry board.</p>
     </ul>
 </p>
 
-<h2> L0002 Liquid Engine Controller Commands: </h2>
-
-<h3>power</h3>
-<p>Opcode: 0x21</p>
-<p>Description: Direct control of the engine controller power supply. Requires an 
-active connection to the engine controller. </p>
-<p>Usage: power [SUBCOMMAND]</p>
-<p>Subcommands: </p>
-<p>source: Determines whether the MCU is being powered by the buck converter or USB</p>
-<p>help: Shows supported subcommands and descriptions</p>
-
 <h3>flash</h3>
 <p>Opcode: 0x22</p>
 <p>Description: Read from and write to the external flash chip. Requires an active
-connection to the engine controller.</p>
+connection to the engine controller or flight computer.</p>
 <p>Usage: flash [SUBCOMMAND] -[OPTIONS] [INPUTS]</p>
 <p>Subcommands: </p>
 <p>enable: Disables the flash write-protection to allow writing to the chip</p>
@@ -127,6 +116,7 @@ connection to the engine controller.</p>
 <p>write: Write data to the flash chip</p>
 <p>read: Read data from the flash chip</p>
 <p>erase: Erase the entire flash chip</p>
+<p>extract: extract all data from the flash chip and export to a text file</p>
 <p>help: Shows supported subcommands, options, and descriptions</p>
 <p>Options:
     <ul>
@@ -142,6 +132,16 @@ connection to the engine controller.</p>
     </ul>
 </p>
 
+<h2> L0002 Liquid Engine Controller Commands: </h2>
+
+<h3>power</h3>
+<p>Opcode: 0x21</p>
+<p>Description: Direct control of the engine controller power supply. Requires an 
+active connection to the engine controller. </p>
+<p>Usage: power [SUBCOMMAND]</p>
+<p>Subcommands: </p>
+<p>source: Determines whether the MCU is being powered by the buck converter or USB</p>
+<p>help: Shows supported subcommands and descriptions</p>
 
 <h2> L0005 Valve Controller Commands: </h2>
 
