@@ -38,8 +38,8 @@ command_list = {
                  "ping"     : commands.ping          ,
 				 "connect"  : commands.connect       ,
                  "sol"      : valveController.sol    ,
-                 "ignite"   : engineController.ignite,
                  "power"    : engineController.power ,
+                 "ignite"   : hw_commands.ignite     ,
                  "flash"    : hw_commands.flash      ,
                  "sensor"   : hw_commands.sensor
                 }

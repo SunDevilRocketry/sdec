@@ -1046,6 +1046,341 @@ def flash(Args, serialObj):
 		print("Error: unknown option passed to connect function")	
 		commands.error_msg()
 		return serialObj
+# sensor # 
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		ignite                                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		issue the ignition signal to the controller or display                     #
+#                                                                                  #
+####################################################################################
+def ignite(Args, serialObj):
+
+	################################################################################
+	# Local Variables                                                              #
+	################################################################################
+
+	# Subcommand Dictionary
+	# Options Dictionary
+	ignite_inputs = { 
+                    'fire'  : {},
+                    'main'  : {},
+                    'drogue': {},
+                    'cont'  : {},
+                    'help'  : {}
+                    }
+    
+	# Maximum number of arguments
+	max_args = 1
+
+	# Supported boards
+	supported_boards = [
+		                controller_names[2], # Engine controller rev 4
+						controller_names[3]  # Flight computer rev 1
+	                   ]
+
+	# Command type -- subcommand function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\x20' 
+
+	# Subcommand codes
+	ignite_fire_code     = b'\x01'
+	ignite_cont_code     = b'\x02'
+	ignite_main_code     = b'\x03'
+	ignite_drogue_code   = b'\x04'
+
+	# Response codes, correspond to enum values in ignition.h
+	ignite_success_code            = b'\x41'
+	ignite_fire_fail_ematch_code   = b'\x42'
+	ignite_fire_fail_power_code    = b'\x43'
+	ignite_fire_fail_code          = b'\x44'
+	ignite_main_fail_switch_code   = b'\x45'
+	ignite_main_fail_cont_code     = b'\x46'
+	ignite_main_fail_code          = b'\x47'
+	ignite_drogue_fail_switch_code = b'\x45'
+	ignite_drogue_fail_cont_code   = b'\x48'
+	ignite_drogue_fail_code        = b'\x49'
+
+	################################################################################
+	# Basic Inputs Parsing                                                         #
+	################################################################################
+
+	parse_check = commands.parseArgs(
+                                    Args,
+                                    max_args,
+                                    ignite_inputs,
+                                    command_type 
+                                    )
+
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set subcommand
+	user_subcommand = Args[0]
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Controller Connection
+	if ( ( not (serialObj.controller in supported_boards) ) and 
+	     ( user_subcommand != "help"                      ) ):
+		print("Error: The ignite command requires a valid " + 
+              "serial connection to an ignition compatible controller "  + 
+              "device." )
+		print( "Supported boards: " )
+		for board in supported_boards:
+			print( "\t" + board )
+		print( "Run the \"connect\" command to establish a valid connection.")
+		return serialObj
+
+	# Engine controller commands check
+	if ( user_subcommand == "fire" ):
+		if ( not ( "Engine Controller" in serialObj.controller ) ):
+			print( "Error: the ignite fire command requires a connection " +
+			        "to an engine controller device. Run the \"connect\" " +
+					"command to setup a connection. " )
+			return serialObj
+
+	# Flight computer commands check
+	if ( ( user_subcommand == "main" ) or ( user_subcommand == "drogue" ) ):
+		if ( not ( "Flight Computer" in serialObj.controller ) ):
+			print( "Error: the ignite main and ignite drogue commands " + 
+			       "require a connection to a flight computer device. " + 
+				   "Run the \"connect\" command to setup a connection.")
+			return serialObj
+
+	################################################################################
+	# Subcommand: ignite help                                                      #
+	################################################################################
+	if (user_subcommand == "help"):
+		commands.display_help_info('ignite')
+		return serialObj
+
+	################################################################################
+	# Subcommand: ignite fire                                                      #
+	################################################################################
+	elif (user_subcommand == "fire"):
+
+		# Send ignite opcode
+		serialObj.sendByte(opcode)
+
+		# Send subcommand code
+		serialObj.sendByte(ignite_fire_code)
+
+		# Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Display ignition status
+
+        # Succesful ignition
+		if (ign_status == ignite_success_code):
+			print("Ignition successful")
+
+		# No response code received
+		elif (ign_status == b''):
+			print('Ignition unsuccessful. No response ' +
+				  'code recieved from engine controller' )
+
+        # No continuity in ematch and/or arming switch
+		elif (ign_status == ignite_fire_fail_ematch_code):
+			print('Ignition unsuccessful. No continuity ' +
+				  'in ematch and/or arming switch. '      +
+				  'Ensure an ematch is connected and the '+
+				  'switch is armed')
+
+		# No power supply
+		elif (ign_status == ignite_fire_fail_power_code):
+			print('Ignition unsuccessful. The device is ' +
+                  'currently being powered via USB. The ' +
+                  'engine controller must be powered via '+
+                  'the 12V jack or power connector to '   +
+                  'trigger to light the ematch.' ) 
+
+        # Ematch continuity is not disrupted after asserting
+        # the ignition signal
+		elif (ign_status == ignite_fire_fail_code):
+			print('Ignition unsuccessful. The ignite signal ' +
+                  'was asserted but the ematch was not lit')
+
+		else:
+			print("Ignition unsuccessful. Unrecognized ignition status code.")
+
+		# Exit
+		return serialObj
+
+	################################################################################
+	# Subcommand: ignite  main                                                     #
+	################################################################################
+	elif (user_subcommand == "main"):
+
+		# Send ignite opcode
+		serialObj.sendByte(opcode)
+
+		# Send subcommand code
+		serialObj.sendByte(ignite_main_code)
+
+		# Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Display ignition status
+
+        # Succesful ignition
+		if (ign_status == ignite_success_code):
+			print("Ignition successful")
+
+		# No response code received
+		elif (ign_status == b''):
+			print('Ignition unsuccessful. No response ' +
+				  'code recieved from flight computer.' )
+
+        # No switch continuity 
+		elif (ign_status == ignite_main_fail_switch_code):
+			print('Ignition unsuccessful. No continuity ' +
+				  'in arming switch. Ensure the '+
+				  'switch is armed.')
+
+		# No ematch continuity
+		elif ( ign_status == ignite_main_fail_cont_code ):
+			print( 'Ignition unsuccessful. No continuity in ematch. Ensure an ' +
+			       'ematch is connected to the main screw terminals ')
+
+        # Ematch continuity is not disrupted after asserting
+        # the ignition signal
+		elif (ign_status == ignite_main_fail_code):
+			print('Ignition unsuccessful. The ignite signal ' +
+                  'was asserted but the ematch was not lit')
+
+		else:
+			print("Ignition unsuccessful. Unrecognized ignition status code.")
+
+		# Exit
+		return serialObj
+
+	################################################################################
+	# Subcommand: ignite  drogue                                                   #
+	################################################################################
+	elif (user_subcommand == "drogue"):
+
+		# Send ignite opcode
+		serialObj.sendByte(opcode)
+
+		# Send subcommand code
+		serialObj.sendByte(ignite_drogue_code)
+
+		# Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Display ignition status
+
+        # Succesful ignition
+		if (ign_status == ignite_success_code):
+			print("Ignition successful")
+
+		# No response code received
+		elif (ign_status == b''):
+			print('Ignition unsuccessful. No response ' +
+				  'code recieved from flight computer.' )
+
+        # No switch continuity 
+		elif (ign_status == ignite_drogue_fail_switch_code):
+			print('Ignition unsuccessful. No continuity ' +
+				  'in arming switch. Ensure the '+
+				  'switch is armed.')
+
+		# No ematch continuity
+		elif ( ign_status == ignite_drogue_fail_cont_code ):
+			print( 'Ignition unsuccessful. No continuity in ematch. Ensure an ' +
+			       'ematch is connected to the drogue screw terminals ')
+
+        # Ematch continuity is not disrupted after asserting
+        # the ignition signal
+		elif (ign_status == ignite_drogue_fail_code):
+			print('Ignition unsuccessful. The ignite signal ' +
+                  'was asserted but the ematch was not lit')
+
+		else:
+			print("Ignition unsuccessful. Unrecognized ignition status code.")
+
+		# Exit
+		return serialObj
+
+	################################################################################
+	# Subcommand: ignite cont                                                      #
+	################################################################################
+	elif (user_subcommand == "cont"):
+
+		# Send ignite opcode
+		serialObj.sendByte(opcode)
+
+		# Send subcommand code
+		serialObj.sendByte(ignite_cont_code)
+
+        # Get ignition status code
+		ign_status = serialObj.readByte()
+
+		# Parse response code
+		ign_status_int = ord(ign_status)
+
+		# Display continuity statuses
+		if ( "Engine Controller" in serialObj.controller ):
+
+			# Ematch and switch continuity
+			if ((ign_status_int >> 3) & 1):
+				print("Ematch and Switch:     Connected")
+			else: 
+				print("Ematch and Switch:     Disconnected")
+
+			# Solid propellant wire continuity
+			if ((ign_status_int >> 4) & 1):
+				print("Solid Propellant Wire: Connected")
+			else: 
+				print("Solid Propellant Wire: Disconnected")
+
+			# Nozzle wire continuity
+			if ((ign_status_int >> 5) & 1):
+				print("Nozzle Wire:           Connected")
+			else: 
+				print("Nozzle Wire:           Disconnected")
+
+		elif ( "Flight Computer" in serialObj.controller ):
+
+			# Switch continuity
+			if ((ign_status_int >> 0) & 1):
+				print("Switch:        Connected")
+			else: 
+				print("Switch:        Disconnected")
+
+			# Main ematch continuity
+			if ((ign_status_int >> 1) & 1):
+				print("Main Ematch:   Connected")
+			else: 
+				print("Main Ematch:   Disconnected")
+
+			# Nozzle wire continuity
+			if ((ign_status_int >> 2) & 1):
+				print("Drogue Ematch: Connected")
+			else: 
+				print("Drogue Ematch: Disconnected")
+
+        # Exit
+		return serialObj
+
+	################################################################################
+    # Unknown Subcommand                                                           #
+	################################################################################
+	else:
+		print("Error: unknown subcommand passed to ignite " +
+              "function")	
+		commands.error_msg()
+		return serialObj
 
 
 ###################################################################################
