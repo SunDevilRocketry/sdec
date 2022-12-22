@@ -55,7 +55,7 @@ command_list = {
 #                                                             #
 ###############################################################
 class terminalData:
-    def __init__(self):
+    def __init__( self ):
         self.baudrate            = None
         self.comport             = None
         self.timeout             = None
@@ -66,19 +66,19 @@ class terminalData:
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):
-        self.baudrate = baudrate 
-        self.comport = comport 
-        self.timeout = timeout 
-        self.serialObj.baudrate = self.baudrate
-        self.serialObj.port = self.comport
-        self.serialObj.timeout = self.timeout
-        self.config_status = True
+        self.baudrate            = baudrate 
+        self.comport             = comport 
+        self.timeout             = timeout 
+        self.serialObj.baudrate  = self.baudrate
+        self.serialObj.port      = self.comport
+        self.serialObj.timeout   = self.timeout
+        self.config_status       = True
 
     # Configure Serial port from class attributes
     def configComport(self):
         self.serialObj.baudrate = self.baudrate
-        self.serialObj.port = self.comport
-        self.serialObj.timeout = self.timeout
+        self.serialObj.port     = self.comport
+        self.serialObj.timeout  = self.timeout
 
     # Open the serial port
     # returns a boolean variable indicating whether the port
@@ -208,12 +208,12 @@ terminalSerObj = terminalData()
 
 while(True):
     # Command prompt
-    userin = input("SDR>> ")
+    userin         = input("SDR>> ")
 
     # Parse command
-    userin_clean = parseInput(userin)
-    userCommand = userin_clean[0]
-    userArgs = userin_clean[1:]
+    userin_clean   = parseInput(userin)
+    userCommand    = userin_clean[0]
+    userArgs       = userin_clean[1:]
 
     # Execute Command
     terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
