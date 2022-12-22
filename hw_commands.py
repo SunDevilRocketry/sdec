@@ -258,6 +258,25 @@ def conv_raw_sensor_readouts( controller, raw_readouts ):
 
 
 ####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		get_sensor_readouts                                                        #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a byte array into sensor readouts and converts digital readout    #
+#                                                                                  #
+####################################################################################
+def get_sensor_readouts( controller, sensor_bytes ):
+
+	# Convert to integer form
+	int_readouts = get_raw_sensor_readouts( controller, sensor_bytes )
+
+	# Make conversions
+	readouts     = conv_raw_sensor_readouts( controller, int_readouts )
+	return readouts
+
+
+####################################################################################
 # Commands                                                                         #
 ####################################################################################
 
@@ -397,15 +416,10 @@ def sensor( Args, serialObj ):
             sensor_bytes_list.append( serialObj.readByte() )
 
 		# Get readouts from byte array
-        raw_sensor_readouts = get_raw_sensor_readouts( 
-				                        serialObj.controller,
-                                        sensor_bytes_list 
-                                                     )
-		# Convert raw readouts
-        sensor_readouts     = conv_raw_sensor_readouts(
-                                        serialObj.controller,
-                                        raw_sensor_readouts
-                                                      )
+        sensor_readouts = get_sensor_readouts( 
+			                                serialObj.controller, 
+											sensor_bytes_list
+		                                     )
 
 		# Display Sensor readouts
         for sensor in sensor_readouts:
