@@ -1,50 +1,52 @@
-############################################################### 
-#                                                             # 
-# sensor_conv.py -- Functions for converting raw sensor data  # 
-#                   from integer format                       #
-# Author: Colton Acosta                                       # 
-# Date: 11/25/2022                                            #
-# Sun Devil Rocketry Avionics                                 #
-#                                                             #
-###############################################################
+####################################################################################
+#                                                                                  # 
+# sensor_conv.py -- Functions for converting raw sensor data                       # 
+#                   from integer format                                            #
+# Author: Colton Acosta                                                            # 
+# Date: 11/25/2022                                                                 #
+# Sun Devil Rocketry Avionics                                                      #
+#                                                                                  #
+####################################################################################
 
 
-###############################################################
-# Standard Imports                                            # 
-###############################################################
+####################################################################################
+# Standard Imports                                                                 # 
+####################################################################################
 
 
-###############################################################
-# Procedures                                                  #
-###############################################################
+####################################################################################
+# Procedures                                                                       #
+####################################################################################
 
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		adc_readout_to_voltage                                #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		Converts a sensor readout from the ADC to a voltage   #
-#       in floating point format                              #
-#                                                             #
-###############################################################
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		adc_readout_to_voltage                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a sensor readout from the ADC to a voltage                        #
+#       in floating point format                                                   #
+#                                                                                  #
+####################################################################################
 def adc_readout_to_voltage( readout ):
 	num_bits     = 16
 	voltage_step = 3.3/float(2**(num_bits))
 	return readout*voltage_step 
 
+## adc_readout_to_voltage ##
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		imu_accel                                             #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		Converts a sensor readout from the IMU accelerometer  #
-#       to the m/s^2 acceleration                             #
-#                                                             #
-###############################################################
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		imu_accel                                                                  #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a sensor readout from the IMU accelerometer                       #
+#       to the m/s^2 acceleration                                                  #
+#                                                                                  #
+####################################################################################
 def imu_accel( readout ):
 	
 	# Convert from 16 bit unsigned to 16 bit signed
@@ -63,17 +65,19 @@ def imu_accel( readout ):
 	# Final conversion
 	return accel_step*signed_int 
 
+## imu_accel ##
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		imu_gryo                                              #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		Converts a sensor readout from the IMU gryoscope      #
-#       to the degree/s angular rate                          #
-#                                                             #
-###############################################################
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		imu_gryo                                                                   #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a sensor readout from the IMU gryoscope                           #
+#       to the degree/s angular rate                                               #
+#                                                                                  #
+####################################################################################
 def imu_gryo( readout ):
 	
 	# Convert from 16 bit unsigned to 16 bit signed
@@ -91,17 +95,19 @@ def imu_gryo( readout ):
 	# Final conversion
 	return float(signed_int)/( gyro_sensitivity ) 
 
+## imu_gryo ##
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		baro_temp                                             #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		Converts a sensor readout from the baro temperature   #
-#       sensor from the raw integer format                    #
-#                                                             #
-###############################################################
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		baro_temp                                                                  #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a sensor readout from the baro temperature sensor from the raw    #
+#       integer format                                                             #
+#                                                                                  #
+####################################################################################
 def baro_temp( readout ):
 	
 	# Convert to degrees C 
@@ -110,7 +116,25 @@ def baro_temp( readout ):
 	# Final conversion
 	return float(readout)*baro_temp_setting
 
+## baro_temp ##
 
-###############################################################
-# END OF FILE                                                 # 
-###############################################################
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		time_millis_to_sec                                                         #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts an integer representing milliseconds to a floating point seconds  #
+#       value                                                                      #
+#                                                                                  #
+####################################################################################
+def time_millis_to_sec( time_millis ):
+	return float( time_millis )/1000.0
+
+## time_millis_to_sec ##
+
+
+####################################################################################
+# END OF FILE                                                                      # 
+####################################################################################

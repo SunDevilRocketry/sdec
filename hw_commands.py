@@ -28,7 +28,7 @@ import commands
 # Global Variables                                                                 #
 ####################################################################################
 
-default_timeout = 5 # 1 second timeout
+default_timeout = 100 # 1 second timeout
 
 # Controller identification codes
 controller_codes = [ 
@@ -117,6 +117,15 @@ sensor_sizes = {
                            "temp" : 4 
 						   }
                }
+
+# Size of a frame of data in flash memory
+sensor_frame_sizes = {
+                      # Engine Controller rev 4.0
+                      controller_names[2]: 44,
+
+				      # Flight Computer rev 1.0
+				      controller_names[3]: 32
+                     }
 
 # Sensor raw readout conversion functions
 sensor_conv_funcs = {
@@ -274,6 +283,69 @@ def get_sensor_readouts( controller, sensor_bytes ):
 	# Make conversions
 	readouts     = conv_raw_sensor_readouts( controller, int_readouts )
 	return readouts
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		get_sensor_frame_bytes                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#		Obtains a frame of sensor data from a controller's flash in byte format    #
+#                                                                                  #
+####################################################################################
+def get_sensor_frame_bytes( serialObj ):
+
+	# Determine the size of the frame
+	frame_size = sensor_frame_sizes[serialObj.controller]
+
+	# Get bytes
+	rx_bytes = serialObj.readBytes( frame_size )
+	return rx_bytes
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		get_sensor_frame                                                           #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#		Converts a list of sensor frames into measurements                         #
+#                                                                                  #
+####################################################################################
+def get_sensor_frames( controller, sensor_frames_bytes ):
+
+	# Convert to integer format
+	sensor_frames_int = []
+	for frame in sensor_frames_bytes:
+		sensor_frame_int = []
+		for sensor_byte in frame:
+			sensor_frame_int.append( ord( sensor_byte ) )
+		sensor_frames_int.append( sensor_frame_int )
+
+	# Combine bytes from integer data and convert
+	sensor_frames = []
+	for int_frame in sensor_frames_int:
+		sensor_frame = []
+		# Time of frame measurement
+		time = ( ( int_frame[0]       ) + 
+		         ( int_frame[1] << 8  ) + 
+				 ( int_frame[2] << 16 ) +
+				 ( int_frame[3] << 24 ) )
+		# Conversion to seconds
+		sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
+
+		# Sensor readouts
+		sensor_frame_dict = {}
+		index = 4
+		for i, sensor in enumerate( sensor_sizes[ controller ] ):
+			measurement = 0
+			for byte_num in range( sensor_sizes[controller][sensor] ):
+				measurement += ( int_frame[index + byte_num] << 8*byte_num )
+			sensor_frame_dict[sensor] = measurement
+			index += sensor_sizes[controller][sensor]
+		sensor_frames.append( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
+	return sensor_frames
 
 
 ####################################################################################
@@ -967,78 +1039,21 @@ def flash(Args, serialObj):
 		# Recieve Data in 32 byte blocks
 		# Flash contains 4096 blocks of data
 		rx_byte_blocks = []
-		for i in range( 4096 ):
+		for i in range( 16_384 ):
 			print( "Reading block " + str(i) + "..."  )
-			rx_byte_blocks.append( serialObj.readBytes( 32 ) )
+			rx_sensor_frame_block = get_sensor_frame_bytes( serialObj )
+			rx_byte_blocks.append( rx_sensor_frame_block )
 
 		# Recieve the status byte from the engine controller
 		return_code = serialObj.readByte()
 
-
-		# Convert the data into integer format
-		rx_int_blocks = []
-		for byte_block in rx_byte_blocks:
-			rx_int_block = []
-			for rx_byte in byte_block:
-				rx_int_block.append( ord(rx_byte) )
-			rx_int_blocks.append( rx_int_block )
-
-		# Combine bytes from the integer data
-		rx_comb_blocks = []
-		for int_block in rx_int_blocks:
-			rx_comb_block = []
-			time = ( ( int_block[0]       ) + 
-                     ( int_block[1] << 8  ) + 
-					 ( int_block[2] << 16 ) + 
-                     ( int_block[3] << 24 ) )
-			imu_a_x = ( ( int_block[4] ) + 
-                        ( int_block[5] << 8 ) )
-			imu_a_y = ( ( int_block[6] ) + 
-                        ( int_block[7] << 8 ) )
-			imu_a_z = ( ( int_block[8] ) + 
-                        ( int_block[9] << 8 ) )
-			imu_g_x = ( ( int_block[10] ) + 
-                        ( int_block[11] << 8 ) )
-			imu_g_y = ( ( int_block[12] ) + 
-                        ( int_block[13] << 8 ) )
-			imu_g_z = ( ( int_block[14] ) + 
-                        ( int_block[15] << 8 ) )
-			imu_m_x = ( ( int_block[16] ) + 
-                        ( int_block[17] << 8 ) )
-			imu_m_y = ( ( int_block[18] ) + 
-                        ( int_block[19] << 8 ) )
-			imu_m_z = ( ( int_block[20] ) + 
-                        ( int_block[21] << 8 ) )
-			imu_temp = ( ( int_block[22] ) + 
-                         ( int_block[23] << 8 ) )
-			baro_temp = ( ( int_block[24]       ) + 
-                          ( int_block[25] << 8  ) + 
-                          ( int_block[26] << 16 ) + 
-                          ( int_block[27] << 24 )  )
-			baro_press = ( ( int_block[28] ) + 
-                           ( int_block[29] << 8  ) + 
-                           ( int_block[30] << 16 ) + 
-                           ( int_block[31] << 24 ) )
-			rx_comb_block.append( time )
-			rx_comb_block.append( imu_a_x )
-			rx_comb_block.append( imu_a_y )
-			rx_comb_block.append( imu_a_z )
-			rx_comb_block.append( imu_g_x )
-			rx_comb_block.append( imu_g_y )
-			rx_comb_block.append( imu_g_z )
-			rx_comb_block.append( imu_m_x )
-			rx_comb_block.append( imu_m_y )
-			rx_comb_block.append( imu_m_z )
-			rx_comb_block.append( imu_temp )
-			rx_comb_block.append( baro_temp )
-			rx_comb_block.append( baro_press )
-			rx_comb_blocks.append( rx_comb_block )
-			
+		# Convert the data from bytes to measurement readouts
+		sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
 
 		# Export the data to txt files
-		with open( "output/int_data.txt", 'w' ) as file:
-			for rx_comb_block in rx_comb_blocks:
-				for val in rx_comb_block:
+		with open( "output/sensor_data.txt", 'w' ) as file:
+			for sensor_frame in sensor_frames:
+				for val in sensor_frame:
 					file.write( str( val ) )
 					file.write( '\t')
 				file.write( '\n' )	
