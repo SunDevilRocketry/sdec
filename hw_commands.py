@@ -344,7 +344,7 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
 				measurement += ( int_frame[index + byte_num] << 8*byte_num )
 			sensor_frame_dict[sensor] = measurement
 			index += sensor_sizes[controller][sensor]
-		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values )
+		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
 		for val in sensor_vals_list:
 			sensor_frame.append( val )
 		sensor_frames.append( sensor_frame )
