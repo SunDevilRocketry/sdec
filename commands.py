@@ -26,7 +26,7 @@ import sensor_conv
 # Global Variables                                                                 #
 ####################################################################################
 
-default_timeout = 1 # 1 second timeout
+default_timeout = 100 # 1 second timeout
 
 # Controller identification codes
 controller_codes = [ 
