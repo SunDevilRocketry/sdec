@@ -888,7 +888,7 @@ def flash(Args, serialObj):
 		# Check if flash chip has writing operations enabled
 		if (not serialObj.flash_write_enabled
             and not (user_options[0] == '-h')):
-			print("Error: Flash write has not been enabled."  +
+			print("Error: Flash write has not been enabled. " +
                   "Run flash write enable to enable writing " +
                   "to the flash chip")
 			return serialObj
