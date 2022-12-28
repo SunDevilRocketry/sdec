@@ -111,12 +111,38 @@ def imu_gryo( readout ):
 def baro_temp( readout ):
 	
 	# Convert to degrees C 
-	baro_temp_setting = 0.0012 # degrees C/ LSB 
+	baro_temp_setting = (125.0/(2**(16) - 1))# degrees C/ LSB 
+	baro_temp_offset  = -40
 	
 	# Final conversion
-	return float(readout)*baro_temp_setting
+	return float(readout)*baro_temp_setting + baro_temp_offset
 
 ## baro_temp ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		baro_press                                                                 #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a sensor readout from the baro pressure sensor from the raw       #
+#       integer format                                                             #
+#                                                                                  #
+####################################################################################
+def baro_press( readout ):
+	
+	# Convert to Pa 
+	baro_max_press     = 1250.0*100.0                     # Pa
+	baro_min_press     = 300.0*100.0                      # Pa
+	baro_press_range   = baro_max_press - baro_min_press  # Pa
+	baro_press_setting = (baro_press_range/(2**(16) - 1)) # Pa/LSB 
+	baro_press         = float(readout)*baro_press_setting + baro_min_press # Pa
+	
+	# Convert to psi 
+	return baro_press*(0.000145038) 
+
+## baro_press ##
 
 
 ####################################################################################

@@ -176,17 +176,17 @@ sensor_conv_funcs = {
                            },
 				  # Flight Computer rev 1.0
 				  controller_names[3]: {
-						   "accX" : sensor_conv.imu_accel,
-                           "accY" : sensor_conv.imu_accel,
-                           "accZ" : sensor_conv.imu_accel,
-                           "gryoX": sensor_conv.imu_gryo,
-                           "gryoY": sensor_conv.imu_gryo,
-                           "gryoZ": sensor_conv.imu_gryo,
-                           "magX" : None,
-                           "magY" : None,
-                           "magZ" : None,
-                           "imut" : None,
-                           "pres" : None,
+						   "accX" : sensor_conv.imu_accel ,
+                           "accY" : sensor_conv.imu_accel ,
+                           "accZ" : sensor_conv.imu_accel ,
+                           "gryoX": sensor_conv.imu_gryo  ,
+                           "gryoY": sensor_conv.imu_gryo  ,
+                           "gryoZ": sensor_conv.imu_gryo  ,
+                           "magX" : None                  ,
+                           "magY" : None                  ,
+                           "magZ" : None                  ,
+                           "imut" : None                  ,
+                           "pres" : sensor_conv.baro_press,
                            "temp" : sensor_conv.baro_temp 
 						   }
 	                }
@@ -221,7 +221,7 @@ def get_bit( num, bit_index ):
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 # 		Returns an integer corresponding the hex number passed into the function   #
-#       as a byte array. Assumes most significant bytes are first                  #
+#       as a byte array. Assumes least significant bytes are first                 #
 #                                                                                  #
 ####################################################################################
 def byte_array_to_int( byte_array ):
@@ -230,7 +230,7 @@ def byte_array_to_int( byte_array ):
 	num_bytes = len( byte_array )
 	for i, byte in enumerate( byte_array ):
 		int_val = int.from_bytes( byte, 'big')
-		int_val = int_val << 8*( (num_bytes-1) - i )
+		int_val = int_val << 8*i
 		result += int_val
 	return result
 # byte_array_to_int #
@@ -593,7 +593,7 @@ def sensor( Args, serialObj ):
 													sensor_bytes_list
 			                                       )
             for sensor in sensor_readouts:
-                print( sensor + ": " + str( sensor_readouts[sensor] ) + '\t', end='' )
+                print( sensor + ": {:.3f}".format( sensor_readouts[sensor] ) + '\t', end='' )
             print()
 			# Pause for readibility
             serialObj.sendByte( sensor_poll_cmds['WAIT'] )
