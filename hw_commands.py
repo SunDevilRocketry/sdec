@@ -438,8 +438,10 @@ def sensor( Args, serialObj ):
 	# Sensor poll codes
     sensor_poll_codes = sensor_codes[serialObj.controller]
     sensor_poll_cmds  = {
-						'START'    : b'\xF3',
+						 'START'   : b'\xF3',
                          'REQUEST' : b'\x51',
+						 'WAIT'    : b'\x44',
+						 'RESUME'  : b'\xEF',
 						 'STOP'    : b'\x74'
 	                    }
 
@@ -593,6 +595,10 @@ def sensor( Args, serialObj ):
             for sensor in sensor_readouts:
                 print( sensor + ": " + str( sensor_readouts[sensor] ) + '\t', end='' )
             print()
+			# Pause for readibility
+            serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+            time.sleep(0.2)
+            serialObj.sendByte( sensor_poll_cmds['RESUME'])
             timeout_ctr += 1
 
 		# Stop transmission	
