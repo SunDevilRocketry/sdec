@@ -118,6 +118,38 @@ sensor_sizes = {
 						   }
                }
 
+# Sensor poll codes
+sensor_codes = {
+                  # Engine Controller rev 4.0
+                  controller_names[2]: {
+						   "pt0": b'\x00',
+						   "pt1": b'\x01',
+						   "pt2": b'\x02',
+						   "pt3": b'\x03',
+						   "pt4": b'\x04',
+						   "pt5": b'\x05',
+						   "pt6": b'\x06',
+						   "pt7": b'\x07',
+						   "tc ": b'\x08',
+						   "lc ": b'\x09' 
+                           },
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+						   "accX" : b'\x00',
+                           "accY" : b'\x01',
+                           "accZ" : b'\x02',
+                           "gryoX": b'\x03',
+                           "gryoY": b'\x04',
+                           "gryoZ": b'\x05',
+                           "magX" : b'\x06',
+                           "magY" : b'\x07',
+                           "magZ" : b'\x08',
+                           "imut" : b'\x09',
+                           "pres" : b'\x0A',
+                           "temp" : b'\x0B' 
+						   }
+			   }
+
 # Size of a frame of data in flash memory
 sensor_frame_sizes = {
                       # Engine Controller rev 4.0
@@ -214,7 +246,7 @@ def byte_array_to_int( byte_array ):
 #       readouts in integer format                                                 #
 #                                                                                  #
 ####################################################################################
-def get_raw_sensor_readouts( controller, sensor_bytes ):
+def get_raw_sensor_readouts( controller, sensors, sensor_bytes ):
 
 	# Sensor readout sizes
 	sensor_size_dict = sensor_sizes[controller]
@@ -227,7 +259,7 @@ def get_raw_sensor_readouts( controller, sensor_bytes ):
 	readouts = {}
 	
 	# Convert each sensor readout 
-	for sensor in sensor_size_dict:
+	for sensor in sensors:
 		size             = sensor_size_dict[sensor]
 		readout_bytes    = sensor_bytes[index:index+size]
 		int_val          = byte_array_to_int( readout_bytes )
@@ -247,7 +279,7 @@ def get_raw_sensor_readouts( controller, sensor_bytes ):
 # 		Converts raw sensor readouts in integer format into the appropriate format #
 #                                                                                  #
 ####################################################################################
-def conv_raw_sensor_readouts( controller, raw_readouts ):
+def conv_raw_sensor_readouts( controller, sensors, raw_readouts ):
 
 	# Conversion functions
 	conv_funcs = sensor_conv_funcs[controller]
@@ -256,7 +288,7 @@ def conv_raw_sensor_readouts( controller, raw_readouts ):
 	readouts = {}
 
 	# Convert each readout
-	for sensor in conv_funcs:
+	for sensor in sensors:
 		if ( conv_funcs[sensor] != None ):
 			readouts[sensor] = conv_funcs[sensor]( raw_readouts[sensor] )
 		else:
@@ -275,13 +307,13 @@ def conv_raw_sensor_readouts( controller, raw_readouts ):
 # 		Converts a byte array into sensor readouts and converts digital readout    #
 #                                                                                  #
 ####################################################################################
-def get_sensor_readouts( controller, sensor_bytes ):
+def get_sensor_readouts( controller, sensors, sensor_bytes ):
 
 	# Convert to integer form
-	int_readouts = get_raw_sensor_readouts( controller, sensor_bytes )
+	int_readouts = get_raw_sensor_readouts( controller, sensors, sensor_bytes )
 
 	# Make conversions
-	readouts     = conv_raw_sensor_readouts( controller, int_readouts )
+	readouts     = conv_raw_sensor_readouts( controller, sensors, int_readouts )
 	return readouts
 
 
@@ -385,7 +417,7 @@ def sensor( Args, serialObj ):
                              }
                     }
 
-    # Maximum number of args
+    # Maximum number of command arguments 
     max_args = 7
 
 	# Command type -- subcommand function
@@ -399,6 +431,23 @@ def sensor( Args, serialObj ):
                        'dump' : b'\x01',
                        'poll' : b'\x02'
                        }
+
+    # Complete list of sensor names/numbers 
+    sensor_numbers = list( controller_sensors[serialObj.controller].keys() )
+
+	# Sensor poll codes
+    sensor_poll_codes = sensor_codes[serialObj.controller]
+    sensor_poll_cmds  = {
+						'START'    : b'\xF3',
+                         'REQUEST' : b'\x51',
+						 'STOP'    : b'\x74'
+	                    }
+
+	# Timeout for sensor poll
+    sensor_poll_timeout = 100
+
+	# Size of sensor readouts
+    readout_sizes = sensor_sizes[serialObj.controller]
 
     # Lists of sensor data
     sensor_bytes_list = []
@@ -463,6 +512,12 @@ def sensor( Args, serialObj ):
                           "codes." )
                     return serialObj
 
+			# Sensor numbers are valid, determine number of bytes needed for 
+			# selected sensors
+            sensor_poll_frame_size = 0 
+            for sensor_num in user_sensor_nums:
+                sensor_poll_frame_size += readout_sizes[sensor_num] 
+
     ################################################################################
     # Subcommand: sensor help                                                      #
     ################################################################################
@@ -494,6 +549,7 @@ def sensor( Args, serialObj ):
 		# Get readouts from byte array
         sensor_readouts = get_sensor_readouts( 
 			                                serialObj.controller, 
+											sensor_numbers      ,
 											sensor_bytes_list
 		                                     )
 
@@ -501,16 +557,47 @@ def sensor( Args, serialObj ):
         for sensor in sensor_readouts:
             print( sensor + ": " + str( sensor_readouts[sensor] ) )
 			
-
         return serialObj
 
     ################################################################################
     # Subcommand: sensor poll                                                      #
     ################################################################################
     elif ( user_subcommand == "poll" ):
-        print( "Error: sensor poll has not yet been added " +
-               "to the sdec terminal by SDR developers. "   + 
-               "Try again later or contact SDR for assistance" )
+
+		# Send command opcode
+        serialObj.sendByte( opcode )
+
+		# Send sensor poll subcommand code
+        serialObj.sendByte( subcommand_codes[user_subcommand] )
+
+		# Tell the controller how many sensors to use
+        serialObj.sendByte( num_sensors.to_bytes( 1, 'big' ) )
+
+		# Send the controller the sensor codes
+        for sensor_num in user_sensor_nums:
+            serialObj.sendByte( sensor_poll_codes[sensor_num] )
+		
+		# Start the sensor poll sequence
+        serialObj.sendByte( sensor_poll_cmds['START'] )
+
+		# Receive and display sensor readouts 
+        timeout_ctr = 0
+        while ( timeout_ctr <= sensor_poll_timeout ):
+            serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+            sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+            sensor_readouts   = get_sensor_readouts(
+				                                    serialObj.controller, 
+                                                    user_sensor_nums    ,
+													sensor_bytes_list
+			                                       )
+            for sensor in sensor_readouts:
+                print( sensor + ": " + str( sensor_readouts[sensor] ) + '\t', end='' )
+            print()
+            timeout_ctr += 1
+
+		# Stop transmission	
+        serialObj.sendByte( sensor_poll_cmds['STOP'] )
+
         return serialObj
 
     ################################################################################
