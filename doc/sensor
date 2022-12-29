@@ -6,8 +6,9 @@ SUBCOMMANDS:
 	sensor dump: Acquires readings for all onboard sensors once and 
                  displays readings 
 	sensor poll: Displays continuous sensor readings in real-time 
+    sensor plot: Plots data-logger data produced by flash extract
 	sensor list: Lists all available sensors for the board 
-			     currently connected 
+                 currently connected 
 	sensor help: Displays subcommand information
 
 OPTIONS:

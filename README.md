@@ -97,6 +97,7 @@ connection to a Sun Devil Rocketry board.</p>
 <p>Subcommands: </p>
 <p>dump: Polls all onboard sensors and displays readings in console</p>
 <p>poll: Displays readings from a specified sensor(s) in real time</p>
+<p>plot: Plots data-logger data produced by flash extract </p>
 <p>list: Displays all sensors and associated codes for the currently connected board</p>
 <p>help: Shows supported subcommands, options, and descriptions</p>
 <p>Options:

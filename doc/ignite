@@ -3,7 +3,9 @@ IGNITE:
 USAGE: ignite [SUBCOMMAND]
 
 SUBCOMMANDS:
-	ignite fire: Fires the engine controller's ignition ematch
-	ignite cont: Displays continuity information on the engine controller's ignition 
-                 system 
-	ignite help: Displays subcommand information
+	ignite fire   : Fires the engine controller's ignition ematch
+	ignite cont   : Displays continuity information on the engine controller's
+	                or flight computer's ignition system 
+	ignite main   : Ignites the main parachute ejection ematch
+	ignite drogue : Ignites the drogue parachute ejection ematch
+	ignite help   : Displays subcommand information

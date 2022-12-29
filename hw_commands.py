@@ -596,6 +596,7 @@ def sensor( Args, serialObj ):
         commands.display_help_info( "sensor" )
         return serialObj
 
+
     ################################################################################
     # Subcommand: sensor dump                                                      #
     ################################################################################

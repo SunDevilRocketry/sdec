@@ -3,17 +3,19 @@ FLASH:
 USAGE: flash [SUBCOMMAND] -[OPTIONS] [INPUTS]
 
 SUBCOMMANDS:
-	flash disable: Disables the flash's write protection
-	               to allow data to be written to the chip 
-	flash enable : Enables the flash's write protection
-	               to make the chip read-only 
-	flash status : Display the contents of the flash status 
-				   register
-	flash write  : Writes data to the flash chip 
-	flash read   : Reads data from the flash chip 
-	flash erase  : Erases the entire flash chip 
-	flash help   : Shows supported subcommands, options, 
-                   and descriptions
+	flash disable : Disables the flash's write protection
+	                to allow data to be written to the chip 
+	flash enable  : Enables the flash's write protection
+	                to make the chip read-only 
+	flash status  : Display the contents of the flash status 
+				    register
+	flash write   : Writes data to the flash chip 
+	flash read    : Reads data from the flash chip 
+	flash erase   : Erases the entire flash chip 
+	flash help    : Shows supported subcommands, options, 
+                    and descriptions
+	flash extract : Extracts all data off the flash memory
+	                chip. Data is stored in text file format
 
 OPTIONS: 
 	-b [BYTE]     : Write byte [BYTE] to flash memory 

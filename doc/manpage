@@ -1,72 +1,75 @@
 Terminal Control Commands:
 
-	clear: clears the terminal window
+    clear: clears the terminal window
 
-	help: displays the terminal control commands
+    help: displays the terminal control commands
 
-	exit: exits the program
+    exit: exits the program
 
-	comports -[OPTIONS] [PORTNAME] [BAUD]: allows the user to connect to a device over USB
-		options: 
-			-c [PORTNAME] [BAUD]: connect to port [PORTNAME] with baudrate [BAUD]
-			-d : disconnect the device currently being used
-			-h : display comports usage information
-			-l : list all available devices
+    comports -[OPTIONS] [PORTNAME] [BAUD]: allows the user to connect to a device over USB
+        options: 
+            -c [PORTNAME] [BAUD]: connect to port [PORTNAME] with baudrate [BAUD]
+            -d : disconnect the device currently being used
+            -h : display comports usage information
+            -l : list all available devices
 
-	ping -[OPTIONS] [TIMEOUT]: transmits a byte over the serial port and awaits response from board
-		options:
-			-t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
-			-h : display ping options
+    ping -[OPTIONS] [TIMEOUT]: transmits a byte over the serial port and awaits response from board
+        options:
+            -t [TIMEOUT]: set the timeout of the serial connection to [TIMEOUT].
+            -h : display ping options
 
-	connect -[OPTIONS] [INPUTS]: establishes a serial connection with an SDR supported board. A connection
+    connect -[OPTIONS] [INPUTS]: establishes a serial connection with an SDR supported board. A connection
                                  must be established before running any controller-specific commands
-		options:
-			-p [PORT]: establish a connection using serial port [PORT].
-			-h : display connect options
-			-d : disconnect from active serial port
+        options:
+            -p [PORT]: establish a connection using serial port [PORT].
+            -h : display connect options
+            -d : disconnect from active serial port
 
-	sensor [SUBCOMMAND] -[OPTIONS] [INPUTS]
-		subcommands:
-			sensor dump: Acquires readings for all onboard sensors once and 
-						 displays readings 
-			sensor poll: Displays continuous sensor readings in real-time 
-			sensor list: Lists all available sensors for the board 
-						 currently connected 
-			sensor help: Displays subcommand information
+    sensor [SUBCOMMAND] -[OPTIONS] [INPUTS]
+        subcommands:
+            sensor dump: Acquires readings for all onboard sensors once and 
+                         displays readings 
+            sensor poll: Displays continuous sensor readings in real-time 
+            sensor plot: Plots data-logger data produced by flash extract
+            sensor list: Lists all available sensors for the board 
+                         currently connected 
+            sensor help: Displays subcommand information
 
-		options: 
-			-n [SENSOR NUM] : specify a sensor for sensor poll
-			-h : display sensor usage information
+        options: 
+            -n [SENSOR NUM] : specify a sensor for sensor poll
+            -h : display sensor usage information
 
-	sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
-		subcommands:
-			sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
-			sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
-			sol toggle: Changes the solenoid state
-			sol reset: Resets all solenoids to the default state
+    sol [SUBCOMMAND] -[OPTIONS] [INPUTS]: controls solenoid actuation states
+        subcommands:
+            sol on: Asserts the acutate solenoid signal of the MCU to supply power to the solenoid
+            sol off: Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state
+            sol toggle: Changes the solenoid state
+            sol reset: Resets all solenoids to the default state
 
-		options: 
-			-n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
-			-h : display solenoid options
+        options: 
+            -n [SOLENOID] : subcommand acts on solenoid [SOLENOID] 
+            -h : display solenoid options
 
-	ignite [SUBCOMMAND]: provides control to the engine controller's ignition system
-		subcommands:
-			ignite fire: Fires the engine controller's ignition ematch
-			ignite cont: Displays continuity information on the engine controller's ignition system 
-			ignite help: Displays subcommand information
+    ignite [SUBCOMMAND]: provides control to the engine controller's ignition system
+        subcommands:
+            ignite fire   : Fires the engine controller's ignition ematch
+            ignite cont   : Displays continuity information on the engine controller's ignition system 
+            ignite main   : Ignites the main parachute ejection ematch
+            ignite drogue : Ignites the drogue parachute ejection ematch
+            ignite help   : Displays subcommand information
 
-	power [SUBCOMMAND]: provides control to the engine controller's power supply system
-		subcommands:
-			power source: Displays the power supply source of the MCU
-			ignite help: Displays subcommand information
+    power [SUBCOMMAND]: provides control to the engine controller's power supply system
+        subcommands:
+            power source: Displays the power supply source of the MCU
+            ignite help: Displays subcommand information
 
-	flash [SUCOMMAND] -[OPTIONS] [INPUTS]: Reads and writes data to the engine controller's flash memory
-		subcommands:
-			flash disable: Disables the flash's write protection to allow data to be written to the chip 
-			flash enable : Enables the flash's write protection to make the chip read-only 
-			flash status : Displays the contents of the status register
-			flash write  : Writes data to the flash chip 
-			flash read   : Reads data from the flash chip 
-			flash erase  : Erases the entire flash chip 
-			flash help   : Shows supported subcommands, options, 
-						and descriptions
+    flash [SUCOMMAND] -[OPTIONS] [INPUTS]: Reads and writes data to the engine controller's flash memory
+        subcommands:
+            flash disable: Disables the flash's write protection to allow data to be written to the chip 
+            flash enable : Enables the flash's write protection to make the chip read-only 
+            flash status : Displays the contents of the status register
+            flash write  : Writes data to the flash chip 
+            flash read   : Reads data from the flash chip 
+            flash erase  : Erases the entire flash chip 
+            flash help   : Shows supported subcommands, options, 
+                           and descriptions
