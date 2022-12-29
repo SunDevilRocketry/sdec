@@ -136,7 +136,7 @@ def baro_press( readout ):
 	baro_max_press     = 1250.0*100.0                     # Pa
 	baro_min_press     = 300.0*100.0                      # Pa
 	baro_press_range   = baro_max_press - baro_min_press  # Pa
-	baro_press_setting = (baro_press_range/(2**(16) - 1)) # Pa/LSB 
+	baro_press_setting = (baro_press_range/(2**(18) - 1)) # Pa/LSB 
 	baro_press         = float(readout)*baro_press_setting + baro_min_press # Pa
 	
 	# Convert to psi 

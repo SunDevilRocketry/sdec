@@ -347,6 +347,9 @@ def get_sensor_frame_bytes( serialObj ):
 ####################################################################################
 def get_sensor_frames( controller, sensor_frames_bytes ):
 
+	# List of of all sensors
+	sensors = list( controller_sensors[controller].keys() )
+
 	# Convert to integer format
 	sensor_frames_int = []
 	for frame in sensor_frames_bytes:
@@ -376,7 +379,7 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
 				measurement += ( int_frame[index + byte_num] << 8*byte_num )
 			sensor_frame_dict[sensor] = measurement
 			index += sensor_sizes[controller][sensor]
-		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
+		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensors, sensor_frame_dict ).values() )
 		for val in sensor_vals_list:
 			sensor_frame.append( val )
 		sensor_frames.append( sensor_frame )
@@ -593,7 +596,7 @@ def sensor( Args, serialObj ):
 													sensor_bytes_list
 			                                       )
             for sensor in sensor_readouts:
-                print( sensor + ": {:.3f}".format( sensor_readouts[sensor] ) + '\t', end='' )
+                print( sensor + ": {:.10f}".format( sensor_readouts[sensor] ) + '\t', end='' )
             print()
 			# Pause for readibility
             serialObj.sendByte( sensor_poll_cmds['WAIT'] )
