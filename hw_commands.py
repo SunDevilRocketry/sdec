@@ -191,6 +191,38 @@ sensor_conv_funcs = {
 						   }
 	                }
 
+# Sensor readout units
+sensor_units = {
+                  # Engine Controller rev 4.0
+                  controller_names[2]: {
+						   "pt0": "V",
+						   "pt1": "V",
+						   "pt2": "V",
+						   "pt3": "V",
+						   "pt4": "V",
+						   "pt5": "V",
+						   "pt6": "V",
+						   "pt7": "V",
+						   "tc ": "C",
+						   "lc ": "lb" 
+                           },
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+						   "accX" : "m/s/s",
+						   "accY" : "m/s/s",
+						   "accZ" : "m/s/s",
+                           "gryoX": "deg/s",
+                           "gryoY": "deg/s",
+                           "gryoZ": "deg/s",
+                           "magX" : None   ,
+                           "magY" : None   ,
+                           "magZ" : None   ,
+                           "imut" : None   ,
+                           "pres" : "psi"  ,
+                           "temp" : "C" 
+						   }
+			   }
+
 
 ####################################################################################
 # Shared Procedures                                                                #
@@ -211,7 +243,7 @@ def get_bit( num, bit_index ):
 		return 1
 	else:	
 		return 0
-# get_bit #
+## get_bit ##
 
 
 ####################################################################################
@@ -233,7 +265,7 @@ def byte_array_to_int( byte_array ):
 		int_val = int_val << 8*i
 		result += int_val
 	return result
-# byte_array_to_int #
+## byte_array_to_int ##
 
 
 ####################################################################################
@@ -279,7 +311,7 @@ def get_raw_sensor_readouts( controller, sensors, sensor_bytes ):
 # 		Converts raw sensor readouts in integer format into the appropriate format #
 #                                                                                  #
 ####################################################################################
-def conv_raw_sensor_readouts( controller, sensors, raw_readouts ):
+def conv_raw_sensor_readouts( controller, raw_readouts ):
 
 	# Conversion functions
 	conv_funcs = sensor_conv_funcs[controller]
@@ -288,14 +320,14 @@ def conv_raw_sensor_readouts( controller, sensors, raw_readouts ):
 	readouts = {}
 
 	# Convert each readout
-	for sensor in sensors:
+	for sensor in raw_readouts:
 		if ( conv_funcs[sensor] != None ):
 			readouts[sensor] = conv_funcs[sensor]( raw_readouts[sensor] )
 		else:
 			readouts[sensor] = raw_readouts[sensor]
 	
 	return readouts
-# conv_raw_sensor_readouts #
+## conv_raw_sensor_readouts ##
 
 
 ####################################################################################
@@ -313,8 +345,9 @@ def get_sensor_readouts( controller, sensors, sensor_bytes ):
 	int_readouts = get_raw_sensor_readouts( controller, sensors, sensor_bytes )
 
 	# Make conversions
-	readouts     = conv_raw_sensor_readouts( controller, sensors, int_readouts )
+	readouts     = conv_raw_sensor_readouts( controller, int_readouts )
 	return readouts
+## get_sensor_readouts ##
 
 
 ####################################################################################
@@ -334,6 +367,7 @@ def get_sensor_frame_bytes( serialObj ):
 	# Get bytes
 	rx_bytes = serialObj.readBytes( frame_size )
 	return rx_bytes
+## get_sensor_frame_bytes ##
 
 
 ####################################################################################
@@ -346,9 +380,6 @@ def get_sensor_frame_bytes( serialObj ):
 #                                                                                  #
 ####################################################################################
 def get_sensor_frames( controller, sensor_frames_bytes ):
-
-	# List of of all sensors
-	sensors = list( controller_sensors[controller].keys() )
 
 	# Convert to integer format
 	sensor_frames_int = []
@@ -379,11 +410,12 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
 				measurement += ( int_frame[index + byte_num] << 8*byte_num )
 			sensor_frame_dict[sensor] = measurement
 			index += sensor_sizes[controller][sensor]
-		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensors, sensor_frame_dict ).values() )
+		sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
 		for val in sensor_vals_list:
 			sensor_frame.append( val )
 		sensor_frames.append( sensor_frame )
 	return sensor_frames
+## get_sensor_frame ##
 
 
 ####################################################################################
