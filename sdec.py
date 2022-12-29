@@ -1,7 +1,7 @@
-#################################################################################### 
+####################################################################################
 #                                                                                  #
 # sdec.py -- main terminal program. Contains main program                          #
-#            loop and global objects                                               # 
+#            loop and global objects                                               #
 #                                                                                  #
 # Author: Colton Acosta                                                            #
 # Date: 4/16/2022                                                                  #
@@ -25,11 +25,14 @@ import commands         # general terminal commands
 import hw_commands      # general hardware commands
 import valveController  # valve controller commands
 import engineController # engine controller commands
+from   config import *  # global settings
 
 
 ###############################################################
 # Global Variables                                            #
 ###############################################################
+
+# List of terminal commands
 command_list = { 
                  "exit"     : commands.exitFunc      ,
                  "help"     : commands.helpFunc      ,
@@ -43,6 +46,7 @@ command_list = {
                  "flash"    : hw_commands.flash      ,
                  "sensor"   : hw_commands.sensor
                 }
+
 
 ###############################################################
 #                                                             #

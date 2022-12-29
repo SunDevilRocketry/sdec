@@ -20,13 +20,18 @@ import time
 
 # Project imports
 import sensor_conv
+from   config      import *
 
 
 ####################################################################################
 # Global Variables                                                                 #
 ####################################################################################
 
-default_timeout = 1 # 1 second timeout
+# Serial port timeouts
+if ( sdr_debug ):
+	default_timeout = 100 # 100 second timeout
+else:
+	default_timeout = 1   # 1 second timeout
 
 # Controller identification codes
 controller_codes = [ 

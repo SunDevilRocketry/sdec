@@ -21,6 +21,7 @@ import serial.tools.list_ports
 ###############################################################
 import commands
 from   commands import display_help_info
+from   config   import *
 
 
 ###############################################################

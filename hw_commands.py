@@ -22,13 +22,18 @@ import time
 # Project imports
 import sensor_conv
 import commands
+from   config      import *
 
 
 ####################################################################################
 # Global Variables                                                                 #
 ####################################################################################
 
-default_timeout = 1 # 1 second timeout
+if ( sdr_debug ):
+	default_timeout = 100 # 100 second timeout
+else:
+	default_timeout = 1   # 1 second timeout
+
 
 # Controller identification codes
 controller_codes = [ 
@@ -416,6 +421,17 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
 		sensor_frames.append( sensor_frame )
 	return sensor_frames
 ## get_sensor_frame ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		format_sensor_readout                                                      #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#		Converts a list of sensor frames into measurements                         #
+#                                                                                  #
+####################################################################################
 
 
 ####################################################################################
