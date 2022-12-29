@@ -429,9 +429,27 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
 # 		format_sensor_readout                                                      #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#		Converts a list of sensor frames into measurements                         #
+#		Formats a sensor readout into a label, rounded readout, and units          #
 #                                                                                  #
 ####################################################################################
+def format_sensor_readout( controller, sensor, readout ):
+
+	# Readout units
+	units = sensor_units[controller][sensor] 
+
+	# Rounded readout
+	if ( units != None ):
+		readout_str = "{:.3f}".format( readout )
+	else:
+		readout_str = str( readout )
+
+	# Concatentate label, readout, and units
+	if ( units != None ):
+		output = sensor + ": " + readout_str + " " + units
+	else:
+		output = sensor + ": " + readout_str
+	return output
+## format_sensor_readout
 
 
 ####################################################################################
@@ -608,7 +626,12 @@ def sensor( Args, serialObj ):
 
 		# Display Sensor readouts
         for sensor in sensor_readouts:
-            print( sensor + ": " + str( sensor_readouts[sensor] ) )
+            readout_formatted = format_sensor_readout(
+				                                      serialObj.controller,
+													  sensor               ,
+													  sensor_readouts[sensor]
+			                                         )
+            print( readout_formatted )
 			
         return serialObj
 
@@ -644,7 +667,12 @@ def sensor( Args, serialObj ):
 													sensor_bytes_list
 			                                       )
             for sensor in sensor_readouts:
-                print( sensor + ": {:.10f}".format( sensor_readouts[sensor] ) + '\t', end='' )
+                readout_formated = format_sensor_readout(
+					                                     serialObj.controller, 
+				                                         sensor              ,
+														 sensor_readouts[sensor] 
+				                                         )
+                print( readout_formated + '\t', end='' )
             print()
 			# Pause for readibility
             serialObj.sendByte( sensor_poll_cmds['WAIT'] )
@@ -680,7 +708,7 @@ def sensor( Args, serialObj ):
                "function. " )
         commands.error_msg()
         return serialObj
-# sensor #
+## sensor ##
 
 
 ####################################################################################
