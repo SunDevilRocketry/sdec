@@ -18,6 +18,8 @@
 import sys
 import os
 import time
+import numpy                    as np
+from   matplotlib import pyplot as plt
 
 # Project imports
 import sensor_conv
@@ -227,6 +229,31 @@ sensor_units = {
                            "temp" : "C" 
 						   }
 			   }
+
+# Inidices of sensors in output file 
+sensor_indices = {
+				  # Flight Computer rev 1.0
+				  controller_names[3]: {
+							"accX" : 1,
+							"accY" : 2,
+							"accZ" : 3,
+							"gryoX": 4,
+							"gryoY": 5,
+							"gryoZ": 6,
+							"magX" : 7,
+							"magY" : 8,
+							"magZ" : 9,
+							"imut" : 10,
+							"pres" : 11,
+							"temp" : 12 
+						               }
+                 }
+
+# Filenames for flash extract outputs 
+sensor_data_filenames = {
+				        # Flight Computer rev 1.0
+				        controller_names[3]: "output/sensor_data.txt"
+			            }
 
 
 ####################################################################################
@@ -449,7 +476,57 @@ def format_sensor_readout( controller, sensor, readout ):
 	else:
 		output = sensor + ": " + readout_str
 	return output
-## format_sensor_readout
+## format_sensor_readout ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		sensor_extract_data_filter                                                 #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#		Finds the end of valid data extracted from flash extract and return a list #
+#       containing only good data                                                  #
+#                                                                                  #
+####################################################################################
+def sensor_extract_data_filter( data ):
+
+	# Indices of beginning and end of good data 
+	start_index = 0
+	end_index   = len( data ) - 1
+
+	# Search exit condition
+	exit = False
+
+	# Search index
+	search_index = 0
+	
+	# Begin binary search
+	while( not exit ):
+		# Set search index
+		search_index = ( (end_index - start_index)//2 ) + start_index
+
+		# Check if two consecutive rows are identically equal
+		rows_equal = ( data[search_index] == data[search_index+1] )
+
+		# Check for exit condition
+		if   (   search_index       == start_index ):
+			if ( rows_equal ):
+				return None
+			else:
+				return data[0:search_index-1]
+		elif ( ( search_index + 1 ) == end_index   ):
+			if ( rows_equal ):
+				return data[0:start_index-1]
+			else:
+				return data[0:end_index-1]
+		else: # No exit confition
+			# Update search range
+			if ( rows_equal ):
+				end_index = search_index
+			else:
+				start_index = search_index
+## sensor_extract_data_filter ## 
 
 
 ####################################################################################
@@ -480,6 +557,10 @@ def sensor( Args, serialObj ):
                              '-n' : 'Specify a sensor number',
                              '-h' : 'Display sensor usage info'
                              },
+					'plot' : {
+                             '-n' : 'Specify a sensor number',
+                             '-h' : 'Display sensor usage info'
+					         },
                     'list' : {
                              },
                     'help' : {
@@ -562,7 +643,8 @@ def sensor( Args, serialObj ):
     ################################################################################
 
 	# Verify sensor nums supplied are valid
-    if ( user_subcommand == "poll" ):
+    if (  ( user_subcommand == "poll" ) or
+	      ( user_subcommand == "plot" ) ):
         if ( user_option == "-n" ):
 
 			# Throw error if no sensors were supplied
@@ -699,6 +781,56 @@ def sensor( Args, serialObj ):
             print( "\t" + sensor_num + " : " +
                     controller_sensors[serialObj.controller][sensor_num] 
                  ) 
+        return serialObj
+	## sensor list ##
+
+    ################################################################################
+    # Subcommand: sensor plot                                                      #
+    ################################################################################
+    elif ( user_subcommand == "plot" ):
+
+		# Data Filename 
+        filename = sensor_data_filenames[serialObj.controller]
+
+		# Import Data
+        with open( filename, "r" ) as file:
+            sensor_data_lines = file.readlines()
+        sensor_data_str = []
+        for line in sensor_data_lines:
+            sensor_data_str.append( line.split('\t') )
+
+		# Convert to floating point format
+        sensor_data = []
+        for frame in sensor_data_str:
+            sensor_frame = []
+            for val in frame:
+                if ( val != '\n' ):
+                    sensor_frame.append( float( val ) )
+            sensor_data.append( sensor_frame )
+		
+		# Filter out garbage flash data
+        sensor_data_filtered = sensor_extract_data_filter( sensor_data )
+        sensor_data_filtered = np.array( sensor_data_filtered )
+
+		# Select data to plot
+        sensor_labels = []
+        for sensor in user_sensor_nums:
+            sensor_index = sensor_indices[serialObj.controller][sensor]
+            sensor_label = ( sensor + " (" + 
+			                 sensor_units[serialObj.controller][sensor] + ")" )
+            sensor_labels.append( sensor_label )
+            plt.plot( sensor_data_filtered[:,0]           , 
+			          sensor_data_filtered[:,sensor_index] )
+
+		# Plot parameters
+        plt.title( "Data: " + serialObj.controller )
+        plt.xlabel( "Time, s" )
+        plt.ylabel( "Measurement Value" )
+        plt.grid()
+        plt.legend( sensor_labels )
+
+		# Display
+        plt.show()
         return serialObj
 
     ################################################################################
