@@ -520,7 +520,7 @@ def sensor_extract_data_filter( data ):
 				return data[0:start_index-1]
 			else:
 				return data[0:end_index-1]
-		else: # No exit confition
+		else: # No exit condfition
 			# Update search range
 			if ( rows_equal ):
 				end_index = search_index
