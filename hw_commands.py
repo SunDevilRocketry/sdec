@@ -819,12 +819,13 @@ def sensor( Args, serialObj ):
             sensor_label = ( sensor + " (" + 
 			                 sensor_units[serialObj.controller][sensor] + ")" )
             sensor_labels.append( sensor_label )
-            plt.plot( sensor_data_filtered[:,0]           , 
+            time_data = sensor_data_filtered[:,0]/60.0 # minutes
+            plt.plot( time_data, 
 			          sensor_data_filtered[:,sensor_index] )
 
 		# Plot parameters
         plt.title( "Data: " + serialObj.controller )
-        plt.xlabel( "Time, s" )
+        plt.xlabel( "Time, min" )
         plt.ylabel( "Measurement Value" )
         plt.grid()
         plt.legend( sensor_labels )
