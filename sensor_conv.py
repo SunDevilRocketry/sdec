@@ -52,7 +52,7 @@ def adc_readout_to_voltage( readout ):
 ####################################################################################
 def imu_accel( readout ):
 	
-	# Convert from 16 bit unsigned to 16 bit signed
+	# Convert from 16 bit unsigned to 16 bit sRigned
 	signed_int = 0
 	if ( readout < 2**(15) ):
 		signed_int = readout	
@@ -136,14 +136,14 @@ def baro_temp( readout ):
 def baro_press( readout ):
 	
 	# Convert to Pa 
-	baro_max_press     = 1250.0*100.0                     # Pa
-	baro_min_press     = 300.0*100.0                      # Pa
-	baro_press_range   = baro_max_press - baro_min_press  # Pa
-	baro_press_setting = (baro_press_range/(2**(19) - 1)) # Pa/LSB 
-	baro_press         = float(readout)*baro_press_setting + baro_min_press # Pa
+	#baro_max_press     = 1250.0*100.0                     # Pa
+	#baro_min_press     = 300.0*100.0                      # Pa
+	#baro_press_range   = baro_max_press - baro_min_press  # Pa
+	#baro_press_setting = (baro_press_range/(2**(19) - 1)) # Pa/LSB 
+	#baro_press         = float(readout)*baro_press_setting + baro_min_press # Pa
 	
-	# Convert to psi 
-	return baro_press*(0.000145038) 
+	# Convert to kPa 
+	return readout*0.001 
 
 ## baro_press ##
 
