@@ -10,17 +10,17 @@
 ####################################################################################
 
 
-###############################################################
-# Standard Imports                                            #
-###############################################################
+####################################################################################
+# Standard Imports                                                                 #
+####################################################################################
 import time
 import serial
 import serial.tools.list_ports
 
 
-###############################################################
-# Project Modules                                             #
-###############################################################
+####################################################################################
+# Project Modules                                                                  #
+####################################################################################
 import commands         # general terminal commands
 import hw_commands      # general hardware commands
 import valveController  # valve controller commands
@@ -28,9 +28,9 @@ import engineController # engine controller commands
 from   config import *  # global settings
 
 
-###############################################################
-# Global Variables                                            #
-###############################################################
+####################################################################################
+# Global Variables                                                                 #
+####################################################################################
 
 # List of terminal commands
 command_list = { 
@@ -48,16 +48,16 @@ command_list = {
                 }
 
 
-###############################################################
-#                                                             #
-# OBJECT:                                                     #
-# 		terminalData                                          #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		serial port user API and handler for passing data     #
-#       between command functions                             #
-#                                                             #
-###############################################################
+####################################################################################
+#                                                                                  #
+# OBJECT:                                                                          #
+# 		terminalData                                                               #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		serial port user API and handler for passing data                          #
+#       between command functions                                                  #
+#                                                                                  #
+####################################################################################
 class terminalData:
     def __init__( self ):
         self.baudrate            = None
@@ -169,15 +169,15 @@ class terminalData:
         self.controller = None
 
 
-###############################################################
-#                                                             #
-# PROCEDURE:                                                  #
-# 		parseInput                                            #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		checks user input against command list options        #
-#                                                             #
-###############################################################
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		parseInput                                                                 #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		checks user input against command list options                             #
+#                                                                                  #
+####################################################################################
 def parseInput(userin): 
 
     # Get rid of any whitespace
@@ -203,9 +203,9 @@ def parseInput(userin):
     userin = input("SDR>> ")
     return parseInput(userin)
 
-###############################################################
-# Application Entry Point                                     #
-###############################################################
+####################################################################################
+# Application Entry Point                                                          #
+####################################################################################
 
 # Initialize Serial Port Object
 terminalSerObj = terminalData()
@@ -222,4 +222,7 @@ while(True):
     # Execute Command
     terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
 
-### END OF FILE
+
+####################################################################################
+# END OF FILE
+####################################################################################
