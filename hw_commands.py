@@ -541,10 +541,10 @@ def format_sensor_readout( controller, sensor, readout ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         sensor_extract_data_filter                                                 #
+#         sensor_extract_data_filter                                               #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#        Finds the end of valid data extracted from flash extract and return a list #
+#       Finds the end of valid data extracted from flash extract and return a list #
 #       containing only good data                                                  #
 #                                                                                  #
 ####################################################################################
@@ -1412,7 +1412,8 @@ def flash(Args, serialObj):
         # Flash contains 4096 blocks of data
         rx_byte_blocks = []
         for i in range( 16_384 ):
-            print( "Reading block " + str(i) + "..."  )
+            if ( i%100 == 0 ):
+                print( "Reading block " + str(i) + "..."  )
             rx_sensor_frame_block = get_sensor_frame_bytes( serialObj )
             rx_byte_blocks.append( rx_sensor_frame_block )
 
@@ -1421,7 +1422,6 @@ def flash(Args, serialObj):
 
         # Record ending time
         extract_time = time.perf_counter() - start_time
-        extract_time /= 60
 
         # Convert the data from bytes to measurement readouts
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
@@ -1439,7 +1439,7 @@ def flash(Args, serialObj):
             print("Error: No response code recieved")
         elif (return_code == b'\x00'):
             print( "Flash extract successful" )
-            print( "Extract time: {:.3f} min".format( extract_time ) )
+            print( "Extract time: {:.3f} sec".format( extract_time ) )
         else:
             print("Error: Unrecognised response code recieved")
         return serialObj

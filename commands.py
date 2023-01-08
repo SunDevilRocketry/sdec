@@ -585,7 +585,7 @@ def connect(Args, serialObj):
 	##############################################################################
 	elif ( user_option == '-p' ):
 		serialObj = comports(
-                            ['-c', user_port, '115200'], 
+                            ['-c', user_port, '921600'], 
                             serialObj
                             )
 		serialObj.sendByte( opcode )
