@@ -81,7 +81,7 @@ def imu_accel( readout ):
 #       to the degree/s angular rate                                               #
 #                                                                                  #
 ####################################################################################
-def imu_gryo( readout ):
+def imu_gyro( readout ):
 	
 	# Convert from 16 bit unsigned to 16 bit signed
 	signed_int = 0

@@ -82,9 +82,9 @@ controller_sensors = {
                            "accX" : "Accelerometer X       ",
                            "accY" : "Accelerometer Y       ",
                            "accZ" : "Accelerometer Z       ",
-                           "gryoX": "Gryoscope X           ",
-                           "gryoY": "Gryoscope Y           ",
-                           "gryoZ": "Gryoscope Z           ",
+                           "gyroX": "gyroscope X           ",
+                           "gyroY": "gyroscope Y           ",
+                           "gyroZ": "gyroscope Z           ",
                            "magX" : "Magnetometer X        ",
                            "magY" : "Magnetometer Y        ",
                            "magZ" : "Magnetometer Z        ",
@@ -114,9 +114,9 @@ sensor_sizes = {
                            "accX" : 2,
                            "accY" : 2,
                            "accZ" : 2,
-                           "gryoX": 2,
-                           "gryoY": 2,
-                           "gryoZ": 2,
+                           "gyroX": 2,
+                           "gyroY": 2,
+                           "gyroZ": 2,
                            "magX" : 2,
                            "magY" : 2,
                            "magZ" : 2,
@@ -146,9 +146,9 @@ sensor_codes = {
                            "accX" : b'\x00',
                            "accY" : b'\x01',
                            "accZ" : b'\x02',
-                           "gryoX": b'\x03',
-                           "gryoY": b'\x04',
-                           "gryoZ": b'\x05',
+                           "gyroX": b'\x03',
+                           "gyroY": b'\x04',
+                           "gyroZ": b'\x05',
                            "magX" : b'\x06',
                            "magY" : b'\x07',
                            "magZ" : b'\x08',
@@ -187,9 +187,9 @@ sensor_conv_funcs = {
                            "accX" : sensor_conv.imu_accel ,
                            "accY" : sensor_conv.imu_accel ,
                            "accZ" : sensor_conv.imu_accel ,
-                           "gryoX": sensor_conv.imu_gryo  ,
-                           "gryoY": sensor_conv.imu_gryo  ,
-                           "gryoZ": sensor_conv.imu_gryo  ,
+                           "gyroX": sensor_conv.imu_gyro  ,
+                           "gyroY": sensor_conv.imu_gyro  ,
+                           "gyroZ": sensor_conv.imu_gyro  ,
                            "magX" : None                  ,
                            "magY" : None                  ,
                            "magZ" : None                  ,
@@ -219,9 +219,9 @@ sensor_units = {
                            "accX" : "m/s/s",
                            "accY" : "m/s/s",
                            "accZ" : "m/s/s",
-                           "gryoX": "deg/s",
-                           "gryoY": "deg/s",
-                           "gryoZ": "deg/s",
+                           "gyroX": "deg/s",
+                           "gyroY": "deg/s",
+                           "gyroZ": "deg/s",
                            "magX" : None   ,
                            "magY" : None   ,
                            "magZ" : None   ,
@@ -238,9 +238,9 @@ sensor_indices = {
                             "accX" : 1,
                             "accY" : 2,
                             "accZ" : 3,
-                            "gryoX": 4,
-                            "gryoY": 5,
-                            "gryoZ": 6,
+                            "gyroX": 4,
+                            "gyroY": 5,
+                            "gyroZ": 6,
                             "magX" : 7,
                             "magY" : 8,
                             "magZ" : 9,
@@ -270,9 +270,9 @@ sensor_formats = {
                            "accX" : int  ,
                            "accY" : int  ,
                            "accZ" : int  ,
-                           "gryoX": int  ,
-                           "gryoY": int  ,
-                           "gryoZ": int  ,
+                           "gyroX": int  ,
+                           "gyroY": int  ,
+                           "gyroZ": int  ,
                            "magX" : int  ,
                            "magY" : int  ,
                            "magZ" : int  ,
@@ -418,10 +418,10 @@ def conv_raw_sensor_readouts( controller, raw_readouts ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         get_sensor_readouts                                                        #
+#         get_sensor_readouts                                                      #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Converts a byte array into sensor readouts and converts digital readout    #
+#         Converts a byte array into sensor readouts and converts digital readout  #
 #                                                                                  #
 ####################################################################################
 def get_sensor_readouts( controller, sensors, sensor_bytes ):
@@ -438,10 +438,10 @@ def get_sensor_readouts( controller, sensors, sensor_bytes ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         get_sensor_frame_bytes                                                     #
+#         get_sensor_frame_bytes                                                   #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#        Obtains a frame of sensor data from a controller's flash in byte format    #
+#        Obtains a frame of sensor data from a controller's flash in byte format   #
 #                                                                                  #
 ####################################################################################
 def get_sensor_frame_bytes( serialObj ):
@@ -458,13 +458,13 @@ def get_sensor_frame_bytes( serialObj ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         get_sensor_frame                                                           #
+#         get_sensor_frame                                                         #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#        Converts a list of sensor frames into measurements                         #
+#        Converts a list of sensor frames into measurements                        #
 #                                                                                  #
 ####################################################################################
-def get_sensor_frames( controller, sensor_frames_bytes ):
+def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
 
     # Convert to integer format
     sensor_frames_int = []
@@ -475,47 +475,50 @@ def get_sensor_frames( controller, sensor_frames_bytes ):
         sensor_frames_int.append( sensor_frame_int )
 
     # Combine bytes from integer data and convert
-    sensor_frames = []
-    for int_frame in sensor_frames_int:
-        sensor_frame = []
-        # Time of frame measurement
-        time = ( ( int_frame[0]       ) + 
-                 ( int_frame[1] << 8  ) + 
-                 ( int_frame[2] << 16 ) +
-                 ( int_frame[3] << 24 ) )
-        # Conversion to seconds
-        sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
+    if ( format == 'converted'):
+        sensor_frames = []
+        for int_frame in sensor_frames_int:
+            sensor_frame = []
+            # Time of frame measurement
+            time = ( ( int_frame[0]       ) + 
+                     ( int_frame[1] << 8  ) + 
+                     ( int_frame[2] << 16 ) +
+                     ( int_frame[3] << 24 ) )
+            # Conversion to seconds
+            sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
 
-        # Sensor readouts
-        sensor_frame_dict = {}
-        index = 4
-        for i, sensor in enumerate( sensor_sizes[ controller ] ):
-            measurement = 0
-            float_bytes = []
-            for byte_num in range( sensor_sizes[controller][sensor] ):
-                if ( sensor_formats[controller][sensor] != float ):
-                    measurement += ( int_frame[index + byte_num] << 8*byte_num )
-                else:
-                    float_bytes.append( ( int_frame[index + byte_num] ).to_bytes(1, 'big' ) ) 
-            if ( sensor_formats[controller][sensor] == float ):
-                measurement = byte_array_to_float( float_bytes )
-            sensor_frame_dict[sensor] = measurement
-            index += sensor_sizes[controller][sensor]
-        sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
-        for val in sensor_vals_list:
-            sensor_frame.append( val )
-        sensor_frames.append( sensor_frame )
-    return sensor_frames
+            # Sensor readouts
+            sensor_frame_dict = {}
+            index = 4
+            for i, sensor in enumerate( sensor_sizes[ controller ] ):
+                measurement = 0
+                float_bytes = []
+                for byte_num in range( sensor_sizes[controller][sensor] ):
+                    if ( sensor_formats[controller][sensor] != float ):
+                        measurement += ( int_frame[index + byte_num] << 8*byte_num )
+                    else:
+                        float_bytes.append( ( int_frame[index + byte_num] ).to_bytes(1, 'big' ) ) 
+                if ( sensor_formats[controller][sensor] == float ):
+                    measurement = byte_array_to_float( float_bytes )
+                sensor_frame_dict[sensor] = measurement
+                index += sensor_sizes[controller][sensor]
+            sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
+            for val in sensor_vals_list:
+                sensor_frame.append( val )
+            sensor_frames.append( sensor_frame )
+        return sensor_frames
+    elif ( format == 'bytes' ):
+        return sensor_frames_int 
 ## get_sensor_frame ##
 
 
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         format_sensor_readout                                                      #
+#         format_sensor_readout                                                    #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#        Formats a sensor readout into a label, rounded readout, and units          #
+#        Formats a sensor readout into a label, rounded readout, and units         #
 #                                                                                  #
 ####################################################################################
 def format_sensor_readout( controller, sensor, readout ):
@@ -1458,10 +1461,10 @@ def flash(Args, serialObj):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         ignite                                                                     #
+#         ignite                                                                   #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         issue the ignition signal to the controller or display                     #
+#         issue the ignition signal to the controller or display                   #
 #                                                                                  #
 ####################################################################################
 def ignite(Args, serialObj):
