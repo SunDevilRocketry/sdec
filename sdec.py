@@ -138,8 +138,6 @@ class terminalData:
                    +"serial port connection")
         else:
             self.serialObj.write( byte_array )
-            #for byte in byte_array:
-            #    self.sendByte(byte)
 
     # Read a single Byte from the serial port
     def readByte(self):
