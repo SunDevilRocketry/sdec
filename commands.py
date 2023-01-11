@@ -510,7 +510,7 @@ def ping( Args, serialObj ):
 # 		establish a serial connection with an SDR board                            #
 #                                                                                  #
 ####################################################################################
-def connect(Args, serialObj):
+def connect( Args, serialObj ):
 
 	##############################################################################
 	# local variables                                                            #
