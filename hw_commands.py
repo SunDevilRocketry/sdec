@@ -599,10 +599,10 @@ def sensor_extract_data_filter( data ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         sensor                                                                     #
+#         sensor                                                                   #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Displays sensor data and/or info                                           #
+#         Displays sensor data and/or info                                         #
 #                                                                                  #
 ####################################################################################
 def sensor( Args, serialObj ):
@@ -763,18 +763,18 @@ def sensor( Args, serialObj ):
             sensor_bytes_list.append( serialObj.readByte() )
 
         # Get readouts from byte array
-        sensor_readouts = get_sensor_readouts( 
-                                            serialObj.controller, 
-                                            sensor_numbers      ,
-                                            sensor_bytes_list
-                                             )
+        serialObj.sensor_readouts = get_sensor_readouts( 
+                                                       serialObj.controller, 
+                                                       sensor_numbers      ,
+                                                       sensor_bytes_list
+                                                       )
 
         # Display Sensor readouts
-        for sensor in sensor_readouts:
+        for sensor in serialObj.sensor_readouts:
             readout_formatted = format_sensor_readout(
                                                       serialObj.controller,
                                                       sensor               ,
-                                                      sensor_readouts[sensor]
+                                                      serialObj.sensor_readouts[sensor]
                                                      )
             print( readout_formatted )
             

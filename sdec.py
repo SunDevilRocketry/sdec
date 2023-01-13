@@ -67,6 +67,7 @@ class terminalData:
         self.config_status       = False 
         self.controller          = None
         self.flash_write_enabled = False 
+        self.sensor_readouts     = {}
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):
