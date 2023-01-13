@@ -184,12 +184,12 @@ sensor_conv_funcs = {
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
-                           "accX" : sensor_conv.imu_accel ,
-                           "accY" : sensor_conv.imu_accel ,
-                           "accZ" : sensor_conv.imu_accel ,
-                           "gyroX": sensor_conv.imu_gyro  ,
-                           "gyroY": sensor_conv.imu_gyro  ,
-                           "gyroZ": sensor_conv.imu_gyro  ,
+                           "accX" : None,
+                           "accY" : None,
+                           "accZ" : None,
+                           "gyroX": None,
+                           "gyroY": None,
+                           "gyroZ": None ,
                            "magX" : None                  ,
                            "magY" : None                  ,
                            "magZ" : None                  ,
@@ -569,7 +569,7 @@ def sensor_extract_data_filter( data ):
         search_index = ( (end_index - start_index)//2 ) + start_index
 
         # Check if two consecutive rows are identically equal
-        rows_equal = ( data[search_index] == data[search_index+1] )
+        rows_equal = ( data[search_index][0:11] == data[search_index+1][0:11] )
 
         # Check for exit condition
         if   (   search_index       == start_index ):
