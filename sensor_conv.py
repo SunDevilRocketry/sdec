@@ -43,6 +43,42 @@ def adc_readout_to_voltage( readout ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
+# 		voltage_to_pressure                                                        #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a voltage readout from a pressure transducer to a pressure        #
+#       in floating point format                                                   #
+#                                                                                  #
+####################################################################################
+def voltage_to_pressure( voltage ):
+	Rgain         = 3.3 # kOhm
+	Rref          = 100 # kOhm
+	gain          = 1 + ( Rref/Rgain )
+	max_voltage   = gain*0.1 # Max pt readout is 0.1 V
+	max_pressure  = 1000 # psi
+	pressure_step = max_pressure/max_voltage 
+	return voltage*pressure_step
+## voltage_to_pressure ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		pt_pressure                                                                #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts readouts from a pressure transducer to the pressure psi           #
+#                                                                                  #
+####################################################################################
+def pt_pressure( readout ):
+	voltage = adc_readout_to_voltage( readout )
+	return voltage_to_pressure( voltage )
+## pt_pressure ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
 # 		imu_accel                                                                  #
 #                                                                                  #
 # DESCRIPTION:                                                                     #

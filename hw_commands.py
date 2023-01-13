@@ -74,8 +74,8 @@ controller_sensors = {
                            "pt5": "Pressure Transducer 5",
                            "pt6": "Pressure Transducer 6",
                            "pt7": "Pressure Transducer 7",
-                           "tc ": "Theromcouple         ",
-                           "lc ": "Load Cell            "            
+                           "tc" : "Theromcouple         ",
+                           "lc" : "Load Cell            "            
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -106,8 +106,8 @@ sensor_sizes = {
                            "pt5": 4,
                            "pt6": 4,
                            "pt7": 4,
-                           "tc ": 4,
-                           "lc ": 4            
+                           "tc" : 4,
+                           "lc" : 4            
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -138,8 +138,8 @@ sensor_codes = {
                            "pt5": b'\x05',
                            "pt6": b'\x06',
                            "pt7": b'\x07',
-                           "tc ": b'\x08',
-                           "lc ": b'\x09' 
+                           "tc": b'\x08',
+                           "lc": b'\x09' 
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -171,31 +171,31 @@ sensor_frame_sizes = {
 sensor_conv_funcs = {
                   # Engine Controller rev 4.0
                   controller_names[2]: {
-                           "pt0": sensor_conv.adc_readout_to_voltage,
-                           "pt1": sensor_conv.adc_readout_to_voltage,
-                           "pt2": sensor_conv.adc_readout_to_voltage,
-                           "pt3": sensor_conv.adc_readout_to_voltage,
-                           "pt4": sensor_conv.adc_readout_to_voltage,
-                           "pt5": sensor_conv.adc_readout_to_voltage,
-                           "pt6": sensor_conv.adc_readout_to_voltage,
-                           "pt7": sensor_conv.adc_readout_to_voltage,
-                           "tc ": sensor_conv.adc_readout_to_voltage,
-                           "lc ": sensor_conv.adc_readout_to_voltage            
+                           "pt0": sensor_conv.pt_pressure           ,
+                           "pt1": sensor_conv.pt_pressure           ,
+                           "pt2": sensor_conv.pt_pressure           ,
+                           "pt3": sensor_conv.pt_pressure           ,
+                           "pt4": sensor_conv.pt_pressure           ,
+                           "pt5": sensor_conv.pt_pressure           ,
+                           "pt6": sensor_conv.pt_pressure           ,
+                           "pt7": sensor_conv.pt_pressure           ,
+                           "tc" : sensor_conv.adc_readout_to_voltage,
+                           "lc" : sensor_conv.adc_readout_to_voltage            
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
-                           "accX" : None,
-                           "accY" : None,
-                           "accZ" : None,
-                           "gyroX": None,
-                           "gyroY": None,
-                           "gyroZ": None ,
+                           "accX" : sensor_conv.imu_accel,
+                           "accY" : sensor_conv.imu_accel,
+                           "accZ" : sensor_conv.imu_accel,
+                           "gyroX": sensor_conv.imu_gyro,
+                           "gyroY": sensor_conv.imu_gyro,
+                           "gyroZ": sensor_conv.imu_gyro,
                            "magX" : None                  ,
                            "magY" : None                  ,
                            "magZ" : None                  ,
                            "imut" : None                  ,
                            "pres" : sensor_conv.baro_press,
-                           "temp" : None 
+                           "temp" : sensor_conv.baro_temp 
                            }
                     }
 
@@ -203,16 +203,16 @@ sensor_conv_funcs = {
 sensor_units = {
                   # Engine Controller rev 4.0
                   controller_names[2]: {
-                           "pt0": "V",
-                           "pt1": "V",
-                           "pt2": "V",
-                           "pt3": "V",
-                           "pt4": "V",
-                           "pt5": "V",
-                           "pt6": "V",
-                           "pt7": "V",
-                           "tc ": "C",
-                           "lc ": "lb" 
+                           "pt0": "psi",
+                           "pt1": "psi",
+                           "pt2": "psi",
+                           "pt3": "psi",
+                           "pt4": "psi",
+                           "pt5": "psi",
+                           "pt6": "psi",
+                           "pt7": "psi",
+                           "tc": "C",
+                           "lc": "lb" 
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -262,8 +262,8 @@ sensor_formats = {
                            "pt5": int,
                            "pt6": int,
                            "pt7": int,
-                           "tc ": int,
-                           "lc ": int 
+                           "tc": int,
+                           "lc": int 
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -528,7 +528,7 @@ def format_sensor_readout( controller, sensor, readout ):
 
     # Rounded readout
     if ( units != None ):
-        readout_str = "{:.10f}".format( readout )
+        readout_str = "{:.3f}".format( readout )
     else:
         readout_str = str( readout )
 
