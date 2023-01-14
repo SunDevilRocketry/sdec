@@ -64,6 +64,40 @@ def voltage_to_pressure( voltage ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
+# 		voltage_to_force                                                           #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a voltage readout from a load cell to a force measurement in      #
+#       floating point format                                                      #
+#                                                                                  #
+####################################################################################
+def voltage_to_force( voltage ):
+	Rgain      = 0.47 # kOhm
+	Rref       = 1000 # kOhm
+	gain       = 1 + (Rref/Rgain)
+	force_step = gain*(1/34.5572)*(0.001) # lb/V
+	return voltage*force_step # lb
+## voltage_to_force ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		loadcell_force                                                             #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts readouts from a load cell to the force in lb                      #
+#                                                                                  #
+####################################################################################
+def loadcell_force( readout ):
+	voltage = adc_readout_to_voltage ( readout )
+	return voltage_to_force( voltage )
+## loadcell_force ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
 # 		pt_pressure                                                                #
 #                                                                                  #
 # DESCRIPTION:                                                                     #

@@ -74,8 +74,8 @@ controller_sensors = {
                            "pt5": "Pressure Transducer 5",
                            "pt6": "Pressure Transducer 6",
                            "pt7": "Pressure Transducer 7",
-                           "tc" : "Theromcouple         ",
-                           "lc" : "Load Cell            "            
+                           "lc" : "Load Cell            ", 
+                           "tc" : "Theromcouple         "
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -179,8 +179,8 @@ sensor_conv_funcs = {
                            "pt5": sensor_conv.pt_pressure           ,
                            "pt6": sensor_conv.pt_pressure           ,
                            "pt7": sensor_conv.pt_pressure           ,
-                           "tc" : sensor_conv.adc_readout_to_voltage,
-                           "lc" : sensor_conv.adc_readout_to_voltage            
+                           "lc" : sensor_conv.loadcell_force        , 
+                           "tc" : sensor_conv.adc_readout_to_voltage
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -211,8 +211,8 @@ sensor_units = {
                            "pt5": "psi",
                            "pt6": "psi",
                            "pt7": "psi",
-                           "tc": "C",
-                           "lc": "lb" 
+                           "lc" : "lb" , 
+                           "tc" : "C"
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
