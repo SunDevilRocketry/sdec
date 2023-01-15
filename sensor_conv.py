@@ -73,9 +73,10 @@ def voltage_to_pressure( voltage ):
 ####################################################################################
 def voltage_to_force( voltage ):
 	Rgain      = 0.47 # kOhm
-	Rref       = 1000 # kOhm
+	Rref       = 100  # kOhm
 	gain       = 1 + (Rref/Rgain)
-	force_step = gain*(1/34.5572)*(0.001) # lb/V
+	voltage   /= gain
+	force_step = (34.5572*1000) # lb/V
 	return voltage*force_step # lb
 ## voltage_to_force ##
 
