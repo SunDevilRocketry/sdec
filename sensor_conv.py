@@ -121,7 +121,7 @@ def pt_pressure( readout ):
 ####################################################################################
 def tc_temp( readout ):
 	# Split readout bytes
-	upper_byte = readout & 0xFF00
+	upper_byte = ( readout & 0xFF00 ) >> 8
 	lower_byte = readout & 0x00FF
 
 	# Check for negative readout
