@@ -36,7 +36,6 @@ def adc_readout_to_voltage( readout ):
 	num_bits     = 16
 	voltage_step = 3.3/float(2**(num_bits))
 	return readout*voltage_step 
-
 ## adc_readout_to_voltage ##
 
 
@@ -109,6 +108,37 @@ def pt_pressure( readout ):
 	voltage = adc_readout_to_voltage( readout )
 	return voltage_to_pressure( voltage )
 ## pt_pressure ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		tc_temp                                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts readouts from a thermocouple to a temperature                     #
+#                                                                                  #
+####################################################################################
+def tc_temp( readout ):
+	# Split readout bytes
+	upper_byte = readout & 0xFF00
+	lower_byte = readout & 0x00FF
+
+	# Check for negative readout
+	if ( ( upper_byte & 0x80 ) == 0x80 ):
+		negative = True
+	else:
+		negative = False
+
+	# Do conversion
+	if ( negative ):
+		temp = ( ( float(upper_byte)*16.0 + float(lower_byte)/16.0 )/16 ) - 4096.0
+	else:
+		temp = ( float(upper_byte)*16.0 + float(lower_byte)/16.0 )
+
+	# Return conversion
+	return temp # degrees C
+## tc_temp ##
 
 
 ####################################################################################

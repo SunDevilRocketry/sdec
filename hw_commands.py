@@ -180,7 +180,7 @@ sensor_conv_funcs = {
                            "pt6": sensor_conv.pt_pressure           ,
                            "pt7": sensor_conv.pt_pressure           ,
                            "lc" : sensor_conv.loadcell_force        , 
-                           "tc" : sensor_conv.adc_readout_to_voltage
+                           "tc" : sensor_conv.tc_temp
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
@@ -262,8 +262,8 @@ sensor_formats = {
                            "pt5": int,
                            "pt6": int,
                            "pt7": int,
-                           "tc": int,
-                           "lc": int 
+                           "tc" : int,
+                           "lc" : int 
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
