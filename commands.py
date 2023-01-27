@@ -38,7 +38,8 @@ controller_codes = [
                   b'\x01', # Engine Controller, Rev 3.0
                   b'\x02', # Valve Controller , Rev 2.0 
                   b'\x03', # Engine Controller, Rev 4.0 
-				  b'\x04'  # Flight Computer,   Rev 1.0
+				  b'\x04', # Flight Computer,   Rev 1.0
+				  b'\x05'  # Flight Computer,   Rev 2.0
                    ]
 
 # Controller Names
@@ -46,7 +47,8 @@ controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
                    "Liquid Engine Controller (L0002 Rev 4.0)",
-				   "Flight Computer (A0002 Rev 1.0)"
+				   "Flight Computer (A0002 Rev 1.0)"         ,
+				   "Flight Computer (A0002 Rev 2.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -54,7 +56,8 @@ controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
                   b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
-				  b'\x04': "Flight Computer (A0002 Rev 1.0)"
+				  b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
+				  b'\x05': "Flight Computer (A0002 Rev 2.0)"
                           }
 
 
@@ -185,7 +188,6 @@ def parseArgs(
 			for arg in Args[1:]:
 				if ( '-' in arg ):
 					user_options.append(arg)
-			
 
 	# Unrecognized Option	
 	if ( subcommand_func ): #subcommand supported

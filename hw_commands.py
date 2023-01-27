@@ -44,6 +44,7 @@ controller_codes = [
                   b'\x02', # Valve Controller , Rev 2.0 
                   b'\x03', # Engine Controller, Rev 4.0 
                   b'\x04'  # Flight Computer,   Rev 1.0
+                  b'\x05'  # Flight Computer,   Rev 2.0
                    ]
 
 # Controller Names
@@ -51,7 +52,8 @@ controller_names = [
                    "Liquid Engine Controller (L0002 Rev 3.0)",
                    "Valve Controller (L0005 Rev 2.0)"        ,
                    "Liquid Engine Controller (L0002 Rev 4.0)",
-                   "Flight Computer (A0002 Rev 1.0)"
+                   "Flight Computer (A0002 Rev 1.0)"         ,
+                   "Flight Computer (A0002 Rev 2.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -59,7 +61,8 @@ controller_descriptions = {
                   b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
                   b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
-                  b'\x04': "Flight Computer (A0002 Rev 1.0)"
+                  b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
+                  b'\x05': "Flight Computer (A0002 Rev 2.0)"
                           }
 
 # Lists of sensors on each controller
@@ -79,6 +82,21 @@ controller_sensors = {
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
+                           "accX" : "Accelerometer X       ",
+                           "accY" : "Accelerometer Y       ",
+                           "accZ" : "Accelerometer Z       ",
+                           "gyroX": "gyroscope X           ",
+                           "gyroY": "gyroscope Y           ",
+                           "gyroZ": "gyroscope Z           ",
+                           "magX" : "Magnetometer X        ",
+                           "magY" : "Magnetometer Y        ",
+                           "magZ" : "Magnetometer Z        ",
+                           "imut" : "IMU Die Temperature   ",
+                           "pres" : "Barometric Pressure   ",
+                           "temp" : "Barometric Temperature"
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
                            "accX" : "Accelerometer X       ",
                            "accY" : "Accelerometer Y       ",
                            "accZ" : "Accelerometer Z       ",
@@ -123,6 +141,21 @@ sensor_sizes = {
                            "imut" : 2,
                            "pres" : 4,
                            "temp" : 4 
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
+                           "accX" : 2,
+                           "accY" : 2,
+                           "accZ" : 2,
+                           "gyroX": 2,
+                           "gyroY": 2,
+                           "gyroZ": 2,
+                           "magX" : 2,
+                           "magY" : 2,
+                           "magZ" : 2,
+                           "imut" : 2,
+                           "pres" : 4,
+                           "temp" : 4 
                            }
                }
 
@@ -155,6 +188,21 @@ sensor_codes = {
                            "imut" : b'\x09',
                            "pres" : b'\x0A',
                            "temp" : b'\x0B' 
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
+                           "accX" : b'\x00',
+                           "accY" : b'\x01',
+                           "accZ" : b'\x02',
+                           "gyroX": b'\x03',
+                           "gyroY": b'\x04',
+                           "gyroZ": b'\x05',
+                           "magX" : b'\x06',
+                           "magY" : b'\x07',
+                           "magZ" : b'\x08',
+                           "imut" : b'\x09',
+                           "pres" : b'\x0A',
+                           "temp" : b'\x0B' 
                            }
                }
 
@@ -164,7 +212,10 @@ sensor_frame_sizes = {
                       controller_names[2]: 44,
 
                       # Flight Computer rev 1.0
-                      controller_names[3]: 32
+                      controller_names[3]: 32,
+
+                      # Flight Computer rev 2.0
+                      controller_names[4]: 32
                      }
 
 # Sensor raw readout conversion functions
@@ -184,6 +235,21 @@ sensor_conv_funcs = {
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
+                           "accX" : sensor_conv.imu_accel,
+                           "accY" : sensor_conv.imu_accel,
+                           "accZ" : sensor_conv.imu_accel,
+                           "gyroX": sensor_conv.imu_gyro,
+                           "gyroY": sensor_conv.imu_gyro,
+                           "gyroZ": sensor_conv.imu_gyro,
+                           "magX" : None                  ,
+                           "magY" : None                  ,
+                           "magZ" : None                  ,
+                           "imut" : None                  ,
+                           "pres" : sensor_conv.baro_press,
+                           "temp" : sensor_conv.baro_temp 
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
                            "accX" : sensor_conv.imu_accel,
                            "accY" : sensor_conv.imu_accel,
                            "accZ" : sensor_conv.imu_accel,
@@ -228,6 +294,21 @@ sensor_units = {
                            "imut" : None   ,
                            "pres" : "kPa",
                            "temp" : "C" 
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
+                           "accX" : "m/s/s",
+                           "accY" : "m/s/s",
+                           "accZ" : "m/s/s",
+                           "gyroX": "deg/s",
+                           "gyroY": "deg/s",
+                           "gyroZ": "deg/s",
+                           "magX" : None   ,
+                           "magY" : None   ,
+                           "magZ" : None   ,
+                           "imut" : None   ,
+                           "pres" : "kPa",
+                           "temp" : "C" 
                            }
                }
 
@@ -235,6 +316,21 @@ sensor_units = {
 sensor_indices = {
                   # Flight Computer rev 1.0
                   controller_names[3]: {
+                            "accX" : 1,
+                            "accY" : 2,
+                            "accZ" : 3,
+                            "gyroX": 4,
+                            "gyroY": 5,
+                            "gyroZ": 6,
+                            "magX" : 7,
+                            "magY" : 8,
+                            "magZ" : 9,
+                            "imut" : 10,
+                            "pres" : 11,
+                            "temp" : 12 
+                                       },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
                             "accX" : 1,
                             "accY" : 2,
                             "accZ" : 3,
@@ -279,14 +375,30 @@ sensor_formats = {
                            "imut" : int  ,
                            "pres" : float,
                            "temp" : float 
+                           },
+                  # Flight Computer rev 2.0
+                  controller_names[4]: {
+                           "accX" : int  ,
+                           "accY" : int  ,
+                           "accZ" : int  ,
+                           "gyroX": int  ,
+                           "gyroY": int  ,
+                           "gyroZ": int  ,
+                           "magX" : int  ,
+                           "magY" : int  ,
+                           "magZ" : int  ,
+                           "imut" : int  ,
+                           "pres" : float,
+                           "temp" : float 
                            }
-
                  }
 
 # Filenames for flash extract outputs 
 sensor_data_filenames = {
                         # Flight Computer rev 1.0
-                        controller_names[3]: "output/sensor_data.txt"
+                        controller_names[3]: "output/sensor_data.txt",
+                        # Flight Computer rev 2.0
+                        controller_names[4]: "output/sensor_data.txt"
                         }
 
 
@@ -298,10 +410,10 @@ sensor_data_filenames = {
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         get_bit                                                                    #
+#         get_bit                                                                  #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         extracts a specific bit from an integer                                    #
+#         extracts a specific bit from an integer                                  #
 #                                                                                  #
 ####################################################################################
 def get_bit( num, bit_index ):
@@ -315,10 +427,10 @@ def get_bit( num, bit_index ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         byte_array_to_int                                                          #
+#         byte_array_to_int                                                        #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Returns an integer corresponding the hex number passed into the function   #
+#         Returns an integer corresponding the hex number passed into the function #
 #       as a byte array. Assumes least significant bytes are first                 #
 #                                                                                  #
 ####################################################################################
@@ -337,11 +449,12 @@ def byte_array_to_int( byte_array ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         byte_array_to_float                                                        #
+#         byte_array_to_float                                                      #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Returns an floating point number corresponding the hex number passed into  #
-#       the function as a byte array. Assumes least significant bytes are first    #
+#         Returns an floating point number corresponding the hex number passed     # 
+#         into the function as a byte array. Assumes least significant bytes are   # 
+#         first                                                                    #
 #                                                                                  #
 ####################################################################################
 def byte_array_to_float( byte_array ):
@@ -353,10 +466,10 @@ def byte_array_to_float( byte_array ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         get_raw_sensor_readouts                                                    #
+#         get_raw_sensor_readouts                                                  #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Converts an array of bytes into a dictionary containing the raw sensor     #
+#         Converts an array of bytes into a dictionary containing the raw sensor   #
 #       readouts in integer format                                                 #
 #                                                                                  #
 ####################################################################################
@@ -390,10 +503,11 @@ def get_raw_sensor_readouts( controller, sensors, sensor_bytes ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         conv_raw_sensor_readouts                                                   #
+#         conv_raw_sensor_readouts                                                 #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         Converts raw sensor readouts in integer format into the appropriate format #
+#         Converts raw sensor readouts in integer format into the appropriate      # 
+#         format                                                                   #
 #                                                                                  #
 ####################################################################################
 def conv_raw_sensor_readouts( controller, raw_readouts ):
@@ -910,10 +1024,10 @@ def sensor( Args, serialObj ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-#         flash                                                                      #
+#         flash                                                                    #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-#         read and write data to a controller's extenral flash                       #
+#         read and write data to a controller's extenral flash                     #
 #                                                                                  #
 ####################################################################################
 def flash(Args, serialObj):
@@ -997,7 +1111,8 @@ def flash(Args, serialObj):
     # Supported flash boards
     flash_supported_boards = [
                    "Liquid Engine Controller (L0002 Rev 4.0)",
-                   "Flight Computer (A0002 Rev 1.0)"
+                   "Flight Computer (A0002 Rev 1.0)"         ,
+                   "Flight Computer (A0002 Rev 2.0)"
                              ]
 
 
@@ -1489,7 +1604,8 @@ def ignite(Args, serialObj):
     # Supported boards
     supported_boards = [
                         controller_names[2], # Engine controller rev 4
-                        controller_names[3]  # Flight computer rev 1
+                        controller_names[3],  # Flight computer rev 1
+                        controller_names[4]  # Flight computer rev 2
                        ]
 
     # Command type -- subcommand function
