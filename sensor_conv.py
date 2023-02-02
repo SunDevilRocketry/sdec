@@ -214,12 +214,8 @@ def imu_gyro( readout ):
 ####################################################################################
 def baro_temp( readout ):
 	
-	# Convert to degrees C 
-	baro_temp_setting = (125.0/(2**(16) - 1))# degrees C/ LSB 
-	baro_temp_offset  = -40
-	
 	# Final conversion
-	return float(readout)*baro_temp_setting + baro_temp_offset
+	return readout 
 
 ## baro_temp ##
 
