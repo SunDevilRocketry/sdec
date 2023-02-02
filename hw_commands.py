@@ -43,7 +43,7 @@ controller_codes = [
                   b'\x01', # Engine Controller, Rev 3.0
                   b'\x02', # Valve Controller , Rev 2.0 
                   b'\x03', # Engine Controller, Rev 4.0 
-                  b'\x04'  # Flight Computer,   Rev 1.0
+                  b'\x04', # Flight Computer,   Rev 1.0
                   b'\x05'  # Flight Computer,   Rev 2.0
                    ]
 
@@ -171,8 +171,8 @@ sensor_codes = {
                            "pt5": b'\x05',
                            "pt6": b'\x06',
                            "pt7": b'\x07',
-                           "tc": b'\x08',
-                           "lc": b'\x09' 
+                           "tc" : b'\x08',
+                           "lc" : b'\x09' 
                            },
                   # Flight Computer rev 1.0
                   controller_names[3]: {
