@@ -162,7 +162,7 @@ def imu_accel( readout ):
 
 	# Convert to acceleration	
 	num_bits   = 16
-	g_setting  = 2 # +- 2g
+	g_setting  = 16  # +- 16g
 	g          = 9.8 # m/s^2
 	accel_step = 2*g_setting*g/float(2**(num_bits) - 1)
 	
