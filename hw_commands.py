@@ -220,8 +220,8 @@ sensor_codes = {
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
-                           "pres" : b'\x0A',
-                           "temp" : b'\x0B' 
+                           "pres" : b'\x00',
+                           "temp" : b'\x01' 
                            }
                }
 
