@@ -40,11 +40,12 @@ else:
 
 # Controller identification codes
 controller_codes = [ 
-                  b'\x01', # Engine Controller, Rev 3.0
-                  b'\x02', # Valve Controller , Rev 2.0 
-                  b'\x03', # Engine Controller, Rev 4.0 
-                  b'\x04', # Flight Computer,   Rev 1.0
-                  b'\x05'  # Flight Computer,   Rev 2.0
+                  b'\x01', # Engine Controller,    Rev 3.0
+                  b'\x02', # Valve Controller ,    Rev 2.0 
+                  b'\x03', # Engine Controller,    Rev 4.0 
+                  b'\x04', # Flight Computer,      Rev 1.0
+                  b'\x05', # Flight Computer,      Rev 2.0
+                  b'\x06'  # Flight Computer Lite, Rev 1.0
                    ]
 
 # Controller Names
@@ -53,7 +54,8 @@ controller_names = [
                    "Valve Controller (L0005 Rev 2.0)"        ,
                    "Liquid Engine Controller (L0002 Rev 4.0)",
                    "Flight Computer (A0002 Rev 1.0)"         ,
-                   "Flight Computer (A0002 Rev 2.0)"
+                   "Flight Computer (A0002 Rev 2.0)"         ,
+                   "Flight Computer Lite (A0007 Rev 1.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -62,13 +64,14 @@ controller_descriptions = {
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
                   b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
                   b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
-                  b'\x05': "Flight Computer (A0002 Rev 2.0)"
+                  b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
+                  b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"
                           }
 
 # Lists of sensors on each controller
 controller_sensors = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": "Pressure Transducer 0",
                            "pt1": "Pressure Transducer 1",
                            "pt2": "Pressure Transducer 2",
@@ -80,8 +83,8 @@ controller_sensors = {
                            "lc" : "Load Cell            ", 
                            "tc" : "Theromcouple         "
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : "Accelerometer X       ",
                            "accY" : "Accelerometer Y       ",
                            "accZ" : "Accelerometer Z       ",
@@ -95,8 +98,8 @@ controller_sensors = {
                            "pres" : "Barometric Pressure   ",
                            "temp" : "Barometric Temperature"
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : "Accelerometer X       ",
                            "accY" : "Accelerometer Y       ",
                            "accZ" : "Accelerometer Z       ",
@@ -109,13 +112,19 @@ controller_sensors = {
                            "imut" : "IMU Die Temperature   ",
                            "pres" : "Barometric Pressure   ",
                            "temp" : "Barometric Temperature"
+                           },
+                # Flight Computer Lite Rev 1.0
+                controller_names[5]: {
+                           "pres" : "Barometric Pressure   ",
+                           "temp" : "Barometric Temperature"
                            }
+                
                      }
 
 # Size of raw sensor readouts in bytes
 sensor_sizes = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": 4,
                            "pt1": 4,
                            "pt2": 4,
@@ -127,8 +136,8 @@ sensor_sizes = {
                            "tc" : 4,
                            "lc" : 4            
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : 2,
                            "accY" : 2,
                            "accZ" : 2,
@@ -142,8 +151,8 @@ sensor_sizes = {
                            "pres" : 4,
                            "temp" : 4 
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : 2,
                            "accY" : 2,
                            "accZ" : 2,
@@ -156,13 +165,18 @@ sensor_sizes = {
                            "imut" : 2,
                            "pres" : 4,
                            "temp" : 4 
+                           },
+                # Flight Computer Lite rev 1.0
+                controller_names[5]: {
+                           "pres" : 4,
+                           "temp" : 4 
                            }
                }
 
 # Sensor poll codes
 sensor_codes = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": b'\x00',
                            "pt1": b'\x01',
                            "pt2": b'\x02',
@@ -174,8 +188,8 @@ sensor_codes = {
                            "tc" : b'\x08',
                            "lc" : b'\x09' 
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : b'\x00',
                            "accY" : b'\x01',
                            "accZ" : b'\x02',
@@ -189,8 +203,8 @@ sensor_codes = {
                            "pres" : b'\x0A',
                            "temp" : b'\x0B' 
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : b'\x00',
                            "accY" : b'\x01',
                            "accZ" : b'\x02',
@@ -203,25 +217,33 @@ sensor_codes = {
                            "imut" : b'\x09',
                            "pres" : b'\x0A',
                            "temp" : b'\x0B' 
+                           },
+                # Flight Computer Lite Rev 1.0
+                controller_names[5]: {
+                           "pres" : b'\x0A',
+                           "temp" : b'\x0B' 
                            }
                }
 
 # Size of a frame of data in flash memory
 sensor_frame_sizes = {
-                      # Engine Controller rev 4.0
-                      controller_names[2]: 44,
+                    # Engine Controller rev 4.0
+                    controller_names[2]: 44,
 
-                      # Flight Computer rev 1.0
-                      controller_names[3]: 32,
+                    # Flight Computer rev 1.0
+                    controller_names[3]: 32,
 
-                      # Flight Computer rev 2.0
-                      controller_names[4]: 32
+                    # Flight Computer rev 2.0
+                    controller_names[4]: 32,
+
+                    # Flight Computer Lite rev 1.0
+                    controller_names[5]: 12
                      }
 
 # Sensor raw readout conversion functions
 sensor_conv_funcs = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": sensor_conv.pt_pressure           ,
                            "pt1": sensor_conv.pt_pressure           ,
                            "pt2": sensor_conv.pt_pressure           ,
@@ -233,8 +255,8 @@ sensor_conv_funcs = {
                            "lc" : sensor_conv.loadcell_force        , 
                            "tc" : sensor_conv.tc_temp
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : sensor_conv.imu_accel,
                            "accY" : sensor_conv.imu_accel,
                            "accZ" : sensor_conv.imu_accel,
@@ -248,8 +270,8 @@ sensor_conv_funcs = {
                            "pres" : sensor_conv.baro_press,
                            "temp" : sensor_conv.baro_temp 
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : sensor_conv.imu_accel,
                            "accY" : sensor_conv.imu_accel,
                            "accZ" : sensor_conv.imu_accel,
@@ -262,13 +284,18 @@ sensor_conv_funcs = {
                            "imut" : None                  ,
                            "pres" : sensor_conv.baro_press,
                            "temp" : sensor_conv.baro_temp 
+                           },
+                # Flight Computer rev 1.0
+                controller_names[5]: {
+                           "pres" : sensor_conv.baro_press,
+                           "temp" : sensor_conv.baro_temp 
                            }
                     }
 
 # Sensor readout units
 sensor_units = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": "psi",
                            "pt1": "psi",
                            "pt2": "psi",
@@ -280,8 +307,8 @@ sensor_units = {
                            "lc" : "lb" , 
                            "tc" : "C"
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : "m/s/s",
                            "accY" : "m/s/s",
                            "accZ" : "m/s/s",
@@ -295,8 +322,8 @@ sensor_units = {
                            "pres" : "kPa",
                            "temp" : "C" 
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : "m/s/s",
                            "accY" : "m/s/s",
                            "accZ" : "m/s/s",
@@ -309,13 +336,18 @@ sensor_units = {
                            "imut" : None   ,
                            "pres" : "kPa",
                            "temp" : "C" 
+                           },
+                # Flight Computer rev 1.0
+                controller_names[5]: {
+                           "pres" : "kPa",
+                           "temp" : "C" 
                            }
                }
 
 # Inidices of sensors in output file 
 sensor_indices = {
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                             "accX" : 1,
                             "accY" : 2,
                             "accZ" : 3,
@@ -329,8 +361,8 @@ sensor_indices = {
                             "pres" : 11,
                             "temp" : 12 
                                        },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                             "accX" : 1,
                             "accY" : 2,
                             "accZ" : 3,
@@ -343,13 +375,18 @@ sensor_indices = {
                             "imut" : 10,
                             "pres" : 11,
                             "temp" : 12 
-                                       }
+                                       },
+                # Flight Computer Lite rev 1.0
+                controller_names[5]: {
+                            "pres" : 1,
+                            "temp" : 2 
+                                     }
                  }
 
 # Sensor raw readout formats
 sensor_formats = {
-                  # Engine Controller rev 4.0
-                  controller_names[2]: {
+                # Engine Controller rev 4.0
+                controller_names[2]: {
                            "pt0": int,
                            "pt1": int,
                            "pt2": int,
@@ -361,8 +398,8 @@ sensor_formats = {
                            "tc" : int,
                            "lc" : int 
                            },
-                  # Flight Computer rev 1.0
-                  controller_names[3]: {
+                # Flight Computer rev 1.0
+                controller_names[3]: {
                            "accX" : int  ,
                            "accY" : int  ,
                            "accZ" : int  ,
@@ -376,8 +413,8 @@ sensor_formats = {
                            "pres" : float,
                            "temp" : float 
                            },
-                  # Flight Computer rev 2.0
-                  controller_names[4]: {
+                # Flight Computer rev 2.0
+                controller_names[4]: {
                            "accX" : int  ,
                            "accY" : int  ,
                            "accZ" : int  ,
@@ -390,15 +427,22 @@ sensor_formats = {
                            "imut" : int  ,
                            "pres" : float,
                            "temp" : float 
+                           },
+                # Flight Computer rev 1.0
+                controller_names[5]: {
+                           "pres" : float,
+                           "temp" : float 
                            }
                  }
 
 # Filenames for flash extract outputs 
 sensor_data_filenames = {
                         # Flight Computer rev 1.0
-                        controller_names[3]: "output/sensor_data.txt",
+                        controller_names[3]: "output/flight_comp_rev1_sensor_data.txt",
                         # Flight Computer rev 2.0
-                        controller_names[4]: "output/sensor_data.txt"
+                        controller_names[4]: "output/flight_comp_rev2_sensor_data.txt",
+                        # Flight Computer Lite rev 1.0
+                        controller_names[5]: "output/flight_comp_lite_rev1_sensor_data.txt"
                         }
 
 
@@ -1112,7 +1156,8 @@ def flash(Args, serialObj):
     flash_supported_boards = [
                    "Liquid Engine Controller (L0002 Rev 4.0)",
                    "Flight Computer (A0002 Rev 1.0)"         ,
-                   "Flight Computer (A0002 Rev 2.0)"
+                   "Flight Computer (A0002 Rev 2.0)"         ,
+                   "Flight Computer Lite (A0007 Rev 1.0)"
                              ]
 
 

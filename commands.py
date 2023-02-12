@@ -35,11 +35,12 @@ else:
 
 # Controller identification codes
 controller_codes = [ 
-                  b'\x01', # Engine Controller, Rev 3.0
-                  b'\x02', # Valve Controller , Rev 2.0 
-                  b'\x03', # Engine Controller, Rev 4.0 
-				  b'\x04', # Flight Computer,   Rev 1.0
-				  b'\x05'  # Flight Computer,   Rev 2.0
+                  b'\x01', # Engine Controller,    Rev 3.0
+                  b'\x02', # Valve Controller ,    Rev 2.0 
+                  b'\x03', # Engine Controller,    Rev 4.0 
+				  b'\x04', # Flight Computer,      Rev 1.0
+				  b'\x05', # Flight Computer,      Rev 2.0
+				  b'\x06'  # Flight Computer Lite, Rev 1.0
                    ]
 
 # Controller Names
@@ -48,7 +49,8 @@ controller_names = [
                    "Valve Controller (L0005 Rev 2.0)"        ,
                    "Liquid Engine Controller (L0002 Rev 4.0)",
 				   "Flight Computer (A0002 Rev 1.0)"         ,
-				   "Flight Computer (A0002 Rev 2.0)"
+				   "Flight Computer (A0002 Rev 2.0)"         ,
+                   "Flight Computer Lite (A0007 Rev 1.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -57,7 +59,8 @@ controller_descriptions = {
                   b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
                   b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
 				  b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
-				  b'\x05': "Flight Computer (A0002 Rev 2.0)"
+				  b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
+                  b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"
                           }
 
 
