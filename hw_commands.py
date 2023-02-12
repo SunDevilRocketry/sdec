@@ -1159,6 +1159,11 @@ def flash(Args, serialObj):
                    "Flight Computer (A0002 Rev 2.0)"         ,
                    "Flight Computer Lite (A0007 Rev 1.0)"
                              ]
+    
+    # Extract blocks
+    extract_frame_size       = sensor_frame_sizes[serialObj.controller]
+    extract_num_frames       = 524288 // extract_frame_size
+    extract_num_unused_bytes = 524288 %  extract_frame_size
 
 
     ################################################################################
@@ -1574,11 +1579,14 @@ def flash(Args, serialObj):
         # Recieve Data in 32 byte blocks
         # Flash contains 4096 blocks of data
         rx_byte_blocks = []
-        for i in range( 16_384 ):
+        for i in range( extract_num_frames ):
             if ( i%100 == 0 ):
                 print( "Reading block " + str(i) + "..."  )
             rx_sensor_frame_block = get_sensor_frame_bytes( serialObj )
             rx_byte_blocks.append( rx_sensor_frame_block )
+        
+        # Receive the unused bytes
+        unused_bytes = serialObj.readBytes( extract_num_unused_bytes )
 
         # Recieve the status byte from the engine controller
         return_code = serialObj.readByte()
@@ -1590,7 +1598,7 @@ def flash(Args, serialObj):
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
 
         # Export the data to txt files
-        with open( "output/sensor_data.txt", 'w' ) as file:
+        with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
             for sensor_frame in sensor_frames:
                 for val in sensor_frame:
                     file.write( str( val ) )
