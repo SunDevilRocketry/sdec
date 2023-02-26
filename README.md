@@ -135,6 +135,18 @@ connection to the engine controller or flight computer.</p>
     </ul>
 </p>
 
+<h2> A0002 Flight Computer Commands: </h2>
+
+<h3>dual-deploy</h3>
+<p>Opcode: 0xA0</p>
+<p>Description: Allows the user to probe and test the flight computer's dual deploy
+system. Requires a connection to a flight computer running the dual deploy firmware.</p>
+<p>Usage: dual-deploy [SUBCOMMAND]</p>
+<p>Subcommands: </p>
+<p>status: Report the altimeter main chute deployment altitude, drogue delay, and 
+event detection sampling rates.</p>
+<p>help: Shows supported subcommands and descriptions</p>
+
 <h2> L0002 Liquid Engine Controller Commands: </h2>
 
 <h3>power</h3>
