@@ -19,8 +19,8 @@ import serial.tools.list_ports
 # Project Modules                                             #
 ###############################################################
 import commands
-from commands import display_help_info
-from config   import *
+from   commands import display_help_info
+from   config   import *
 
 
 ###############################################################

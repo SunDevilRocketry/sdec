@@ -25,6 +25,7 @@ import commands         # general terminal commands
 import hw_commands      # general hardware commands
 import valveController  # valve controller commands
 import engineController # engine controller commands
+import flightComputer   # flight computer commands
 from   config import *  # global settings
 
 
@@ -34,17 +35,18 @@ from   config import *  # global settings
 
 # List of terminal commands
 command_list = { 
-                 "exit"     : commands.exitFunc      ,
-                 "help"     : commands.helpFunc      ,
-                 "clear"    : commands.clearConsole  ,
-                 "comports" : commands.comports      ,
-                 "ping"     : commands.ping          ,
-				 "connect"  : commands.connect       ,
-                 "sol"      : valveController.sol    ,
-                 "power"    : engineController.power ,
-                 "ignite"   : hw_commands.ignite     ,
-                 "flash"    : hw_commands.flash      ,
-                 "sensor"   : hw_commands.sensor
+                 "exit"       : commands.exitFunc      ,
+                 "help"       : commands.helpFunc      ,
+                 "clear"      : commands.clearConsole  ,
+                 "comports"   : commands.comports      ,
+                 "ping"       : commands.ping          ,
+				 "connect"    : commands.connect       ,
+                 "sol"        : valveController.sol    ,
+                 "power"      : engineController.power ,
+                 "ignite"     : hw_commands.ignite     ,
+                 "flash"      : hw_commands.flash      ,
+                 "sensor"     : hw_commands.sensor     ,
+                 "dual-deploy": flightComputer.dual_deploy
                 }
 
 
@@ -66,6 +68,7 @@ class terminalData:
         self.serialObj           = serial.Serial()
         self.config_status       = False 
         self.controller          = None
+        self.firmware            = None
         self.flash_write_enabled = False 
         self.sensor_readouts     = {}
 
@@ -160,12 +163,14 @@ class terminalData:
             return rx_bytes 
 
 	# Set the SDR controller to enable board-specific commands
-    def set_SDR_controller(self, controller_name):
+    def set_SDR_controller(self, controller_name, firmware_name = None ):
         self.controller = controller_name
+        self.firmware   = firmware_name
 
 	# Reset the SDR controller to disable board-specific commands
     def reset_SDR_controller(self):
-        self.controller = None
+        self.controller    = None
+        self.firmware_name = None
 
 
 ####################################################################################

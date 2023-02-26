@@ -621,14 +621,18 @@ def connect( Args, serialObj ):
 			serialObj = comports( ['-d'], serialObj )
 			return serialObj
 		else:
+			# Get the firmware version if supported
+			if ( controller_descriptions[controller_response] in 
+			     firmware_id_supported_boards ):
+				firmware_version = firmware_ids[serialObj.readByte()]
+
 			# Set global controller variable 
 			serialObj.set_SDR_controller(
-                     controller_descriptions[controller_response]
-                                        )
-									
-			# Get the firmware version if supported
-			if ( serialObj.controller in firmware_id_supported_boards ):
-				firmware_version = firmware_ids[serialObj.readByte()]
+						controller_descriptions[controller_response],
+					    firmware_version	
+									    )
+
+            # Display connection info									
 			print( "Connection established with " + 
                     controller_descriptions[controller_response] )
 			if ( serialObj.controller in firmware_id_supported_boards ):
