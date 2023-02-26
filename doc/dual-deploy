@@ -1,0 +1,8 @@
+DUAL-DEPLOY: 
+
+USAGE: dual-deploy [SUBCOMMAND]
+
+SUBCOMMANDS:
+	dual-deploy status: Report the altimeter main chute deployment altitude, drogue delay, and 
+                        event detection sampling rates 
+	dual-deploy help  : Displays subcommand information
