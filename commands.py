@@ -63,6 +63,18 @@ controller_descriptions = {
                   b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"
                           }
 
+# Firmware Ids
+firmware_ids = {
+                b'\x01': "Terminal"   ,
+				b'\x02': "Data Logger",
+				b'\x03': "Dual Deploy"
+               }
+			
+# Boards that report firmware ids with the connect command
+firmware_id_supported_boards = [
+                controller_names[4]
+                               ]
+
 
 ####################################################################################
 # Shared Procedures                                                                #
@@ -520,20 +532,23 @@ def connect( Args, serialObj ):
 	##############################################################################
 	# local variables                                                            #
 	##############################################################################
-	opcode = b'\x02'
+	opcode           = b'\x02'
 
 	# Options Dictionary
-	connect_inputs = { 
+	connect_inputs   = { 
 					   '-h' : 'Display help info',
 					   '-p' : 'Specify the connection serial port',
 					   '-d' : 'Disconnect from active serial port'
-                      }
+                       }
     
 	# Maximum number of arguments
-	max_args = 2
+	max_args         = 2
 
 	# Command type -- subcommand function
-	command_type = 'default'
+	command_type     = 'default'
+
+	# Firmware version
+	firmware_version = None
 
 	##############################################################################
 	# Basic inputs parsing                                                       #
@@ -589,11 +604,16 @@ def connect( Args, serialObj ):
     # Port Option (-p)                                                           #
 	##############################################################################
 	elif ( user_option == '-p' ):
+		# Open the serial comport
 		serialObj = comports(
                             ['-c', user_port, '921600'], 
                             serialObj
                             )
+		
+		# Send the connect opcode 
 		serialObj.sendByte( opcode )
+
+		# Get the board identifier 
 		controller_response = serialObj.readByte()
 		if ( (controller_response == b''                    ) or
              (not (controller_response in controller_codes) ) ):
@@ -601,11 +621,18 @@ def connect( Args, serialObj ):
 			serialObj = comports( ['-d'], serialObj )
 			return serialObj
 		else:
-			print( "Connection established with " + 
-                    controller_descriptions[controller_response] )
+			# Set global controller variable 
 			serialObj.set_SDR_controller(
                      controller_descriptions[controller_response]
                                         )
+									
+			# Get the firmware version if supported
+			if ( serialObj.controller in firmware_id_supported_boards ):
+				firmware_version = firmware_ids[serialObj.readByte()]
+			print( "Connection established with " + 
+                    controller_descriptions[controller_response] )
+			if ( serialObj.controller in firmware_id_supported_boards ):
+				print( "Firmware: " + firmware_version )
 			return serialObj
 		
 
