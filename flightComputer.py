@@ -20,6 +20,7 @@ import time
 
 # Project imports
 from   config      import *
+from   hw_commands import byte_array_to_int
 import commands
 
 ####################################################################################
@@ -66,6 +67,14 @@ def dual_deploy( Args, serialObj ):
     # Maximum number of arguments
     max_args = 1
 
+    # Opcode
+    opcode = b'\xA0'
+
+    # Subcommand opcodes
+    sub_opcodes = {
+                  'status': b'\x01'
+                  }
+
     # Command type -- subcommand function
     command_type = 'subcommand'
 
@@ -110,8 +119,28 @@ def dual_deploy( Args, serialObj ):
     # dual-deploy status                                                           #
     ################################################################################
     elif ( subcommand == "status" ):
-        print( "Display status here" )
+        # Send the dual-deploy/status opcode 
+        serialObj.sendByte( opcode                )
+        serialObj.sendByte( sub_opcodes['status'] )
 
+        # Receive the recovery programmed settings
+        main_alt     = byte_array_to_int( serialObj.readBytes( 4 ) )
+        drogue_delay = byte_array_to_int( serialObj.readBytes( 4 ) )
+
+        # Receive the sample rates, ms/sample
+        ld_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
+        ad_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
+        md_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
+        zd_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
+
+        # Display Results
+        print( "Main Deployment Altitude        : " + str( main_alt       ) + " ft" )
+        print( "Drogue Delay                    : " + str( drogue_delay   ) + " s"  )
+        print( "Launch Detect Sample Rate       : " + str( ld_sample_rate ) + " ms" )
+        print( "Apogee Detect Sample Rate       : " + str( ad_sample_rate ) + " ms" )
+        print( "Main Altitude Detect Sample Rate: " + str( md_sample_rate ) + " ms" )
+        print( "Landing Detect Sample Rate      : " + str( zd_sample_rate ) + " ms" )
+        return serialObj
     return serialObj 
 ## dual_deploy ##
 
