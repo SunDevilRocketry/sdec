@@ -77,6 +77,8 @@ Terminal Control Commands:
     dual-deploy [SUBCOMMAND]: Allows the user to probe and test the flight computer's dual deploy
                               system. Requires a connection to a flight computer running the dual deploy firmware        
 		subcommands:
-			dual-deploy status: Report the altimeter main chute deployment altitude, drogue delay, and 
-								event detection sampling rates 
-			dual-deploy help  : Displays subcommand information
+			dual-deploy status : Report the altimeter main chute deployment altitude, drogue delay, and 
+								 event detection sampling rates 
+            dual-deploy extract: Retrieve all flight data from the flight computer
+            dual-deploy plot   : Plot the most recent flight data from the flight computer
+			dual-deploy help   : Displays subcommand information

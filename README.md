@@ -145,6 +145,8 @@ system. Requires a connection to a flight computer running the dual deploy firmw
 <p>Subcommands: </p>
 <p>status: Report the altimeter main chute deployment altitude, drogue delay, and 
 event detection sampling rates.</p>
+<p>extract: Retrieve all flight data from the computer</p>
+<p>plot:    Plot flight data and events from latest flight</p>
 <p>help: Shows supported subcommands and descriptions</p>
 
 <h2> L0002 Liquid Engine Controller Commands: </h2>

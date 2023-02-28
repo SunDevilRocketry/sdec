@@ -3,6 +3,8 @@ DUAL-DEPLOY:
 USAGE: dual-deploy [SUBCOMMAND]
 
 SUBCOMMANDS:
-	dual-deploy status: Report the altimeter main chute deployment altitude, drogue delay, and 
-                        event detection sampling rates 
-	dual-deploy help  : Displays subcommand information
+	dual-deploy status : Report the altimeter main chute deployment altitude, drogue delay, and 
+                         event detection sampling rates 
+	dual-deploy extract: Retrieve all flight data from the flight computer
+	dual-deploy plot   : Plot the most recent flight data from the flight computer
+	dual-deploy help   : Displays subcommand information
