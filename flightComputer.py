@@ -172,7 +172,7 @@ def dual_deploy( Args, serialObj ):
 
         # Receive the flight data
         rx_blocks = []
-        for i in range( 43008 ):
+        for i in range( 40960 ):
             if ( i%100 == 0 ):
                 print( "Reading block " + str( i ) )
             rx_frame_block = serialObj.readBytes( 12 )
@@ -196,14 +196,15 @@ def dual_deploy( Args, serialObj ):
         while( os.path.exists( output_dir ) ):
             test_num += 1
             output_dir = output_dir + "/data" + str( test_num )
+        os.mkdir( output_dir )
         
         # Export the header data
         with open( output_dir + "/header.txt", "a") as file:
-            file.write( "Main Altitude     : " + str( main_alt           ) + " ft" )
-            file.write( "Drogue Delay      : " + str( drogue_delay       ) + " s"  )
-            file.write( "Main Deploy Time  : " + str( main_deploy_time   ) + " ms" )
-            file.write( "Drogue Deploy Time: " + str( drogue_deploy_time ) + " ms" )
-            file.write( "Landing Time      : " + str( land_time          ) + " ms" )
+            file.write( "Main Altitude     : " + str( main_alt           ) + " ft \n" )
+            file.write( "Drogue Delay      : " + str( drogue_delay       ) + " s  \n" )
+            file.write( "Main Deploy Time  : " + str( main_deploy_time   ) + " ms \n" )
+            file.write( "Drogue Deploy Time: " + str( drogue_deploy_time ) + " ms \n" )
+            file.write( "Landing Time      : " + str( land_time          ) + " ms \n" )
 
         # Export the flight data
         with open( output_dir + "/data.txt", 'w' ) as file:
