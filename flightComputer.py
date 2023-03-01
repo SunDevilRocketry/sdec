@@ -188,14 +188,14 @@ def dual_deploy( Args, serialObj ):
         run_date = run_date.strftime("%m-%d-%Y")
         if ( not ( os.path.exists( "output/dual-deploy" ) ) ):
             os.mkdir( "output/dual-deploy" )
-        output_dir = "output/dual-deploy/" + run_date
-        if ( not ( os.path.exists( output_dir ) ) ):
-            os.mkdir( output_dir )
+        base_output_dir = "output/dual-deploy/" + run_date
+        if ( not ( os.path.exists( base_output_dir ) ) ):
+            os.mkdir( base_output_dir )
         test_num = 0
-        output_dir = output_dir + "/data" + str( test_num )
+        output_dir = base_output_dir + "/data" + str( test_num )
         while( os.path.exists( output_dir ) ):
             test_num += 1
-            output_dir = output_dir + "/data" + str( test_num )
+            output_dir = base_output_dir + "/data" + str( test_num )
         os.mkdir( output_dir )
         
         # Export the header data
