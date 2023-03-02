@@ -502,6 +502,9 @@ def byte_array_to_int( byte_array ):
 #                                                                                  #
 ####################################################################################
 def byte_array_to_float( byte_array ):
+    # Check to NaN
+    if ( byte_array == [b'\xFF', b'\xFF', b'\xFF', b'\xFF'] ):
+        byte_array = [b'\x00', b'\x00', b'\x00', b'\x00']
     byte_array_joined = b''.join( byte_array )
     return struct.unpack( 'f', byte_array_joined )[0]
 ## byte_array_to_float ##
@@ -727,7 +730,7 @@ def sensor_extract_data_filter( data ):
         search_index = ( (end_index - start_index)//2 ) + start_index
 
         # Check if two consecutive rows are identically equal
-        rows_equal = ( data[search_index][0:11] == data[search_index+1][0:11] )
+        rows_equal = ( data[search_index] == data[search_index+1] )
 
         # Check for exit condition
         if   (   search_index       == start_index ):
