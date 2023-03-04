@@ -18,6 +18,7 @@ import sys
 import os
 import time
 import datetime
+from   matplotlib import pyplot as plt
 
 # Project imports
 from   config      import *
@@ -65,7 +66,8 @@ def dual_deploy( Args, serialObj ):
     dual_deploy_inputs = { 
                        'help'   : {},
                        'status' : {},
-                       'extract': {}
+                       'extract': {},
+                       'plot'   : {}
                          }
     
     # Maximum number of arguments
@@ -99,8 +101,8 @@ def dual_deploy( Args, serialObj ):
 
     # Check for active flight computer connection running the dual deploy firmware
     if ( serialObj.controller not in supported_boards ):
-        print( "Error: The dual-deploy command requires an active connection to \
-               a flight computer.")
+        print( "Error: The dual-deploy command requires an active connection to " +
+               "a flight computer.")
         return serialObj
     
     # Check that the flight computer is running the dual deploy firmware
@@ -215,6 +217,91 @@ def dual_deploy( Args, serialObj ):
                 file.write( '\n' )    
         return serialObj
         # dual-deploy extract #
+
+    ################################################################################
+    # dual-deploy plot #
+    ################################################################################
+    elif ( subcommand == 'plot' ):
+
+        # Find most recent date of data extraction 
+        base_data_dirs = os.listdir( "output/dual-deploy" )
+        max_month = 1
+        for base_data_dir in base_data_dirs:
+            month = base_data_dir[0:2]
+            month = int( month )
+            if ( month >= max_month ):
+                max_month = month
+            else:
+                base_data_dirs.remove( base_data_dir )
+        max_day = 0
+        for base_data_dir in base_data_dirs:
+            day = base_data_dir[3:5]
+            day = int( day )
+            if ( day > max_day ):
+                max_day = day
+            else:
+                base_data_dirs.remove( base_data_dir )
+        base_data_dir = base_data_dirs[-1]
+        base_data_dir = "output/dual-deploy/" + base_data_dir
+
+        # Find most recent data
+        data_num = 0
+        while ( os.path.exists( base_data_dir + "/data" + str( data_num ) ) ):
+            data_num += 1
+        data_dir = base_data_dir + "/data" + str( data_num - 1 )
+        header_filename = data_dir + "/header.txt"
+        data_filename   = data_dir + "/data.txt"
+
+        # Extract the header data
+        with open( header_filename, "r" ) as file:
+            header_lines = file.readlines()
+            header_lines_split = []
+            for line in header_lines:
+                header_lines_split.append( line.split() )
+        main_deploy_alt    = float( header_lines_split[0][3] )
+        drogue_delay       = float( header_lines_split[1][3] )
+        main_deploy_time   = float( header_lines_split[2][4] )/1000.0
+        drogue_deploy_time = float( header_lines_split[3][3] )/1000.0
+        landing_time       = float( header_lines_split[4][3] )/1000.0
+
+        # Extract the flight data
+        sensor_time     = []
+        sensor_pressure = []
+        sensor_temp     = []
+        with open( data_filename, "r" ) as file:
+            data_lines = file.readlines()
+            for line in data_lines:
+                data_line_split = line.split()
+                sensor_time.append    ( float( data_line_split[0] ) )
+                sensor_pressure.append( float( data_line_split[1] ) )
+                sensor_temp.append    ( float( data_line_split[2] ) )
+        
+        # Plot Pressure data
+        plt.figure()
+        plt.plot( sensor_time, sensor_pressure )
+        plt.title( "Pressure Data" )
+        plt.xlabel( "Time, s" )
+        plt.ylabel( "Pressure, kPa" )
+        plt.grid()
+        plt.axvline( x = main_deploy_time  , color = 'b', label = "Main Deployment"   )
+        plt.axvline( x = drogue_deploy_time, color = 'r', label = "Drogue Deployment" )
+        plt.axvline( x = landing_time      , color = 'g', label = "Landed"            )
+        plt.legend()
+        plt.show( block = False )
+
+        # Plot Temperature Data
+        plt.figure()
+        plt.plot( sensor_time, sensor_temp )
+        plt.title( "Temperature Data" )
+        plt.xlabel( "Time, s" )
+        plt.ylabel( "Temperature, Degrees C" )
+        plt.grid()
+        plt.axvline( x = main_deploy_time  , color = 'b', label = "Main Deployment"   )
+        plt.axvline( x = drogue_deploy_time, color = 'r', label = "Drogue Deployment" )
+        plt.axvline( x = landing_time      , color = 'g', label = "Landed"            )
+        plt.legend()
+        plt.show( block = False )
+        return serialObj
 
     return serialObj 
 ## dual_deploy ##
