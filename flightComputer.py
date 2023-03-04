@@ -23,6 +23,7 @@ from   matplotlib import pyplot as plt
 # Project imports
 from   config      import *
 from   hw_commands import byte_array_to_int
+from   hw_commands import byte_array_to_float
 from   hw_commands import get_sensor_frames
 from   hw_commands import sensor_extract_data_filter
 import commands
@@ -134,6 +135,10 @@ def dual_deploy( Args, serialObj ):
         main_alt     = byte_array_to_int( serialObj.readBytes( 4 ) )
         drogue_delay = byte_array_to_int( serialObj.readBytes( 4 ) )
 
+        # Receive the ground pressure
+        ground_press = byte_array_to_float( serialObj.readBytes( 4 ) )
+        ground_press /= 1000
+
         # Receive the sample rates, ms/sample
         ld_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
         ad_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
@@ -141,12 +146,13 @@ def dual_deploy( Args, serialObj ):
         zd_sample_rate = byte_array_to_int( serialObj.readBytes( 4 ) )
 
         # Display Results
-        print( "Main Deployment Altitude        : " + str( main_alt       ) + " ft" )
-        print( "Drogue Delay                    : " + str( drogue_delay   ) + " s"  )
-        print( "Launch Detect Sample Rate       : " + str( ld_sample_rate ) + " ms" )
-        print( "Apogee Detect Sample Rate       : " + str( ad_sample_rate ) + " ms" )
-        print( "Main Altitude Detect Sample Rate: " + str( md_sample_rate ) + " ms" )
-        print( "Landing Detect Sample Rate      : " + str( zd_sample_rate ) + " ms" )
+        print( "Main Deployment Altitude        : " + str( main_alt       ) + " ft"  )
+        print( "Drogue Delay                    : " + str( drogue_delay   ) + " s"   )
+        print( "Ground Pressure                 : " + str( ground_press   ) + " kPa" )
+        print( "Launch Detect Sample Rate       : " + str( ld_sample_rate ) + " ms"  )
+        print( "Apogee Detect Sample Rate       : " + str( ad_sample_rate ) + " ms"  )
+        print( "Main Altitude Detect Sample Rate: " + str( md_sample_rate ) + " ms"  )
+        print( "Landing Detect Sample Rate      : " + str( zd_sample_rate ) + " ms"  )
         return serialObj
 
     ################################################################################
@@ -171,6 +177,10 @@ def dual_deploy( Args, serialObj ):
         main_deploy_time   = byte_array_to_int( serialObj.readBytes( 4 ) )
         drogue_deploy_time = byte_array_to_int( serialObj.readBytes( 4 ) )
         land_time          = byte_array_to_int( serialObj.readBytes( 4 ) )
+
+        # Receive the ground pressure
+        ground_press       = byte_array_to_int( serialObj.readBytes( 4 ) )
+        ground_press      /= 1000
 
         # Receive the flight data
         rx_blocks = []
@@ -204,6 +214,7 @@ def dual_deploy( Args, serialObj ):
         with open( output_dir + "/header.txt", "a") as file:
             file.write( "Main Altitude     : " + str( main_alt           ) + " ft \n" )
             file.write( "Drogue Delay      : " + str( drogue_delay       ) + " s  \n" )
+            file.write( "Ground Pressure   : " + str( ground_press       ) + " kPa\n" )
             file.write( "Main Deploy Time  : " + str( main_deploy_time   ) + " ms \n" )
             file.write( "Drogue Deploy Time: " + str( drogue_deploy_time ) + " ms \n" )
             file.write( "Landing Time      : " + str( land_time          ) + " ms \n" )
@@ -260,9 +271,10 @@ def dual_deploy( Args, serialObj ):
                 header_lines_split.append( line.split() )
         main_deploy_alt    = float( header_lines_split[0][3] )
         drogue_delay       = float( header_lines_split[1][3] )
-        main_deploy_time   = float( header_lines_split[2][4] )/1000.0
-        drogue_deploy_time = float( header_lines_split[3][3] )/1000.0
-        landing_time       = float( header_lines_split[4][3] )/1000.0
+        ground_press       = float( header_lines_split[2][3] )
+        main_deploy_time   = float( header_lines_split[3][4] )/1000.0
+        drogue_deploy_time = float( header_lines_split[4][3] )/1000.0
+        landing_time       = float( header_lines_split[5][3] )/1000.0
 
         # Extract the flight data
         sensor_time     = []
