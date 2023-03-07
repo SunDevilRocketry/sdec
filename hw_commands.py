@@ -117,8 +117,12 @@ controller_sensors = {
                 controller_names[5]: {
                            "pres" : "Barometric Pressure   ",
                            "temp" : "Barometric Temperature"
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": "Oxygen Valve Encoder",
+                           "encF": "Fuel Valve Encoder  "
                            }
-                
                      }
 
 # Size of raw sensor readouts in bytes
@@ -170,6 +174,11 @@ sensor_sizes = {
                 controller_names[5]: {
                            "pres" : 4,
                            "temp" : 4 
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": 4,
+                           "encF": 4 
                            }
                }
 
@@ -222,6 +231,11 @@ sensor_codes = {
                 controller_names[5]: {
                            "pres" : b'\x00',
                            "temp" : b'\x01' 
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": b'\x00',
+                           "encF": b'\x01' 
                            }
                }
 
@@ -237,7 +251,10 @@ sensor_frame_sizes = {
                     controller_names[4]: 32,
 
                     # Flight Computer Lite rev 1.0
-                    controller_names[5]: 12
+                    controller_names[5]: 12,
+
+                    # Valve Controller rev 2.0
+                    controller_names[1]: 12
                      }
 
 # Sensor raw readout conversion functions
@@ -289,6 +306,11 @@ sensor_conv_funcs = {
                 controller_names[5]: {
                            "pres" : sensor_conv.baro_press,
                            "temp" : sensor_conv.baro_temp 
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": sensor_conv.encoder_int_to_deg,
+                           "encF": sensor_conv.encoder_int_to_deg
                            }
                     }
 
@@ -341,6 +363,11 @@ sensor_units = {
                 controller_names[5]: {
                            "pres" : "kPa",
                            "temp" : "C" 
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": "deg",
+                           "encF": "deg" 
                            }
                }
 
@@ -380,7 +407,12 @@ sensor_indices = {
                 controller_names[5]: {
                             "pres" : 1,
                             "temp" : 2 
-                                     }
+                                     },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": 1,
+                           "encF": 2 
+                           }
                  }
 
 # Sensor raw readout formats
@@ -432,6 +464,11 @@ sensor_formats = {
                 controller_names[5]: {
                            "pres" : float,
                            "temp" : float 
+                           },
+                # Valve Controller Rev 2.0
+                controller_names[1]: {
+                           "encO": int,
+                           "encF": int 
                            }
                  }
 
@@ -442,7 +479,9 @@ sensor_data_filenames = {
                         # Flight Computer rev 2.0
                         controller_names[4]: "output/flight_comp_rev2_sensor_data.txt",
                         # Flight Computer Lite rev 1.0
-                        controller_names[5]: "output/flight_comp_lite_rev1_sensor_data.txt"
+                        controller_names[5]: "output/flight_comp_lite_rev1_sensor_data.txt",
+                        # Valve Controller rev 2.0
+                        controller_names[1]: "output/valve_controller_rev2_sensor_data.txt"
                         }
 
 

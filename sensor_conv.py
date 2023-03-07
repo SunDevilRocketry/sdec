@@ -258,7 +258,26 @@ def baro_press( readout ):
 def time_millis_to_sec( time_millis ):
 	return float( time_millis )/1000.0
 
-## time_millis_to_sec ##
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 	   encoder_int_to_deg                                                          #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts an integer representing a encoder ticks to a floating point value #
+#       in degrees                                                                 #
+#                                                                                  #
+####################################################################################
+def encoder_int_to_deg( encoder_out ):
+	if ( encoder_out & 0x80000000 ):
+		encoder_out_sig = encoder_out ^ 0xFFFFFFFF
+		encoder_out_sig += 1
+		encoder_out_sig *= -1
+	else:
+		encoder_out_sig = encoder_out
+	return encoder_out_sig
+## encoder_int_to_deg ##
 
 
 ####################################################################################
