@@ -25,11 +25,12 @@ from   config   import *
 #################################################################################### 
 # Global Variables                                                                 #
 #################################################################################### 
-supported_boards = ["Valve Controller (L0005 Rev 2.0)",
-                    "Valve Controller (L0005 Rev 3.0)" ]
+supported_boards = [ "Valve Controller (L0005 Rev 2.0)"       ,
+                     "Valve Controller (L0005 Rev 3.0)"       ,
+                     "Liquid Engine Controller (L0002 Rev 4.0)" ]
 
 
-#################################################################################### 
+####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
 # 		sol                                                                        #
@@ -221,7 +222,223 @@ def sol(Args, serialObj):
     # Unknown Option                                                               #
 	################################################################################
 	else:
-		print("Error: unknown option passed to connect function")	
+		print("Error: unknown option passed to sol function")	
+		commands.error_msg()
+		return serialObj
+## sol ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		valve                                                                      #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		control the actuation servo-actuated ball valves                           #
+#                                                                                  #
+#################################################################################### 
+def valve( Args, serialObj ):
+	################################################################################
+	# Local Variables                                                              #
+	################################################################################
+
+	# Subcommand and Options Dictionary
+	valve_inputs= { 
+			   'enable'    : {
+			                 },
+			   'disable'   : {
+			                 },
+			   'open'      : {
+						     '-n' : 'Specify a valve'
+						     } ,
+			   'close'     : {
+						     '-n' : 'Specify a valve'
+						     } , 
+			   'calibrate' : {
+						     },
+			   'list'      : {
+						     },
+			   'help'      : {
+						     }
+                 }
+    
+	# Maximum number of arguments
+	max_args = 3
+
+	# Command type -- subcommand function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\x52' 
+
+	# Subcommand codes
+	valve_enable_code     = b'\x00'
+	valve_disable_code    = b'\x02'
+	valve_open_base_code  = b'\x04'
+	valve_close_base_code = b'\x06'
+	valve_calibrate_code  = b'\x08'
+
+	# Subcommand codes as integers
+	valve_open_base_code_int  = ord( valve_open_base_code  )
+	valve_close_base_code_int = ord( valve_close_base_code )
+
+	# Valve names
+	valve_names        = [ 'ox', 'fuel' ]
+	valve_descriptions = {
+                  'ox'  : "Oxidizer main valve ( LOX )",
+				  'fuel': "Fuel main valve ( RP1 )"
+	                     }
+	
+	# Valve numbers
+	valve_nums = {
+				 'ox'  : 0,
+				 'fuel': 1
+	             }
+
+	################################################################################
+	# Basic Inputs Parsing                                                         #
+	################################################################################
+	parse_check = commands.parseArgs(
+                                    Args        ,
+                                    max_args    ,
+                                    valve_inputs,
+                                    command_type 
+                                    )
+
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set subcommand and option
+	user_subcommand = Args[0]
+	if ( len(Args) != 1 ):
+		user_option = Args[1]
+		options_command = True
+	else:
+		options_command = False
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+	if ( options_command ):
+		if ( user_option == '-n' ):
+			# No valve number entered
+			if ( len( Args ) == 2 ):
+				print('Error: No valve specified')
+				return serialObj
+
+			# Invalid valve name 
+			user_valve = Args[2] 
+			if ( not ( user_valve in valve_names ) ):
+				print( "Error: Invalid valve name. Run the valve list command " +
+				       "to see a list of valid valve names")
+				return serialObj
+
+	# Verify Valve Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The valve command requires a valid " + 
+              "serial connection to a valve controller or engine controller " + 
+              "device. Run the \"connect\" command to "  +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Pre-processing                                                               #
+	################################################################################
+	if ( user_subcommand == "open" ):
+		subcommand_code_int = valve_open_base_code_int + valve_nums[ user_valve ]
+		subcommand_code     = subcommand_code_int.to_bytes( 1                , 
+		                                                    byteorder = 'big',
+															signed    = False )
+	elif ( user_subcommand == "close" ):
+		subcommand_code_int = valve_close_base_code_int + valve_nums[ user_valve ]
+		subcommand_code     = subcommand_code_int.to_bytes( 1                 , 
+		                                                     byteorder = 'big',
+															 signed    = False)
+	
+
+	################################################################################
+	# Subcommand: valve help                                                       #
+	################################################################################
+	if ( user_subcommand == "help" ):
+		commands.display_help_info('valve')
+		return serialObj
+
+	################################################################################
+	# Subcommand: valve enable                                                     #
+	################################################################################
+	elif ( user_subcommand == "enable" ):
+
+		# Send opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand code
+		serialObj.sendByte( valve_enable_code )
+		return serialObj
+
+	################################################################################
+	# Subcommand: valve disable                                                    #
+	################################################################################
+	elif ( user_subcommand == "disable" ):
+
+		# Send opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand opcode 
+		serialObj.sendByte( valve_disable_code )
+		return serialObj	
+
+	################################################################################
+	# Subcommand: valve open                                                       #
+	################################################################################
+	elif ( user_subcommand == "open" ):
+
+		# Send opcode
+		serialObj.sendByte( opcode )
+
+		# send subcommand code
+		serialObj.sendByte( subcommand_code )
+		return serialObj	
+
+	################################################################################
+	# Subcommand: valve close                                                      #
+	################################################################################
+	elif ( user_subcommand == "close" ):
+
+		# Send opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand code 
+		serialObj.sendByte( subcommand_code )
+		return serialObj	
+
+	################################################################################
+	# Subcommand: valve calibrate                                                  #
+	################################################################################
+	elif ( user_subcommand == "calibrate" ):
+		# Send Opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand code
+		serialObj.sendByte( valve_calibrate_code )
+		return serialObj	
+
+	################################################################################
+	# Subcommand: valve list                                                       #
+	################################################################################
+	elif ( user_subcommand == "list" ):
+
+		# Print out valve names
+		print( "Servo actuated ball valve names:" )
+		for valve in valve_names:
+			print( "\t" + valve + " : " + valve_descriptions[valve] )
+		return serialObj	
+
+	################################################################################
+    # Unknown Option                                                               #
+	################################################################################
+	else:
+		print("Error: unknown option passed to valve function")	
 		commands.error_msg()
 		return serialObj
 
