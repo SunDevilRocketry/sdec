@@ -1,47 +1,47 @@
-###############################################################
-#                                                             #
-# valveController.py -- module with valve controller specific #
-#                        command line functions               # 
-# Author: Colton Acosta                                       #
-# Date: 4/16/2022                                             #
-# Sun Devil Rocketry Avionics                                 #
-#                                                             #
-###############################################################
+#################################################################################### 
+#                                                                                  #
+# valveController.py -- module with valve controller specific command line         #
+#                       functions                                                  # 
+# Author: Colton Acosta                                                            #
+# Date: 4/16/2022                                                                  #
+# Sun Devil Rocketry Avionics                                                      #
+#                                                                                  #
+#################################################################################### 
 
 
-###############################################################
-# Standard Imports                                            #
-###############################################################
+#################################################################################### 
+# Standard Imports                                                                 #
+#################################################################################### 
 import serial.tools.list_ports
 
 
-###############################################################
-# Project Modules                                             #
-###############################################################
+#################################################################################### 
+# Project Modules                                                                  #
+#################################################################################### 
 import commands
-from   commands import display_help_info
 from   config   import *
 
 
-###############################################################
-# Global Variables                                            #
-###############################################################
-supported_boards = ["Valve Controller (L0005 Rev 2.0)"]
+#################################################################################### 
+# Global Variables                                                                 #
+#################################################################################### 
+supported_boards = ["Valve Controller (L0005 Rev 2.0)",
+                    "Valve Controller (L0005 Rev 3.0)" ]
 
 
-###############################################################
-#                                                             #
-# COMMAND:                                                    #
-# 		sol                                                   #
-#                                                             #
-# DESCRIPTION:                                                #
-# 		control the actuation state of solenoids              #
-#                                                             #
-###############################################################
+#################################################################################### 
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		sol                                                                        #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		control the actuation state of solenoids                                   #
+#                                                                                  #
+#################################################################################### 
 def sol(Args, serialObj):
-	###########################################################
-	# Local Variables                                         #
-	###########################################################
+	################################################################################
+	# Local Variables                                                              #
+	################################################################################
 
 	# Subcommand and Options Dictionary
 	sol_inputs = { 
@@ -84,9 +84,9 @@ def sol(Args, serialObj):
 	sol_off_base_code_int    = ord( b'\x08' )
 	sol_toggle_base_code_int = ord( b'\x10' )
 
-	###########################################################
-	# Basic Inputs Parsing                                    #
-    ###########################################################
+	################################################################################
+	# Basic Inputs Parsing                                                         #
+	################################################################################
 	parse_check = commands.parseArgs(
                                     Args,
                                     max_args,
@@ -105,9 +105,9 @@ def sol(Args, serialObj):
 	else:
 		options_command = False
 
-	###########################################################
-	# Command-Specific Checks                                 #
-    ###########################################################
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
 	if (options_command):
 		if (user_option == '-n'):
 			# No solenoid number entered
@@ -137,20 +137,20 @@ def sol(Args, serialObj):
               "establish a valid connection.")
 		return serialObj
 
-	###########################################################
-	# Subcommand: sol help                                    #
-    ###########################################################
+	################################################################################
+	# Subcommand: sol help                                                         #
+	################################################################################
 	if (user_subcommand == "help"):
-		display_help_info('sol')
+		commands.display_help_info('sol')
 		return serialObj
 
-	###########################################################
-	# Subcommand: sol on                                      #
-    ###########################################################
+	################################################################################
+	# Subcommand: sol on                                                           #
+	################################################################################
 	elif (user_subcommand == "on"):
 		# Option: -h                                          
 		if (user_option == '-h'):
-			display_help_info('sol')
+			commands.display_help_info('sol')
 			return serialObj
 
 		# Option: -n                                          
@@ -165,13 +165,13 @@ def sol(Args, serialObj):
 			serialObj.sendByte(sol_on_code)
 			return serialObj
 
-	###########################################################
-	# Subcommand: sol off                                     #
-    ###########################################################
+	################################################################################
+	# Subcommand: sol off                                                          #
+	################################################################################
 	elif (user_subcommand == "off"):
 		# Option: -h                                          
 		if (user_option == '-h'):
-			display_help_info('sol')
+			commands.display_help_info('sol')
 			return serialObj
 
 		# Option: -n                                          
@@ -186,13 +186,13 @@ def sol(Args, serialObj):
 			serialObj.sendByte(sol_off_code)
 			return serialObj
 
-	###########################################################
-	# Subcommand: sol toggle                                  #
-    ###########################################################
+	################################################################################
+	# Subcommand: sol toggle                                                       #
+	################################################################################
 	elif (user_subcommand == "toggle"):
 		# Option: -h                                          
 		if (user_option == '-h'):
-			display_help_info('sol')
+			commands.display_help_info('sol')
 			return serialObj
 
 		# Option: -n                                          
@@ -207,9 +207,9 @@ def sol(Args, serialObj):
 			serialObj.sendByte(sol_toggle_code)
 			return serialObj
 
-	###########################################################
-	# Subcommand: sol reset                                   #
-    ###########################################################
+	################################################################################
+	# Subcommand: sol reset                                                        #
+	################################################################################
 	elif (user_subcommand == "reset"):
 		# Send solenoid opcode
 		serialObj.sendByte(opcode)
@@ -217,12 +217,12 @@ def sol(Args, serialObj):
 		serialObj.sendByte(sol_reset_code)
 		return serialObj
 
-    ###########################################################
-    # Unknown Option                                          #
-    ###########################################################
+	################################################################################
+    # Unknown Option                                                               #
+	################################################################################
 	else:
 		print("Error: unknown option passed to connect function")	
-		error_msg()
+		commands.error_msg()
 		return serialObj
 
 ### END OF FILE

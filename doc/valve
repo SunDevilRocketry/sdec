@@ -13,4 +13,3 @@ SUBCOMMANDS:
 
 OPTIONS:
     -n [VALVE] : Subcommand acts on valve [VALVE]
-    -h : display valve options

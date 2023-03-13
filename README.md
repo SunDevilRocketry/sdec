@@ -197,6 +197,5 @@ active connection to the engine controller. </p>
 <p>Options:
     <ul>
         <li> -n [VALVE]: operate on valve [VALVE] </li>
-		<li> -h : display valve usage information </li>
     </ul>
 </p>

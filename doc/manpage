@@ -96,4 +96,3 @@ Terminal Control Commands:
         
         options:
             -n [VALVE] : Subcommand acts on valve [VALVE]
-            -h : display valve options
