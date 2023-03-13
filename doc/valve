@@ -1,0 +1,16 @@
+VALVE:
+
+USAGE: valve [SUBCOMMAND] -[OPTIONS] [INPUTS]
+
+SUBCOMMANDS:
+    valve enable   : Enables the valves to be actuated
+    valve disable  : Disables the valves
+    valve open     : Opens the specified valve
+    valve close    : Closed the specified valve
+    valve calibrate: Calibrates the valves by setting the closed position
+    valve list     : List valid valve names
+    valve help     : Displays valve help information
+
+OPTIONS:
+    -n [VALVE] : Subcommand acts on valve [VALVE]
+    -h : display valve options

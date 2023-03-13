@@ -82,3 +82,18 @@ Terminal Control Commands:
             dual-deploy extract: Retrieve all flight data from the flight computer
             dual-deploy plot   : Plot the most recent flight data from the flight computer
 			dual-deploy help   : Displays subcommand information
+
+    valve [SUBCOMMAND] -[OPTIONS] [INPUTS]: Actuates specified servo-actuated ball valves. Requires a connection 
+                                            to a valve controller or liquid engine controller
+        subcommands:
+            valve enable    : Enable the valves to be actuated 
+            valve disable   : Disable the valves 
+            valve open      : Open a specified valve
+            valve close     : Close a specified valve
+            valve calibrate : Calibrate the valves by setting the closed position
+            valve list      : List valid valve names
+            valve help      : Display valve usage information
+        
+        options:
+            -n [VALVE] : Subcommand acts on valve [VALVE]
+            -h : display valve options

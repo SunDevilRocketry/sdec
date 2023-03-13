@@ -181,4 +181,22 @@ active connection to the engine controller. </p>
         <li> -n [SOLENOID]: operate on solenoid [SOLENOID]. Valid [SOLENOID] inputs range from 1 to 6.</li>
 		<li> -h : display sol usage information </li>
     </ul>
+
+<h3>valve</h3>
+<p>Opcode: 0x52</p>
+<p>Description: Actuates a servo-actuated ball valve. </p>
+<p>Usage: valve [SUBCOMMAND] -[OPTION] [INPUTS]</p>
+<p>Subcommands: </p>
+<p>valve enable    : Enable the valves to be actuated</p>
+<p>valve disable   : Disable the valves</p>
+<p>valve open      : Opens the specified valve </p>
+<p>valve close     : Closes the specified valve </p>
+<p>valve calibrate : Calibrates the valves by finding and setting the closed position</p>
+<p>valve list      : Lists valid valve names</p>
+<p>valve help      : Displays valve usage information </p>
+<p>Options:
+    <ul>
+        <li> -n [VALVE]: operate on valve [VALVE] </li>
+		<li> -h : display valve usage information </li>
+    </ul>
 </p>
