@@ -27,6 +27,7 @@ from   hw_commands import byte_array_to_float
 from   hw_commands import get_sensor_frames
 from   hw_commands import sensor_extract_data_filter
 import commands
+import sensor_conv
 
 ####################################################################################
 # Global Variables                                                                 #
@@ -179,7 +180,7 @@ def dual_deploy( Args, serialObj ):
         land_time          = byte_array_to_int( serialObj.readBytes( 4 ) )
 
         # Receive the ground pressure
-        ground_press       = byte_array_to_int( serialObj.readBytes( 4 ) )
+        ground_press       = byte_array_to_float( serialObj.readBytes( 4 ) )
         ground_press      /= 1000
 
         # Receive the flight data
@@ -295,6 +296,11 @@ def dual_deploy( Args, serialObj ):
                 sensor_time.append    ( float( data_line_split[0] ) )
                 sensor_pressure.append( float( data_line_split[1] ) )
                 sensor_temp.append    ( float( data_line_split[2] ) )
+                
+        # Calculate Altitude
+        sensor_altitude = []
+        for press in sensor_pressure:
+            sensor_altitude.append( sensor_conv.pressure_to_alt( press, ground_press ) )
         
         # Plot Pressure data
         plt.figure()
@@ -315,6 +321,19 @@ def dual_deploy( Args, serialObj ):
         plt.title( "Temperature Data" )
         plt.xlabel( "Time, s" )
         plt.ylabel( "Temperature, Degrees C" )
+        plt.grid()
+        plt.axvline( x = main_deploy_time  , color = 'b', label = "Main Deployment"   )
+        plt.axvline( x = drogue_deploy_time, color = 'r', label = "Drogue Deployment" )
+        plt.axvline( x = landing_time      , color = 'g', label = "Landed"            )
+        plt.legend()
+        plt.show( block = False )
+
+        # Plot Altitude Data
+        plt.figure()
+        plt.plot( sensor_time, sensor_altitude )
+        plt.title( "Altitude Data" )
+        plt.xlabel( "Time, s" )
+        plt.ylabel( "Altitude, ft" )
         plt.grid()
         plt.axvline( x = main_deploy_time  , color = 'b', label = "Main Deployment"   )
         plt.axvline( x = drogue_deploy_time, color = 'r', label = "Drogue Deployment" )

@@ -281,5 +281,33 @@ def encoder_int_to_deg( encoder_out ):
 
 
 ####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 	   pressure_to_alt                                                             #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#     Converts pressure readouts in kPa to altitude using the ground pressure and  #
+#     altitude pressure                                                            #
+#                                                                                  #
+####################################################################################
+def pressure_to_alt( pressure, ground_pressure ):
+	# Constants
+	ps     = 101.3 # kPa
+	z_star = 8404.0 # m
+	gamma  = 1.4 
+
+	# Calculations
+	gamma_const1 = ( gamma - 1.0 )/( gamma )
+	gamma_const2 = ( gamma )/( gamma - 1.0 )
+	alt          = z_star*gamma_const2*( 1 - ( ( pressure/ps )**( gamma_const1 ) ) )
+	ground_alt   = z_star*gamma_const2*( 1 - ( ( ground_pressure/ps)**( gamma_const1 ) ) )
+	alt_agl      = alt - ground_alt
+
+	# Convert to feet
+	return alt_agl*3.28084
+## pressure_to_alt ##
+
+
+####################################################################################
 # END OF FILE                                                                      # 
 ####################################################################################
