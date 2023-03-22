@@ -235,24 +235,32 @@ def dual_deploy( Args, serialObj ):
     elif ( subcommand == 'plot' ):
 
         # Find most recent date of data extraction 
-        base_data_dirs = os.listdir( "output/dual-deploy" )
+        base_data_dirs             = os.listdir( "output/dual-deploy" )
+        base_data_dirs_recent      = []
+        base_data_dirs_most_recent = []
         max_month = 1
         for base_data_dir in base_data_dirs:
             month = base_data_dir[0:2]
             month = int( month )
             if ( month >= max_month ):
                 max_month = month
-            else:
-                base_data_dirs.remove( base_data_dir )
-        max_day = 0
         for base_data_dir in base_data_dirs:
+            month = base_data_dir[0:2]
+            month = int( month )
+            if ( month == max_month ):
+                base_data_dirs_recent.append( base_data_dir )
+        max_day = 0
+        for base_data_dir in base_data_dirs_recent:
             day = base_data_dir[3:5]
             day = int( day )
             if ( day > max_day ):
                 max_day = day
-            else:
-                base_data_dirs.remove( base_data_dir )
-        base_data_dir = base_data_dirs[-1]
+        for base_data_dir in base_data_dirs_recent:
+            day = base_data_dir[3:5]
+            day = int( day )
+            if ( day == max_day ):
+                base_data_dirs_most_recent.append( base_data_dir )
+        base_data_dir = base_data_dirs_most_recent[-1]
         base_data_dir = "output/dual-deploy/" + base_data_dir
 
         # Find most recent data
