@@ -172,6 +172,7 @@ class terminalData:
     def reset_SDR_controller(self):
         self.controller    = None
         self.firmware_name = None
+## class terminalData ##
 
 
 ####################################################################################
@@ -237,6 +238,7 @@ if __name__ == '__main__':
 
         # Execute Command
         terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
+## parseInput ##
 
 
 ####################################################################################

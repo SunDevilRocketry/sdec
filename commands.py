@@ -1,7 +1,7 @@
-#################################################################################### 
-#                                                                                  # 
-# Commands.py -- module with general command line functions                        # 
-# Author: Colton Acosta                                                            # 
+####################################################################################
+#                                                                                  #
+# Commands.py -- module with general command line functions                        #
+# Author: Colton Acosta                                                            #
 # Date: 4/16/2022                                                                  #
 # Sun Devil Rocketry Avionics                                                      #
 #                                                                                  #
@@ -21,6 +21,7 @@ import time
 # Project imports
 import sensor_conv
 from   config      import *
+from   controller  import *
 
 
 ####################################################################################
@@ -32,48 +33,6 @@ if ( sdr_debug ):
 	default_timeout = 100 # 100 second timeout
 else:
 	default_timeout = 1   # 1 second timeout
-
-# Controller identification codes
-controller_codes = [ 
-                  b'\x01', # Engine Controller,    Rev 3.0
-                  b'\x02', # Valve Controller ,    Rev 2.0 
-                  b'\x03', # Engine Controller,    Rev 4.0 
-				  b'\x04', # Flight Computer,      Rev 1.0
-				  b'\x05', # Flight Computer,      Rev 2.0
-				  b'\x06'  # Flight Computer Lite, Rev 1.0
-                   ]
-
-# Controller Names
-controller_names = [
-                   "Liquid Engine Controller (L0002 Rev 3.0)",
-                   "Valve Controller (L0005 Rev 2.0)"        ,
-                   "Liquid Engine Controller (L0002 Rev 4.0)",
-				   "Flight Computer (A0002 Rev 1.0)"         ,
-				   "Flight Computer (A0002 Rev 2.0)"         ,
-                   "Flight Computer Lite (A0007 Rev 1.0)"
-                   ]
-
-# Controller descriptions from identification codes
-controller_descriptions = {
-                  b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
-                  b'\x02': "Valve Controller (L0005 Rev 2.0)"        ,
-                  b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
-				  b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
-				  b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
-                  b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"
-                          }
-
-# Firmware Ids
-firmware_ids = {
-                b'\x01': "Terminal"   ,
-				b'\x02': "Data Logger",
-				b'\x03': "Dual Deploy"
-               }
-			
-# Boards that report firmware ids with the connect command
-firmware_id_supported_boards = [
-                controller_names[4]
-                               ]
 
 
 ####################################################################################
@@ -97,6 +56,7 @@ def display_help_info( command ):
 	for line in doc_lines:
 		print( line, end='' )
 	print()
+## display_help_info ##
 
 
 ####################################################################################
@@ -111,6 +71,7 @@ def display_help_info( command ):
 def error_msg():
 	print( "Something went wrong. Report this issue to " + 
               "the Sun Devil Rocketry development team" )	
+## error_msg ##
 
 
 ####################################################################################
@@ -226,7 +187,7 @@ def parseArgs(
 
 	# User input passes all checks	
 	return parse_pass
-# parseArgs #
+## parseArgs ##
 
 
 ####################################################################################
@@ -245,6 +206,7 @@ def parseArgs(
 ####################################################################################
 def exitFunc(Args, serialObj):
    sys.exit()
+## exitFunc ##
 
 
 ####################################################################################
@@ -259,6 +221,7 @@ def exitFunc(Args, serialObj):
 def helpFunc(Args, serialObj):
     display_help_info('manpage')
     return serialObj 
+## helpFunc ##
     
 
 ####################################################################################
@@ -276,6 +239,7 @@ def clearConsole(Args, serialObj):
         command = 'cls'
     os.system(command)
     return serialObj 
+## clearConsole ##
 
 
 ####################################################################################
@@ -422,7 +386,7 @@ def comports(Args, serialObj):
 			return serialObj
 
 	return serialObj
-# comports #
+## comports ##
 
 
 ####################################################################################
@@ -515,7 +479,7 @@ def ping( Args, serialObj ):
         else:
             print("Error: invalid option supplied to ping function")
             return serialObj
-# ping #
+## ping ##
 
 
 ####################################################################################
@@ -656,8 +620,9 @@ def connect( Args, serialObj ):
                "function" )	
 		error_msg()
 		return serialObj
+## connect ##
 
 
 ##################################################################################
-# END OF FILE                                                                    # 
+# END OF FILE                                                                    #
 ##################################################################################
