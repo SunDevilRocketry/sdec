@@ -25,9 +25,31 @@ from   config   import *
 #################################################################################### 
 # Global Variables                                                                 #
 #################################################################################### 
+
+# Compatible Boards
 supported_boards = [ "Valve Controller (L0005 Rev 2.0)"       ,
                      "Valve Controller (L0005 Rev 3.0)"       ,
                      "Liquid Engine Controller (L0002 Rev 4.0)" ]
+
+# Name and description of each solenoid
+solenoid_names = {
+				"oxPress"  : "LOX Pressurization" ,
+				"fuelPress": "Fuel Pressurization",
+				"oxPurge"  : "LOX-side Purge"     ,
+				"fuelPurge": "Fuel-side Purge"    ,
+				"oxVent"   : "LOX Vent Valve"     ,
+				"fuelVent" : "Fuel Vent Valve"
+                 }
+
+# Numbers assigned to each solenoid
+solenoid_nums = {
+				"oxPress"  : 1,
+				"fuelPress": 2,
+				"oxPurge"  : 5,
+				"fuelPurge": 6,
+				"oxVent"   : 3,
+				"fuelVent" : 4 
+                }
 
 
 ####################################################################################
@@ -46,23 +68,24 @@ def sol(Args, serialObj):
 
 	# Subcommand and Options Dictionary
 	sol_inputs = { 
-			   'on':     {
+			    'on':     {
 							'-h' : 'Display help info',
 							'-n' : 'Specify a solenoid number'
 						 } ,
-			   'off':    {
+			    'off':    {
 							'-h' : 'Display help info',
 							'-n' : 'Specify a solenoid number'
 						 } , 
-			   'toggle': {
+			    'toggle': {
 							'-h' : 'Display help info',
 							'-n' : 'Specify a solenoid number'
 						 },
-			   'reset':  {
+			    'reset':  {
 						 },
-			   'help':   {
-						 }
-                       
+			    'help':   {
+						 },
+			    'list': {
+				        }
                  }
     
 	# Maximum number of arguments
@@ -115,9 +138,14 @@ def sol(Args, serialObj):
 			if (len(Args) == 2):
 				print('Error: No solenoid specified')
 				return serialObj
+			# Invalid solenoid
+			if ( not Args[2] in solenoid_names ):
+				print( "Error: Invalid Solenoid" )
+				return serialObj
+
 			# Solenoid number not a number
 			try:
-				user_solenoid = int(Args[2])
+				user_solenoid = int( solenoid_nums[Args[2]] )
 			except ValueError:
 				print('Error: Invalid solenoid number. Ensure '
                     + 'the input is an integer in the range of '
@@ -217,6 +245,17 @@ def sol(Args, serialObj):
 		# Send subcommand code
 		serialObj.sendByte(sol_reset_code)
 		return serialObj
+
+
+	################################################################################
+	# Subcommand: sol list                                                         #
+	################################################################################
+	elif ( user_subcommand == "list" ):
+		print( "Solenoid names:" )
+		for solenoid in solenoid_names:
+			print( "\t" + solenoid + ": " + solenoid_names[solenoid] )
+		return serialObj
+
 
 	################################################################################
     # Unknown Option                                                               #
