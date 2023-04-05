@@ -51,6 +51,26 @@ solenoid_nums = {
 				"fuelVent" : 4 
                 }
 
+# Solenoid on/off states
+solenoid_on_states = {
+					"oxPress"  : "OPEN",
+					"fuelPress": "OPEN",
+					"oxPurge"  : "CLOSED",
+					"fuelPurge": "CLOSED",
+					"oxVent"   : "CLOSED",
+					"fuelVent" : "CLOSED" 
+                     }
+
+solenoid_off_states = {
+					"oxPress"  : "CLOSED",
+					"fuelPress": "CLOSED",
+					"oxPurge"  : "OPEN",
+					"fuelPurge": "OPEN",
+					"oxVent"   : "OPEN",
+					"fuelVent" : "OPEN" 
+                     }
+
+
 
 ####################################################################################
 #                                                                                  #
@@ -85,7 +105,9 @@ def sol(Args, serialObj):
 			    'help':   {
 						 },
 			    'list': {
-				        }
+				        },
+				'getstate': {
+				            }
                  }
     
 	# Maximum number of arguments
@@ -102,6 +124,7 @@ def sol(Args, serialObj):
 	sol_off_base_code    = b'\x08'
 	sol_toggle_base_code = b'\x10'
 	sol_reset_code       = b'\x18'
+	sol_getstate_code    = b'\x20'
 
 	# Subcommand codes as integers
 	sol_on_base_code_int     = ord( b'\x00' )
@@ -254,6 +277,29 @@ def sol(Args, serialObj):
 		print( "Solenoid names:" )
 		for solenoid in solenoid_names:
 			print( "\t" + solenoid + ": " + solenoid_names[solenoid] )
+		return serialObj
+	
+
+	################################################################################
+	# Subcommand: sol getstate                                                     #
+	################################################################################
+	elif ( user_subcommand == "getstate" ):
+		
+		# Send solenoid opcode and subcommand
+		serialObj.sendByte( opcode            )
+		serialObj.sendByte( sol_getstate_code )
+
+		# Get the state of the solenoids
+		sol_state = serialObj.readByte()
+		sol_state = ord( sol_state )
+
+		# Parse results
+		print( "Solenoid States:" )
+		for solenoid in solenoid_nums:
+			if ( sol_state & ( 1 << ( solenoid_nums[solenoid] - 1 ) ) ):
+				print( "\t" + solenoid + ": " + solenoid_on_states[solenoid] )
+			else:
+				print( "\t" + solenoid + ": " + solenoid_off_states[solenoid] )
 		return serialObj
 
 
@@ -481,4 +527,4 @@ def valve( Args, serialObj ):
 		commands.error_msg()
 		return serialObj
 
-### END OF FILE
+### END OF FILE ###
