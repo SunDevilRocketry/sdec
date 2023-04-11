@@ -107,7 +107,15 @@ def sol(Args, serialObj):
 			    'list': {
 				        },
 				'getstate': {
-				            }
+				            },
+			    'open': {
+						'-h' : 'Display help info',
+						'-n' : 'Specify a solenoid number'
+						}, 
+			    'close': {
+						'-h' : 'Display help info',
+						'-n' : 'Specify a solenoid number'
+						} 
                  }
     
 	# Maximum number of arguments
@@ -125,11 +133,16 @@ def sol(Args, serialObj):
 	sol_toggle_base_code = b'\x10'
 	sol_reset_code       = b'\x18'
 	sol_getstate_code    = b'\x20'
+	sol_open_base_code   = b'\x28'
+	sol_close_base_code  = b'\x30'
 
 	# Subcommand codes as integers
-	sol_on_base_code_int     = ord( b'\x00' )
-	sol_off_base_code_int    = ord( b'\x08' )
-	sol_toggle_base_code_int = ord( b'\x10' )
+	sol_on_base_code_int     = ord( sol_on_base_code     )
+	sol_off_base_code_int    = ord( sol_off_base_code    )
+	sol_toggle_base_code_int = ord( sol_toggle_base_code )
+	sol_open_base_code_int   = ord( sol_open_base_code   )
+	sol_close_base_code_int  = ord( sol_close_base_code  )
+
 
 	################################################################################
 	# Basic Inputs Parsing                                                         #
@@ -301,6 +314,52 @@ def sol(Args, serialObj):
 			else:
 				print( "\t" + solenoid + ": " + solenoid_off_states[solenoid] )
 		return serialObj
+	
+
+	################################################################################
+	# Subcommand: sol open                                                         #
+	################################################################################
+	elif ( user_subcommand == "open" ):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			commands.display_help_info('sol')
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			# Send solenoid opcode
+			serialObj.sendByte( opcode )
+			# Send subcommand code
+			sol_open_code_int = sol_open_base_code_int + user_solenoid
+			sol_open_code = sol_open_code_int.to_bytes(1, 
+                                                       byteorder = 'big',
+                                                       signed = False)
+			serialObj.sendByte( sol_open_code )
+			return serialObj
+	# sol open #
+	
+
+	################################################################################
+	# Subcommand: sol close                                                        #
+	################################################################################
+	elif ( user_subcommand == "close" ):
+		# Option: -h                                          
+		if (user_option == '-h'):
+			commands.display_help_info('sol')
+			return serialObj
+
+		# Option: -n                                          
+		elif(user_option == '-n'):
+			# Send solenoid opcode
+			serialObj.sendByte( opcode )
+			# Send subcommand code
+			sol_close_code_int = sol_close_base_code_int + user_solenoid
+			sol_close_code = sol_close_code_int.to_bytes(1, 
+                                                         byteorder = 'big',
+                                                         signed = False)
+			serialObj.sendByte( sol_close_code )
+			return serialObj
+	# sol close #
 
 
 	################################################################################
@@ -339,6 +398,9 @@ def valve( Args, serialObj ):
 			   'close'     : {
 						     '-n' : 'Specify a valve'
 						     } , 
+			   'crack'     : {
+							 '-n' : "Specify a valve"
+			                 },
 			   'calibrate' : {
 						     },
 			   'list'      : {
@@ -362,10 +424,12 @@ def valve( Args, serialObj ):
 	valve_open_base_code  = b'\x04'
 	valve_close_base_code = b'\x06'
 	valve_calibrate_code  = b'\x08'
+	valve_crack_base_code = b'\x0A'
 
 	# Subcommand codes as integers
 	valve_open_base_code_int  = ord( valve_open_base_code  )
 	valve_close_base_code_int = ord( valve_close_base_code )
+	valve_crack_base_code_int = ord( valve_crack_base_code )
 
 	# Valve names
 	valve_names        = [ 'ox', 'fuel' ]
@@ -440,6 +504,11 @@ def valve( Args, serialObj ):
 		subcommand_code     = subcommand_code_int.to_bytes( 1                 , 
 		                                                     byteorder = 'big',
 															 signed    = False)
+	elif ( user_subcommand == "crack" ):
+		subcommand_code_int = valve_crack_base_code_int + valve_nums[ user_valve ]
+		subcommand_code     = subcommand_code_int.to_bytes( 1                 , 
+		                                                     byteorder = 'big',
+															 signed    = False)
 	
 
 	################################################################################
@@ -474,9 +543,11 @@ def valve( Args, serialObj ):
 		return serialObj	
 
 	################################################################################
-	# Subcommand: valve open                                                       #
+	# Subcommand: valve open/close/crack                                           #
 	################################################################################
-	elif ( user_subcommand == "open" ):
+	elif ( ( user_subcommand == "open"  ) or
+	       ( user_subcommand == "close" ) or
+		   ( user_subcommand == "crack" ) ):
 
 		# Send opcode
 		serialObj.sendByte( opcode )
@@ -485,17 +556,6 @@ def valve( Args, serialObj ):
 		serialObj.sendByte( subcommand_code )
 		return serialObj	
 
-	################################################################################
-	# Subcommand: valve close                                                      #
-	################################################################################
-	elif ( user_subcommand == "close" ):
-
-		# Send opcode
-		serialObj.sendByte( opcode )
-
-		# Send subcommand code 
-		serialObj.sendByte( subcommand_code )
-		return serialObj	
 
 	################################################################################
 	# Subcommand: valve calibrate                                                  #
