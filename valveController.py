@@ -403,6 +403,8 @@ def valve( Args, serialObj ):
 			                 },
 			   'calibrate' : {
 						     },
+			   'reset'     : {
+			                 },
 			   'list'      : {
 						     },
 			   'help'      : {
@@ -425,6 +427,7 @@ def valve( Args, serialObj ):
 	valve_close_base_code = b'\x06'
 	valve_calibrate_code  = b'\x08'
 	valve_crack_base_code = b'\x0A'
+	valve_reset_code      = b'\x10'
 
 	# Subcommand codes as integers
 	valve_open_base_code_int  = ord( valve_open_base_code  )
@@ -567,6 +570,19 @@ def valve( Args, serialObj ):
 		# Send subcommand code
 		serialObj.sendByte( valve_calibrate_code )
 		return serialObj	
+	
+
+	################################################################################
+	# Subcommand: valve reset                                                      #
+	################################################################################
+	elif ( user_subcommand == "reset" ):
+		# Send Opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand code
+		serialObj.sendByte( valve_reset_code )
+		return serialObj	
+
 
 	################################################################################
 	# Subcommand: valve list                                                       #
