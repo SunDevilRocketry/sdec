@@ -27,7 +27,8 @@ controller_codes = [
                   b'\x04', # Flight Computer,      Rev 1.0
                   b'\x05', # Flight Computer,      Rev 2.0
                   b'\x06', # Flight Computer Lite, Rev 1.0
-                  b'\x07'  # Valve Controller,     Rev 3.0
+                  b'\x07', # Valve Controller,     Rev 3.0
+                  b'\x08'  # Engine Controller,    Rev 5.0
                    ]
 
 # Controller Names
@@ -38,7 +39,8 @@ controller_names = [
                    "Flight Computer (A0002 Rev 1.0)"         ,
                    "Flight Computer (A0002 Rev 2.0)"         ,
                    "Flight Computer Lite (A0007 Rev 1.0)"    ,
-                   "Valve Controller (L0005 Rev 3.0)"        
+                   "Valve Controller (L0005 Rev 3.0)"        , 
+                   "Liquid Engine Controller (L0002 Rev 5.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -49,7 +51,8 @@ controller_descriptions = {
                   b'\x04': "Flight Computer (A0002 Rev 1.0)"         ,
                   b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
                   b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"    ,
-                  b'\x07': "Valve Controller (L0005 Rev 3.0)"
+                  b'\x07': "Valve Controller (L0005 Rev 3.0)"        ,
+                  b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)"
                           }
 
 # Lists of sensors on each controller
@@ -112,6 +115,19 @@ controller_sensors = {
                            "encO": "Oxygen Valve Encoder",
                            "encF": "Fuel Valve Encoder  "
                            }, 
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": "Pressure Transducer 0",
+                           "pt1": "Pressure Transducer 1",
+                           "pt2": "Pressure Transducer 2",
+                           "pt3": "Pressure Transducer 3",
+                           "pt4": "Pressure Transducer 4",
+                           "pt5": "Pressure Transducer 5",
+                           "pt6": "Pressure Transducer 6",
+                           "pt7": "Pressure Transducer 7",
+                           "lc" : "Load Cell            ", 
+                           "tc" : "Theromcouple         "
+                           }
                      }
 
 # Size of raw sensor readouts in bytes
@@ -173,6 +189,19 @@ sensor_sizes = {
                 controller_names[6]: {
                            "encO": 4,
                            "encF": 4 
+                           },
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": 4,
+                           "pt1": 4,
+                           "pt2": 4,
+                           "pt3": 4,
+                           "pt4": 4,
+                           "pt5": 4,
+                           "pt6": 4,
+                           "pt7": 4,
+                           "tc" : 4,
+                           "lc" : 4            
                            }
                }
 
@@ -235,6 +264,19 @@ sensor_codes = {
                 controller_names[6]: {
                            "encO": b'\x00',
                            "encF": b'\x01' 
+                           },
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": b'\x00',
+                           "pt1": b'\x01',
+                           "pt2": b'\x02',
+                           "pt3": b'\x03',
+                           "pt4": b'\x04',
+                           "pt5": b'\x05',
+                           "pt6": b'\x06',
+                           "pt7": b'\x07',
+                           "tc" : b'\x08',
+                           "lc" : b'\x09' 
                            }
                }
 
@@ -256,7 +298,10 @@ sensor_frame_sizes = {
                     controller_names[1]: 12,
 
                     # Valve Controller rev 3.0
-                    controller_names[6]: 12
+                    controller_names[6]: 12,
+
+                    # Engine Controller rev 5.0
+                    controller_names[7]: 44
                      }
 
 # Sensor raw readout conversion functions
@@ -318,6 +363,19 @@ sensor_conv_funcs = {
                 controller_names[6]: {
                            "encO": sensor_conv.encoder_int_to_deg,
                            "encF": sensor_conv.encoder_int_to_deg
+                           },
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": sensor_conv.pt_pressure           ,
+                           "pt1": sensor_conv.pt_pressure           ,
+                           "pt2": sensor_conv.pt_pressure           ,
+                           "pt3": sensor_conv.pt_pressure           ,
+                           "pt4": sensor_conv.pt_pressure           ,
+                           "pt5": sensor_conv.pt_pressure           ,
+                           "pt6": sensor_conv.pt_pressure           ,
+                           "pt7": sensor_conv.pt_pressure           ,
+                           "lc" : sensor_conv.loadcell_force        , 
+                           "tc" : sensor_conv.tc_temp
                            }
                     }
 
@@ -380,6 +438,19 @@ sensor_units = {
                 controller_names[6]: {
                            "encO": "deg",
                            "encF": "deg" 
+                           },
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": "psi",
+                           "pt1": "psi",
+                           "pt2": "psi",
+                           "pt3": "psi",
+                           "pt4": "psi",
+                           "pt5": "psi",
+                           "pt6": "psi",
+                           "pt7": "psi",
+                           "lc" : "lb" , 
+                           "tc" : "C"
                            }
                }
 
@@ -491,6 +562,19 @@ sensor_formats = {
                 controller_names[6]: {
                            "encO": int,
                            "encF": int 
+                           },
+                # Engine Controller rev 5.0
+                controller_names[7]: {
+                           "pt0": int,
+                           "pt1": int,
+                           "pt2": int,
+                           "pt3": int,
+                           "pt4": int,
+                           "pt5": int,
+                           "pt6": int,
+                           "pt7": int,
+                           "tc" : int,
+                           "lc" : int 
                            }
                  }
 
@@ -512,7 +596,8 @@ sensor_data_filenames = {
 firmware_ids = {
                 b'\x01': "Terminal"   ,
 				b'\x02': "Data Logger",
-				b'\x03': "Dual Deploy"
+				b'\x03': "Dual Deploy",
+                b'\x04': "Hotfire"
                }
 			
 # Boards that report firmware ids with the connect command

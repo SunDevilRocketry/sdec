@@ -29,7 +29,8 @@ from   config   import *
 # Compatible Boards
 supported_boards = [ "Valve Controller (L0005 Rev 2.0)"       ,
                      "Valve Controller (L0005 Rev 3.0)"       ,
-                     "Liquid Engine Controller (L0002 Rev 4.0)" ]
+                     "Liquid Engine Controller (L0002 Rev 4.0)", 
+                     "Liquid Engine Controller (L0002 Rev 5.0)" ]
 
 # Name and description of each solenoid
 solenoid_names = {
@@ -405,6 +406,8 @@ def valve( Args, serialObj ):
 						     },
 			   'reset'     : {
 			                 },
+			   'openall'   : {
+			                 },
 			   'list'      : {
 						     },
 			   'help'      : {
@@ -428,6 +431,7 @@ def valve( Args, serialObj ):
 	valve_calibrate_code  = b'\x08'
 	valve_crack_base_code = b'\x0A'
 	valve_reset_code      = b'\x10'
+	valve_openall_code    = b'\x12'
 
 	# Subcommand codes as integers
 	valve_open_base_code_int  = ord( valve_open_base_code  )
@@ -581,6 +585,18 @@ def valve( Args, serialObj ):
 
 		# Send subcommand code
 		serialObj.sendByte( valve_reset_code )
+		return serialObj	
+	
+
+	################################################################################
+	# Subcommand: valve openall                                                    #
+	################################################################################
+	elif ( user_subcommand == "openall" ):
+		# Send Opcode
+		serialObj.sendByte( opcode )
+
+		# Send subcommand code
+		serialObj.sendByte( valve_openall_code )
 		return serialObj	
 
 

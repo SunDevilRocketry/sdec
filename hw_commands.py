@@ -753,7 +753,8 @@ def flash(Args, serialObj):
                    "Liquid Engine Controller (L0002 Rev 4.0)",
                    "Flight Computer (A0002 Rev 1.0)"         ,
                    "Flight Computer (A0002 Rev 2.0)"         ,
-                   "Flight Computer Lite (A0007 Rev 1.0)"
+                   "Flight Computer Lite (A0007 Rev 1.0)"    ,
+                   "Liquid Engine Controller (L0002 Rev 5.0)"
                              ]
     
     # Extract blocks

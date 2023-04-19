@@ -173,8 +173,11 @@ active connection to the engine controller. </p>
 <p>Subcommands: </p>
 <p>sol on : Asserts the acutate solenoid signal of the MCU to supply power to the solenoid. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
 <p>sol off : Deasserts the acutate solenoid signal of the MCU to return the solenoid to its default state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
+<p>sol open: Opens the specified solenoid</p>
+<p>sol close: Closes the specified solenoid</p>
 <p>sol toggle : Changes the solenoid state. The open/close state of the solenoid depends on whether the attached solenoid is normally open or closed.</p>
 <p>sol reset : Resets all solenoids to the default state. The state of each solenoid depends on whether the solenoid is open or closed. No options</p>
+<p>sol getstate: Returns the states of the solenoids</p>
 <p>sol help : Displays sol usage information. No options. </p>
 <p>Options:
     <ul>

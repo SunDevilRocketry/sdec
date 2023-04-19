@@ -27,6 +27,7 @@ from   config   import *
 # Global Variables                                                                 #
 ####################################################################################
 supported_boards = ["Liquid Engine Controller (L0002 Rev 4.0)",
+                    "Liquid Engine Controller (L0002 Rev 5.0)",
 				    "Flight Computer (A0002 Rev 1.0)" ]
 
 
