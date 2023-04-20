@@ -132,7 +132,7 @@ def tc_temp( readout ):
 
 	# Do conversion
 	if ( negative ):
-		temp = ( ( float(upper_byte)*16.0 + float(lower_byte)/16.0 )/16 ) - 4096.0
+		temp = ( ( float(upper_byte)*16.0 + float(lower_byte)/16.0 ) -4096.0 )
 	else:
 		temp = ( float(upper_byte)*16.0 + float(lower_byte)/16.0 )
 
