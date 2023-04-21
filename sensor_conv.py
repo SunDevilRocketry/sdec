@@ -63,6 +63,24 @@ def voltage_to_pressure( voltage ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
+# 		voltage_to_pressure_5V                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts a voltage readout from a pressure transducer to a pressure        #
+#       in floating point format, used with pts that have a 5V output              #
+#                                                                                  #
+####################################################################################
+def voltage_to_pressure_5V( voltage ):
+	max_voltage   = 5    # V
+	max_pressure  = 1000 # psi
+	pressure_step = max_pressure/max_voltage 
+	return voltage*pressure_step
+## voltage_to_pressure ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
 # 		voltage_to_force                                                           #
 #                                                                                  #
 # DESCRIPTION:                                                                     #

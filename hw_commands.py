@@ -1256,7 +1256,8 @@ def ignite(Args, serialObj):
                         controller_names[2],  # Engine controller rev 4
                         controller_names[3],  # Flight computer rev 1
                         controller_names[4],  # Flight computer rev 2
-                        controller_names[5]   # Flight computer lite rev 1
+                        controller_names[5],  # Flight computer lite rev 1
+                        controller_names[7]   # Engine controller rev 5 
                        ]
 
     # Command type -- subcommand function
