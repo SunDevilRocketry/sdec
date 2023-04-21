@@ -117,15 +117,15 @@ controller_sensors = {
                            }, 
                 # Engine Controller rev 5.0
                 controller_names[7]: {
-                           "pt0": "Pressure Transducer 0",
-                           "pt1": "Pressure Transducer 1",
-                           "pt2": "Pressure Transducer 2",
-                           "pt3": "Pressure Transducer 3",
-                           "pt4": "Pressure Transducer 4",
-                           "pt5": "Pressure Transducer 5",
-                           "pt6": "Pressure Transducer 6",
-                           "pt7": "Pressure Transducer 7",
-                           "lc" : "Load Cell            ", 
+                           "pt0": "Pressure Transducer: LOX Pressure"        ,
+                           "pt1": "Pressure Transducer: LOX Flow Upstream"   ,
+                           "pt2": "Pressure Transducer: LOX Flow Downstream" ,
+                           "pt3": "Pressure Transducer: None"                ,
+                           "pt4": "Pressure Transducer: Engine Pressure"     ,
+                           "pt5": "Pressure Transducer: Fuel Flow Downstream",
+                           "pt6": "Pressure Transducer: Fuel Flow Upstream"  ,
+                           "pt7": "Pressure Transducer: Fuel Pressure"       ,
+                           "lc" : "Load Cell            "                    , 
                            "tc" : "Theromcouple         "
                            }
                      }
