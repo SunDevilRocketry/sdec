@@ -366,15 +366,15 @@ sensor_conv_funcs = {
                            },
                 # Engine Controller rev 5.0
                 controller_names[7]: {
-                           "pt0": sensor_conv.pt_pressure           ,
-                           "pt1": sensor_conv.pt_pressure           ,
-                           "pt2": sensor_conv.pt_pressure           ,
-                           "pt3": sensor_conv.pt_pressure           ,
-                           "pt4": sensor_conv.pt_pressure           ,
-                           "pt5": sensor_conv.pt_pressure           ,
-                           "pt6": sensor_conv.pt_pressure           ,
-                           "pt7": sensor_conv.pt_pressure           ,
-                           "lc" : sensor_conv.loadcell_force        , 
+                           "pt0": sensor_conv.pt_pressure   ,
+                           "pt1": sensor_conv.pt_pressure   ,
+                           "pt2": sensor_conv.pt_pressure   ,
+                           "pt3": sensor_conv.pt_pressure   ,
+                           "pt4": sensor_conv.pt_pressure_5V,
+                           "pt5": sensor_conv.pt_pressure_5V,
+                           "pt6": sensor_conv.pt_pressure_5V,
+                           "pt7": sensor_conv.pt_pressure_5V,
+                           "lc" : sensor_conv.loadcell_force, 
                            "tc" : sensor_conv.tc_temp
                            }
                     }
@@ -441,16 +441,18 @@ sensor_units = {
                            },
                 # Engine Controller rev 5.0
                 controller_names[7]: {
-                           "pt0": "psi",
-                           "pt1": "psi",
-                           "pt2": "psi",
-                           "pt3": "psi",
-                           "pt4": "psi",
-                           "pt5": "psi",
-                           "pt6": "psi",
-                           "pt7": "psi",
-                           "lc" : "lb" , 
-                           "tc" : "C"
+                           "pt0"  : "psi" ,
+                           "pt1"  : "psi" ,
+                           "pt2"  : "psi" ,
+                           "pt3"  : "psi" ,
+                           "pt4"  : "psi" ,
+                           "pt5"  : "psi" ,
+                           "pt6"  : "psi" ,
+                           "pt7"  : "psi" ,
+                           "lc"   : "lb"  , 
+                           "tc"   : "C"   ,
+                           "oxfr" : "kg/s",
+                           "ffr"  : "kg/s"
                            }
                }
 

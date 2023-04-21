@@ -134,6 +134,21 @@ def pt_pressure( readout ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
+# 		pt_pressure_5V                                                             #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Converts readouts from a pressure transducer to the pressure in psi        #
+#                                                                                  #
+####################################################################################
+def pt_pressure_5V( readout ):
+	voltage = adc_readout_to_voltage( readout )
+	return voltage_to_pressure_5V( voltage )
+## pt_pressure ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
 # 		tc_temp                                                                    #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
@@ -342,9 +357,9 @@ def pressure_to_alt( pressure, ground_pressure ):
 def ox_pressure_to_flow( dp ):
 	dp *= 6894.76 # psi to Pa conversion
 	if ( dp > 0 ):
-		return (  (math.sqrt(1143/998)*0.001088*math.sqrt(dp ) + 0.00121) )
+		return (  (math.sqrt(1143/998)*0.001088*math.sqrt(dp ) ) + 0.00121 ) 
 	else:
-		return ( -(math.sqrt(1143/998)*0.001088*math.sqrt(-dp) + 0.00121) )
+		return ( -(math.sqrt(1143/998)*0.001088*math.sqrt(-dp) ) + 0.00121 ) 
 ## ox_pressure_to_flow ##
 
 
@@ -361,9 +376,9 @@ def ox_pressure_to_flow( dp ):
 def fuel_pressure_to_flow( dp ):
 	dp *= 6894.76 # psi to Pa conversion
 	if ( dp > 0 ):
-		return (  (math.sqrt(1143/998)*0.001088*math.sqrt(dp ) + 0.00121) )
+		return (  (math.sqrt(780/998)*0.003431*math.sqrt(dp ) ) - 0.0545 ) 
 	else:
-		return ( -(math.sqrt(1143/998)*0.001088*math.sqrt(-dp) + 0.00121) )
+		return ( -(math.sqrt(780/998)*0.003431*math.sqrt(-dp) ) - 0.0545 ) 
 ## fuel_pressure_to_flow ##
 
 
