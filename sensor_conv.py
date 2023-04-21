@@ -13,6 +13,9 @@
 # Imports                                                                          # 
 ####################################################################################
 
+# Standard imports 
+import math
+
 # Project imports
 from config import *
 
@@ -72,7 +75,7 @@ def voltage_to_pressure( voltage ):
 ####################################################################################
 def voltage_to_pressure_5V( voltage ):
 	max_voltage   = 5    # V
-	max_pressure  = 1000 # psi
+	max_pressure  = 2000 # psi
 	pressure_step = max_pressure/max_voltage 
 	return voltage*pressure_step
 ## voltage_to_pressure ##
@@ -324,6 +327,44 @@ def pressure_to_alt( pressure, ground_pressure ):
 	# Convert to feet
 	return alt_agl*3.28084
 ## pressure_to_alt ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 	   ox_pressure_to_flow                                                         #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#     Converts a differential pressure readout in psi to flow rate for liquid      #
+#     oxygen, return value is in kg/s                                              #
+#                                                                                  #
+####################################################################################
+def ox_pressure_to_flow( dp ):
+	dp *= 6894.76 # psi to Pa conversion
+	if ( dp > 0 ):
+		return (  (math.sqrt(1143/998)*0.001088*math.sqrt(dp ) + 0.00121) )
+	else:
+		return ( -(math.sqrt(1143/998)*0.001088*math.sqrt(-dp) + 0.00121) )
+## ox_pressure_to_flow ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 	   fuel_pressure_to_flow                                                       #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#     Converts a differential pressure readout in psi to flow rate for RP1, return #
+#     value is in kg/s                                                             #
+#                                                                                  #
+####################################################################################
+def fuel_pressure_to_flow( dp ):
+	dp *= 6894.76 # psi to Pa conversion
+	if ( dp > 0 ):
+		return (  (math.sqrt(1143/998)*0.001088*math.sqrt(dp ) + 0.00121) )
+	else:
+		return ( -(math.sqrt(1143/998)*0.001088*math.sqrt(-dp) + 0.00121) )
+## fuel_pressure_to_flow ##
 
 
 ####################################################################################
