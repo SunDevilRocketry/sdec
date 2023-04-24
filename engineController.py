@@ -566,5 +566,112 @@ def hotfire_getstate( Args, serialObj, show_output = True ):
 
 
 ####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		stophotfire                                                                #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Terminates the engine burn                                                 #
+#                                                                                  #
+####################################################################################
+def stop_hotfire( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x9A' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The stophotfire command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Halting Hotfire ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Hotfire sucessfully terminated" )
+	elif ( response == no_ack_byte ):
+		print( "Stop Hotfire unsucessful. No response from engine controller" )
+	else:
+		print( "Stop Hotfire unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## stop_hotfire ## 
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		stoppurge                                                                  #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Terminates the post-hotfire engine purge                                   #
+#                                                                                  #
+####################################################################################
+def stop_purge( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x97' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The stoppurge command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Stopping Purge ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Purge sucessfully terminated" )
+		serialObj.set_engine_state( "Disarm State" )
+	elif ( response == no_ack_byte ):
+		print( "stoppurge unsucessful. No response from engine controller" )
+	else:
+		print( "stoppurge unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## stop_purge ## 
+
+
+####################################################################################
 # END OF FILE                                                                      #
 ####################################################################################

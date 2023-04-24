@@ -54,6 +54,8 @@ command_list = {
                  "standby"    : engineController.standby         ,
                  "hotfire"    : engineController.hotfire         ,
                  "getstate"   : engineController.hotfire_getstate,
+                 "stophotfire": engineController.stop_hotfire    ,
+                 "stoppurge"  : engineController.stop_purge      ,
                  "dual-deploy": flightComputer.dual_deploy
                 }
 
