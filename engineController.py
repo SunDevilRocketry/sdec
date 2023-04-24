@@ -158,6 +158,10 @@ def hotfire_abort( Args, serialObj ):
 	# Command opcode
 	opcode = b'\x90' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -173,8 +177,19 @@ def hotfire_abort( Args, serialObj ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "ABORT" )
+	print( "Aborting Hotfire ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Hotfire sucessfully aborted" )
+	elif ( response == no_ack_byte ):
+		print( "Abort unsuccessful. No response from engine controller" )
+	else:
+		print( "Abort unsuccessful. Timeout or unrecognized response" )
 	return serialObj
 ## hotfire_abort ##
 
@@ -234,6 +249,10 @@ def pfpurge( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x91' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -249,8 +268,19 @@ def pfpurge( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "PFPURGE" )
+	print( "Initiating Pre-Hotfire Purge Sequence ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Pre-Hotfire purge sequence sucessfully initiated" )
+	elif ( response == no_ack_byte ):
+		print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
+	else:
+		print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## pfpurge ##
 
@@ -272,6 +302,10 @@ def fillchill( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x92' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -287,8 +321,19 @@ def fillchill( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "FILL AND CHILL" )
+	print( "Initiating Fill and Chill Sequence ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Fill and Chill sequence sucessfully initiated" )
+	elif ( response == no_ack_byte ):
+		print( "Fill and Chill unsucessful. No response from engine controller" )
+	else:
+		print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## fillchill ##
 
@@ -310,6 +355,10 @@ def standby( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x93' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -325,8 +374,19 @@ def standby( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "STANDBY" )
+	print( "Initiating Standby State ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Standby sequence sucessfully initiated" )
+	elif ( response == no_ack_byte ):
+		print( "Standby unsucessful. No response from engine controller" )
+	else:
+		print( "Standby unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## standby ##
 
@@ -348,6 +408,10 @@ def hotfire( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x94' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -363,8 +427,19 @@ def hotfire( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "HOTFIRE" )
+	print( "Initiating Hotfire ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Ignition sequence sucessfully initiated" )
+	elif ( response == no_ack_byte ):
+		print( "Ignition unsucessful. No response from engine controller" )
+	else:
+		print( "Ignition unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## hotfire ##
 
