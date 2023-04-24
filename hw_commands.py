@@ -359,7 +359,7 @@ def sensor_extract_data_filter( data ):
 #         Displays sensor data and/or info                                         #
 #                                                                                  #
 ####################################################################################
-def sensor( Args, serialObj ):
+def sensor( Args, serialObj, show_readouts = True ):
 
     ################################################################################
     # Local Variables                                                              #
@@ -524,13 +524,14 @@ def sensor( Args, serialObj ):
                                                        )
 
         # Display Sensor readouts
-        for sensor in serialObj.sensor_readouts:
-            readout_formatted = format_sensor_readout(
-                                                      serialObj.controller,
-                                                      sensor               ,
-                                                      serialObj.sensor_readouts[sensor]
-                                                     )
-            print( readout_formatted )
+        if ( show_readouts ):
+            for sensor in serialObj.sensor_readouts:
+                readout_formatted = format_sensor_readout(
+                                                        serialObj.controller,
+                                                        sensor               ,
+                                                        serialObj.sensor_readouts[sensor]
+                                                        )
+                print( readout_formatted )
             
         return serialObj
 
