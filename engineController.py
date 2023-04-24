@@ -501,6 +501,24 @@ def hotfire_getstate( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x99' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	# Engine States
+	engine_state = {
+					b'\x00': "Initialization State",
+					b'\x01': "Ready State"         ,
+					b'\x02': "Pre Fire Purge State",
+					b'\x03': "Fill and Chill State",
+					b'\x04': "Standby State"       ,
+					b'\x05': "Fire State"          ,
+					b'\x06': "Disarm State"        ,
+					b'\x07': "Post-Fire State"     ,
+					b'\x08': "Manual State"        ,
+					b'\x09': "Abort State"
+	               }
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -516,8 +534,22 @@ def hotfire_getstate( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "GET STATE" )
+
+	# Send opcode 
+	serialObj.sendByte( opcode )
+
+	# Get response from engine controller
+	response = serialObj.readByte()
+	if ( response == no_ack_byte ):
+		print( "Error: Could not reach engine controller" )
+	elif ( response == b'' ):
+		print( "Error: Timeout")
+	elif ( response not in list( engine_state.keys() ) ):
+		print( "Error: Unrecognized engine state" )
+
+	# Display Engine State	
+	print( "Engine State: " )
+	print( engine_state[response] )
 	return serialObj
 ## hotfire_getstate ##
 
