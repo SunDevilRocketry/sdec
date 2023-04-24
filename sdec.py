@@ -79,6 +79,7 @@ class terminalData:
         self.firmware            = None
         self.flash_write_enabled = False 
         self.sensor_readouts     = {}
+        self.engine_state        = None
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):
@@ -179,6 +180,14 @@ class terminalData:
     def reset_SDR_controller(self):
         self.controller    = None
         self.firmware_name = None
+
+    # Get the state of the liquid engine
+    def get_engine_state( self ):
+        return self.engine_state
+
+    # Set the state of the liquid engine
+    def set_engine_state( self, engine_state ):
+        self.engine_state = engine_state
 ## class terminalData ##
 
 

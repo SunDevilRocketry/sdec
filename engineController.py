@@ -542,14 +542,20 @@ def hotfire_getstate( Args, serialObj, show_output = True ):
 	response = serialObj.readByte()
 	if ( response == no_ack_byte ):
 		print( "Error: Could not reach engine controller" )
+		return serialObj
 	elif ( response == b'' ):
 		print( "Error: Timeout")
+		return serialObj
 	elif ( response not in list( engine_state.keys() ) ):
 		print( "Error: Unrecognized engine state" )
+		return serialObj
 
 	# Display Engine State	
 	print( "Engine State: " )
 	print( engine_state[response] )
+
+	# Set the engine state
+	serialObj.set_engine_state( engine_state[response] )
 	return serialObj
 ## hotfire_getstate ##
 
