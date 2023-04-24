@@ -188,6 +188,7 @@ def hotfire_abort( Args, serialObj ):
 	response = serialObj.readByte()
 	if ( response == ack_byte ):
 		print( "Hotfire sucessfully aborted" )
+		serialObj.set_engine_state( "Abort State" )
 	elif ( response == no_ack_byte ):
 		print( "Abort unsuccessful. No response from engine controller" )
 	else:
@@ -317,6 +318,7 @@ def pfpurge( Args, serialObj, show_output = True ):
 	response = serialObj.readByte()
 	if ( response == ack_byte ):
 		print( "Pre-Hotfire purge sequence sucessfully initiated" )
+		serialObj.set_engine_state( "Pre-Fire Purge State" )
 	elif ( response == no_ack_byte ):
 		print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
 	else:
@@ -370,6 +372,7 @@ def fillchill( Args, serialObj, show_output = True ):
 	response = serialObj.readByte()
 	if ( response == ack_byte ):
 		print( "Fill and Chill sequence sucessfully initiated" )
+		serialObj.set_engine_state( "Fill and Chill State" )
 	elif ( response == no_ack_byte ):
 		print( "Fill and Chill unsucessful. No response from engine controller" )
 	else:
@@ -423,6 +426,7 @@ def standby( Args, serialObj, show_output = True ):
 	response = serialObj.readByte()
 	if ( response == ack_byte ):
 		print( "Standby sequence sucessfully initiated" )
+		serialObj.set_engine_state( "Standby State" )
 	elif ( response == no_ack_byte ):
 		print( "Standby unsucessful. No response from engine controller" )
 	else:
@@ -476,6 +480,7 @@ def hotfire( Args, serialObj, show_output = True ):
 	response = serialObj.readByte()
 	if ( response == ack_byte ):
 		print( "Ignition sequence sucessfully initiated" )
+		serialObj.set_engine_state( "Fire State" )
 	elif ( response == no_ack_byte ):
 		print( "Ignition unsucessful. No response from engine controller" )
 	else:
