@@ -20,6 +20,8 @@ import serial.tools.list_ports
 # Project Modules                                                                  #
 ####################################################################################
 import commands
+import hw_commands
+import controller
 from   config   import *
 
 
@@ -211,6 +213,16 @@ def telreq( Args, serialObj, show_output = True ):
 	# Command opcode
 	opcode = b'\x96' 
 
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	# Size of sensor dump
+	sensor_dump_size = 40
+
+	 # Complete list of sensor names/numbers 
+	sensor_numbers = list( controller.controller_sensors[serialObj.controller].keys() )
+
 	################################################################################
 	# Command-Specific Checks                                                      #
 	################################################################################
@@ -226,8 +238,36 @@ def telreq( Args, serialObj, show_output = True ):
 	################################################################################
 	# Command Implementation                                                       #
 	################################################################################
-	## TODO: Implement
-	print( "TELREQ" )
+
+	# Send opcode 
+	serialObj.sendByte( opcode )
+
+	# Wait for acknowledge command
+	response = serialObj.readByte()
+	if ( response != ack_byte ):
+		if ( show_output ):
+			print( "Telemetry request unsucessful. Cannot reach engine controller" )
+		return serialObj
+
+	# Get sensor data
+	sensor_data_bytes = serialObj.readBytes( sensor_dump_size )
+
+	# Process sensor data
+	serialObj.sensor_readouts = hw_commands.get_sensor_readouts(
+												serialObj.controller,
+												sensor_numbers       ,
+												sensor_data_bytes
+	                                                           )
+
+	# Display Sensor readouts
+	if ( show_output ):
+		for sensor in serialObj.sensor_readouts:
+			readout_formatted = hw_commands.format_sensor_readout(
+													serialObj.controller,
+													sensor               ,
+													serialObj.sensor_readouts[sensor]
+													             )
+			print( readout_formatted )
 	return serialObj
 ## telreq ##
 
