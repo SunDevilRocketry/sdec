@@ -35,18 +35,25 @@ from   config import *  # global settings
 
 # List of terminal commands
 command_list = { 
-                 "exit"       : commands.exitFunc      ,
-                 "help"       : commands.helpFunc      ,
-                 "clear"      : commands.clearConsole  ,
-                 "comports"   : commands.comports      ,
-                 "ping"       : commands.ping          ,
-				 "connect"    : commands.connect       ,
-                 "sol"        : valveController.sol    ,
-                 "valve"      : valveController.valve  ,
-                 "power"      : engineController.power ,
-                 "ignite"     : hw_commands.ignite     ,
-                 "flash"      : hw_commands.flash      ,
-                 "sensor"     : hw_commands.sensor     ,
+                 "exit"       : commands.exitFunc                ,
+                 "help"       : commands.helpFunc                ,
+                 "clear"      : commands.clearConsole            ,
+                 "comports"   : commands.comports                ,
+                 "ping"       : commands.ping                    ,
+				 "connect"    : commands.connect                 ,
+                 "sol"        : valveController.sol              ,
+                 "valve"      : valveController.valve            ,
+                 "power"      : engineController.power           ,
+                 "ignite"     : hw_commands.ignite               ,
+                 "flash"      : hw_commands.flash                ,
+                 "sensor"     : hw_commands.sensor               ,
+                 "abort"      : engineController.hotfire_abort   ,
+                 "telreq"     : engineController.telreq          ,
+                 "pfpurge"    : engineController.pfpurge         ,
+                 "fillchill"  : engineController.fillchill       ,
+                 "standby"    : engineController.standby         ,
+                 "hotfire"    : engineController.hotfire         ,
+                 "getstate"   : engineController.hotfire_getstate,
                  "dual-deploy": flightComputer.dual_deploy
                 }
 

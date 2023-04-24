@@ -142,5 +142,271 @@ def power(Args, serialObj):
 
 
 ####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		hotfire_abort                                                              #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Sends the hotfire abort commands to the engine controller                  #
+#                                                                                  #
+####################################################################################
+def hotfire_abort( Args, serialObj ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x90' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The abort command requires a valid "  + 
+              "serial connection to an engine controller "  + 
+              "device. Run the \"connect\" command to "     +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "ABORT" )
+	return serialObj
+## hotfire_abort ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		telreq                                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Telemetry request, gets sensor data from the engine controller             #
+#                                                                                  #
+####################################################################################
+def telreq( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x96' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The telreq command requires a valid "  + 
+              "serial connection to an engine controller "  + 
+              "device. Run the \"connect\" command to "     +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "TELREQ" )
+	return serialObj
+## telreq ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		pfpurge                                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Pre-fire purge, initiates a system purge prior to hotfire                  #
+#                                                                                  #
+####################################################################################
+def pfpurge( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x91' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The pfpurge command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "PFPURGE" )
+	return serialObj
+## pfpurge ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		fillchill                                                                  #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Fill and Chill, initiates the fill and chill engine sequence               #
+#                                                                                  #
+####################################################################################
+def fillchill( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x92' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The fillchill command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "FILL AND CHILL" )
+	return serialObj
+## fillchill ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		standby                                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Initiates the standby engine sequence                                      #
+#                                                                                  #
+####################################################################################
+def standby( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x93' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The standby command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "STANDBY" )
+	return serialObj
+## standby ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		hotfire                                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Initiates the hotfire engine sequence                                      #
+#                                                                                  #
+####################################################################################
+def hotfire( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x94' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The hotfire command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "HOTFIRE" )
+	return serialObj
+## hotfire ##
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		hotfire_getstate                                                           #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Gets the state of the hotfire sequence                                     #
+#                                                                                  #
+####################################################################################
+def hotfire_getstate( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x99' 
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The getstate command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	## TODO: Implement
+	print( "GET STATE" )
+	return serialObj
+## hotfire_getstate ##
+
+
+####################################################################################
 # END OF FILE                                                                      #
 ####################################################################################
