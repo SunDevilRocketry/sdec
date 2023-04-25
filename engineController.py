@@ -673,5 +673,59 @@ def stop_purge( Args, serialObj, show_output = True ):
 
 
 ####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		kbottleclose                                                               #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Sends the signal indicating that the kbottle has been closed               #
+#                                                                                  #
+####################################################################################
+def kbottle_close( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x9C' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The kbottleclose command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Sending K-Bottle Close Command ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Sucessful" )
+		serialObj.set_engine_state( "Post-Fire State" )
+	elif ( response == no_ack_byte ):
+		print( "Unsucessful. No response from engine controller" )
+	else:
+		print( "Unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## kbottleclose ## 
+
+
+####################################################################################
 # END OF FILE                                                                      #
 ####################################################################################
