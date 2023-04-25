@@ -246,8 +246,7 @@ def telreq( Args, serialObj, show_output = True ):
 	# Wait for acknowledge command
 	response = serialObj.readByte()
 	if ( response != ack_byte ):
-		if ( show_output ):
-			print( "Telemetry request unsucessful. Cannot reach engine controller" )
+		print( "Telemetry request unsucessful. Cannot reach engine controller" )
 		return serialObj
 
 	# Get sensor data
