@@ -834,10 +834,64 @@ def lox_purge( Args, serialObj, show_output = True ):
 	elif ( response == no_ack_byte ):
 		print( "Unsucessful. No response from engine controller" )
 	else:
-		print( response )
 		print( "Unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## lox_purge ## 
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		manual                                                                     #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Puts the engine into manual mode                                           #
+#                                                                                  #
+####################################################################################
+def manual( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x9E' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The loxpurge command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Entering manual mode ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Sucessful. Now in manual mode" )
+		serialObj.set_engine_state( "Manual State" )
+	elif ( response == no_ack_byte ):
+		print( "Unsucessful. No response from engine controller" )
+	else:
+		print( "Unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## lox_purge ## 
+
 
 
 ####################################################################################
