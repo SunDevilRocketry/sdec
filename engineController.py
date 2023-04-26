@@ -14,6 +14,7 @@
 # Standard Imports                                                                 #
 ####################################################################################
 import serial.tools.list_ports
+import time
 
 
 ####################################################################################
@@ -245,6 +246,7 @@ def telreq( Args, serialObj, show_output = True ):
 
 	# Wait for acknowledge command
 	response = serialObj.readByte()
+
 	if ( response != ack_byte ):
 		print( "Telemetry request unsucessful. Cannot reach engine controller" )
 		return serialObj
@@ -723,6 +725,119 @@ def kbottle_close( Args, serialObj, show_output = True ):
 		print( "Unsucessful. Timeout or unrecognized response" )
 	return serialObj
 ## kbottleclose ## 
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		tankstat                                                                   #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Checks if the tank pressures are sufficiently low to approach              #
+#                                                                                  #
+####################################################################################
+def tankstat( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x9D' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	# Engine Tank status responses
+	tank_safe_code   = b'\x01'
+	tank_unsafe_code = b'\x02'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The kbottleclose command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Checking Tank Pressures ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == no_ack_byte ):
+		print( "Unsuccessful. Could not reach engine controller" )
+	elif ( response == tank_unsafe_code ):
+		print( "UNSAFE: Tank pressures too high" )
+	elif ( response == tank_safe_code ):
+		print( "SAFE: Tank pressures OK ")
+	else:
+		print( "Unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## tankstat ## 
+
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		lox_purge                                                                  #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Sends the signal to initiate the LOX purge                                 #
+#                                                                                  #
+####################################################################################
+def lox_purge( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x9B' 
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x95'
+	no_ack_byte = b'\x98'
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The loxpurge command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+	print( "Initiating LOX Tank Purge ... " )
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Sucessful" )
+	elif ( response == no_ack_byte ):
+		print( "Unsucessful. No response from engine controller" )
+	else:
+		print( response )
+		print( "Unsucessful. Timeout or unrecognized response" )
+	return serialObj
+## lox_purge ## 
 
 
 ####################################################################################
