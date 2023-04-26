@@ -591,7 +591,9 @@ sensor_data_filenames = {
                         # Valve Controller rev 2.0
                         controller_names[1]: "output/valve_controller_rev2_sensor_data.txt",
                         # Valve Controller rev 3.0
-                        controller_names[6]: "output/valve_controller_rev3_sensor_data.txt"
+                        controller_names[6]: "output/valve_controller_rev3_sensor_data.txt",
+                        # Engine Controller rev 5.0
+                        controller_names[7]: "output/engine_controller_rev5_sensor_data.txt"
                         }
 
 # Firmware Ids
