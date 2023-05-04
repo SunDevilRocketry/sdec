@@ -83,6 +83,7 @@ class terminalData:
         self.flash_write_enabled = False 
         self.sensor_readouts     = {}
         self.engine_state        = None
+        self.valve_states        = {}
 
     # Initialize Serial Port
     def initComport(self, baudrate, comport, timeout):

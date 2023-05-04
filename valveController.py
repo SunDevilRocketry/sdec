@@ -71,6 +71,71 @@ solenoid_off_states = {
 					"fuelVent" : "OPEN" 
                      }
 
+# Numbers assigned to each valve 
+valve_nums = {
+			"oxPress"  : 1,
+			"fuelPress": 2,
+			"oxPurge"  : 5,
+			"fuelPurge": 6,
+			"oxVent"   : 3,
+			"fuelVent" : 4,
+			"oxMain"   : 7,
+			"fuelMain" : 8
+             }
+
+# Valve on/off states
+valve_on_states = {
+				"oxPress"  : "OPEN",
+				"fuelPress": "OPEN",
+				"oxPurge"  : "CLOSED",
+				"fuelPurge": "CLOSED",
+				"oxVent"   : "CLOSED",
+				"fuelVent" : "CLOSED",
+				"oxMain"   : "OPEN"  ,
+				"fuelMain" : "OPEN"
+                  }
+
+valve_off_states = {
+				"oxPress"  : "CLOSED",
+				"fuelPress": "CLOSED",
+				"oxPurge"  : "OPEN"  ,
+				"fuelPurge": "OPEN"  ,
+				"oxVent"   : "OPEN"  ,
+				"fuelVent" : "OPEN"  ,
+				"oxMain"   : "CLOSED",
+				"fuelMain" : "CLOSED"
+                   }
+
+
+####################################################################################
+# Shared Procedures                                                                #
+####################################################################################
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+#         extract_valve_state                                                      #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#         extracts extracts the state of each valve from telemetry byte            #
+#                                                                                  #
+####################################################################################
+def extract_valve_state( valve_state_byte ):
+	valve_state_int = ord( valve_state_byte )
+	valve_states    = {}
+	for valve in valve_nums:
+		if ( valve_state_int & ( 1 << ( valve_nums[valve] - 1 ) ) ):
+			valve_states[valve] = valve_on_states[valve]
+		else:
+			valve_states[valve] = valve_off_states[valve]
+	return valve_states
+## extract_valve_state ## 
+
+
+####################################################################################
+# Procedures                                                                       #
+####################################################################################
 
 
 ####################################################################################
@@ -408,6 +473,8 @@ def valve( Args, serialObj ):
 			                 },
 			   'openall'   : {
 			                 },
+			   'getstate'  : {
+			                 },
 			   'list'      : {
 						     },
 			   'help'      : {
@@ -432,6 +499,7 @@ def valve( Args, serialObj ):
 	valve_crack_base_code = b'\x0A'
 	valve_reset_code      = b'\x10'
 	valve_openall_code    = b'\x12'
+	valve_getstate_code   = b'\x14'
 
 	# Subcommand codes as integers
 	valve_open_base_code_int  = ord( valve_open_base_code  )
@@ -598,6 +666,26 @@ def valve( Args, serialObj ):
 		# Send subcommand code
 		serialObj.sendByte( valve_openall_code )
 		return serialObj	
+	
+
+	################################################################################
+	# Subcommand: valve getstate                                                   #
+	################################################################################
+	elif ( user_subcommand == "getstate" ):
+		# Send opcode
+		serialObj.sendByte( opcode )
+
+		# Send Subcommand opcode
+		serialObj.sendByte( valve_getstate_code )
+
+		# Receive the byte from the controller
+		valve_state_byte = serialObj.readByte()
+		valve_states     = extract_valve_state( valve_state_byte )
+
+		# Print the results
+		print( "ox  : " + valve_states["oxMain"  ] )
+		print( "fuel: " + valve_states["fuelMain"] )
+		return serialObj
 
 
 	################################################################################

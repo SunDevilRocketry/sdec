@@ -33,6 +33,67 @@ supported_boards = ["Liquid Engine Controller (L0002 Rev 4.0)",
                     "Liquid Engine Controller (L0002 Rev 5.0)",
 				    "Flight Computer (A0002 Rev 1.0)" ]
 
+# Numbers assigned to each valve 
+valve_nums = {
+			"oxPress"  : 1,
+			"fuelPress": 2,
+			"oxPurge"  : 5,
+			"fuelPurge": 6,
+			"oxVent"   : 3,
+			"fuelVent" : 4,
+			"oxMain"   : 7,
+			"fuelMain" : 8
+             }
+
+# Valve on/off states
+valve_on_states = {
+				"oxPress"  : "OPEN",
+				"fuelPress": "OPEN",
+				"oxPurge"  : "CLOSED",
+				"fuelPurge": "CLOSED",
+				"oxVent"   : "CLOSED",
+				"fuelVent" : "CLOSED",
+				"oxMain"   : "OPEN"  ,
+				"fuelMain" : "OPEN"
+                  }
+
+valve_off_states = {
+				"oxPress"  : "CLOSED",
+				"fuelPress": "CLOSED",
+				"oxPurge"  : "OPEN"  ,
+				"fuelPurge": "OPEN"  ,
+				"oxVent"   : "OPEN"  ,
+				"fuelVent" : "OPEN"  ,
+				"oxMain"   : "CLOSED",
+				"fuelMain" : "CLOSED"
+                   }
+
+
+####################################################################################
+# Shared Procedures                                                                #
+####################################################################################
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+#         extract_valve_state                                                      #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#         extracts extracts the state of each valve from telemetry byte            #
+#                                                                                  #
+####################################################################################
+def extract_valve_state( valve_state_byte ):
+	valve_state_int = ord( valve_state_byte )
+	valve_states    = {}
+	for valve in valve_nums:
+		if ( valve_state_int & ( 1 << ( valve_nums[valve] - 1 ) ) ):
+			valve_states[valve] = valve_on_states[valve]
+		else:
+			valve_states[valve] = valve_off_states[valve]
+	return valve_states
+## extract_valve_state ## 
+
 
 ####################################################################################
 # Procedures                                                                       #
@@ -246,7 +307,6 @@ def telreq( Args, serialObj, show_output = True ):
 
 	# Wait for acknowledge command
 	response = serialObj.readByte()
-
 	if ( response != ack_byte ):
 		print( "Telemetry request unsucessful. Cannot reach engine controller" )
 		return serialObj
@@ -254,12 +314,18 @@ def telreq( Args, serialObj, show_output = True ):
 	# Get sensor data
 	sensor_data_bytes = serialObj.readBytes( sensor_dump_size )
 
+	# Get the valve state
+	valve_state_byte = serialObj.readBytes( 1 )
+
 	# Process sensor data
 	serialObj.sensor_readouts = hw_commands.get_sensor_readouts(
 												serialObj.controller,
 												sensor_numbers       ,
 												sensor_data_bytes
 	                                                           )
+	
+	# Process the valve data
+	serialObj.valve_states = extract_valve_state( valve_state_byte )
 
 	# Display Sensor readouts
 	if ( show_output ):
@@ -270,6 +336,8 @@ def telreq( Args, serialObj, show_output = True ):
 													serialObj.sensor_readouts[sensor]
 													             )
 			print( readout_formatted )
+		for valve in serialObj.valve_states:
+			print( valve + ": " + serialObj.valve_states[valve] )
 	return serialObj
 ## telreq ##
 
