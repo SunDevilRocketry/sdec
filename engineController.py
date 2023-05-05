@@ -315,7 +315,7 @@ def telreq( Args, serialObj, show_output = True ):
 	sensor_data_bytes = serialObj.readBytes( sensor_dump_size )
 
 	# Get the valve state
-	valve_state_byte = serialObj.readBytes( 1 )
+	valve_state_byte = serialObj.readByte() 
 
 	# Process sensor data
 	serialObj.sensor_readouts = hw_commands.get_sensor_readouts(
