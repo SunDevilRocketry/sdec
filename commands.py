@@ -20,6 +20,7 @@ import time
 
 # Project imports
 import sensor_conv
+import doc
 from   config      import *
 from   controller  import *
 
@@ -30,9 +31,9 @@ from   controller  import *
 
 # Serial port timeouts
 if ( sdr_debug ):
-	default_timeout = 100 # 100 second timeout
+    default_timeout = 100 # 100 second timeout
 else:
-	default_timeout = 1   # 1 second timeout
+    default_timeout = 1   # 1 second timeout
 
 
 ####################################################################################
@@ -43,150 +44,153 @@ else:
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-# 		display_help_info                                                          #
+#         display_help_info                                                          #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		displays a command's help info from its doc file                           #
+#         displays a command's help info from its doc file                           #
 #                                                                                  #
 ####################################################################################
 def display_help_info( command ):
-	with open ("doc/" + command ) as file:
-		doc_lines = file.readlines()
-	print()
-	for line in doc_lines:
-		print( line, end='' )
-	print()
+    command_parsed = command.replace('-', '_')
+    documentation = getattr(doc, command_parsed)
+    print(f"\n{documentation}\n")
+    # with open ("doc/" + command ) as file:
+    #     doc_lines = file.readlines()
+    # print()
+    # for line in doc_lines:
+    #     print( line, end='' )
+    # print()
 ## display_help_info ##
 
 
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-# 		error_msg                                                                  #
+#         error_msg                                                                  #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		displays a general software failure error message                          #
+#         displays a general software failure error message                          #
 #                                                                                  #
 ####################################################################################
 def error_msg():
-	print( "Something went wrong. Report this issue to " + 
-              "the Sun Devil Rocketry development team" )	
+    print( "Something went wrong. Report this issue to " +
+              "the Sun Devil Rocketry development team" )
 ## error_msg ##
 
 
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
-# 		parseArgs                                                                  #
+#         parseArgs                                                                  #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		runs basic checks on command inputs and outputs a                          #
+#         runs basic checks on command inputs and outputs a                          #
 #       boolean indicating if the user input passes the                            #
 #       checks                                                                     #
 #                                                                                  #
 ####################################################################################
 def parseArgs(
              Args,          # function arguments
-			 max_num_Args,  # maximum number of function arguments
+             max_num_Args,  # maximum number of function arguments
              Args_dic,      # dictionary of supported inputs
              command_type,  # indicates if command has subcommands
              ):
 
-	##############################################################################
-	# Local Variables                                                            #
-	##############################################################################
+    ##############################################################################
+    # Local Variables                                                            #
+    ##############################################################################
 
-	# Error code returns
-	parse_pass = True
-	parse_fail = False
+    # Error code returns
+    parse_pass = True
+    parse_fail = False
 
-	# subcommand support
-	if ( command_type == 'subcommand' ):
-		subcommand_func = True
-	else:
-		subcommand_func = False
+    # subcommand support
+    if ( command_type == 'subcommand' ):
+        subcommand_func = True
+    else:
+        subcommand_func = False
 
 
-	##############################################################################
-	# Input Tests                                                                #
-	##############################################################################
+    ##############################################################################
+    # Input Tests                                                                #
+    ##############################################################################
 
-	# No Subcommands/Options
-	if ( subcommand_func ):
-		if ( len(Args) == 0 ): # no subcommand
-			print( 'Error: No subcommand supplied. Valid ' +
+    # No Subcommands/Options
+    if ( subcommand_func ):
+        if ( len(Args) == 0 ): # no subcommand
+            print( 'Error: No subcommand supplied. Valid ' +
                    'subcommands include: ' )
-			for subcommand in Args_dic:
-				print( '\t' + subcommand )
-			print()
-			return parse_fail
-		user_subcommand = Args[0]
-	else:
-		if ( len(Args) == 0 ): # no options
-			print( 'Error: No options supplied. Valid ' +
+            for subcommand in Args_dic:
+                print( '\t' + subcommand )
+            print()
+            return parse_fail
+        user_subcommand = Args[0]
+    else:
+        if ( len(Args) == 0 ): # no options
+            print( 'Error: No options supplied. Valid ' +
                    'options include: ' )
-			for option in Args_dic:
-				print( '\t' + option + '\t' + Args_dic[option] ) 
-			print()
-			return parse_fail
-		user_option = Args[0]
+            for option in Args_dic:
+                print( '\t' + option + '\t' + Args_dic[option] )
+            print()
+            return parse_fail
+        user_option = Args[0]
 
-	# Too Many Inputs
-	if ( len(Args) > max_num_Args ): 
-		print( 'Error: To many inputs.' )
-		return parse_fail
+    # Too Many Inputs
+    if ( len(Args) > max_num_Args ):
+        print( 'Error: To many inputs.' )
+        return parse_fail
 
-	# Unrecognized Subcommand
-	if ( subcommand_func ):
-		if ( not (user_subcommand in Args_dic) ): 
-			print('Error: Unrecognized subcommand. Valid ' +
+    # Unrecognized Subcommand
+    if ( subcommand_func ):
+        if ( not (user_subcommand in Args_dic) ):
+            print('Error: Unrecognized subcommand. Valid ' +
                   'subcommands include: ')
-			for subcommand in Args_dic:
-				print( '\t' + subcommand )
-			print()
-			return parse_fail
-		num_options = len( Args_dic[user_subcommand] )
-		# No option supplied after subcommand
-		if ( (len(Args) == 1) and (num_options != 0) ):
-			print( 'Error: No options supplied. Valid ' +
+            for subcommand in Args_dic:
+                print( '\t' + subcommand )
+            print()
+            return parse_fail
+        num_options = len( Args_dic[user_subcommand] )
+        # No option supplied after subcommand
+        if ( (len(Args) == 1) and (num_options != 0) ):
+            print( 'Error: No options supplied. Valid ' +
                    'options include: ' )
-			for option in Args_dic[user_subcommand]:
-				print( '\t' + option + '\t' + 
-                       Args_dic[user_subcommand][option] ) 
-			print()
-			return parse_fail
-		# Subcommand valid, exit if subcommand has no options
-		if ( num_options == 0 ):
-			return parse_pass
-		else: 
-			# Organize user options into a list
-			user_options = []
-			for arg in Args[1:]:
-				if ( '-' in arg ):
-					user_options.append(arg)
+            for option in Args_dic[user_subcommand]:
+                print( '\t' + option + '\t' +
+                       Args_dic[user_subcommand][option] )
+            print()
+            return parse_fail
+        # Subcommand valid, exit if subcommand has no options
+        if ( num_options == 0 ):
+            return parse_pass
+        else:
+            # Organize user options into a list
+            user_options = []
+            for arg in Args[1:]:
+                if ( '-' in arg ):
+                    user_options.append(arg)
 
-	# Unrecognized Option	
-	if ( subcommand_func ): #subcommand supported
-		for user_option in user_options:	
-			if ( not(user_option in Args_dic[user_subcommand]) ): 
-				print( 'Error: Unrecognized option. Valid ' +
+    # Unrecognized Option
+    if ( subcommand_func ): #subcommand supported
+        for user_option in user_options:
+            if ( not(user_option in Args_dic[user_subcommand]) ):
+                print( 'Error: Unrecognized option. Valid ' +
                        'options include: ')
-				for option in Args_dic[user_subcommand]:
-					print( '\t' + option + '\t' + 
-                           Args_dic[user_subcommand][option] ) 
-				print()
-				return parse_fail
-	else: # subcommand not supported 
-		if ( not(user_option in Args_dic) ): 
-			print( 'Error: Unrecognized option. Valid ' +
+                for option in Args_dic[user_subcommand]:
+                    print( '\t' + option + '\t' +
+                           Args_dic[user_subcommand][option] )
+                print()
+                return parse_fail
+    else: # subcommand not supported
+        if ( not(user_option in Args_dic) ):
+            print( 'Error: Unrecognized option. Valid ' +
                    'options include: ' )
-			for option in Args_dic:
-				print( '\t' + option + '\t' + Args_dic[option] ) 
-			print()
-			return parse_fail
+            for option in Args_dic:
+                print( '\t' + option + '\t' + Args_dic[option] )
+            print()
+            return parse_fail
 
-	# User input passes all checks	
-	return parse_pass
+    # User input passes all checks
+    return parse_pass
 ## parseArgs ##
 
 
@@ -198,10 +202,10 @@ def parseArgs(
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		exit                                                                       #
+#         exit                                                                       #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		quits the program                                                          #
+#         quits the program                                                          #
 #                                                                                  #
 ####################################################################################
 def exitFunc(Args, serialObj):
@@ -212,25 +216,25 @@ def exitFunc(Args, serialObj):
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		help                                                                       #
+#         help                                                                       #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		displays command info from manpage                                         #
+#         displays command info from manpage                                         #
 #                                                                                  #
 ####################################################################################
 def helpFunc(Args, serialObj):
     display_help_info('manpage')
-    return serialObj 
+    return serialObj
 ## helpFunc ##
-    
+
 
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		clear                                                                      #
+#         clear                                                                      #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		clears the python terminal                                                 #
+#         clears the python terminal                                                 #
 #                                                                                  #
 ####################################################################################
 def clearConsole(Args, serialObj):
@@ -238,170 +242,170 @@ def clearConsole(Args, serialObj):
     if os.name in ('nt', 'dos'):
         command = 'cls'
     os.system(command)
-    return serialObj 
+    return serialObj
 ## clearConsole ##
 
 
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		comports                                                                   #
+#         comports                                                                   #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		connects to a USB device or displays connectivity                          #
+#         connects to a USB device or displays connectivity                          #
 #                                                                                  #
 ####################################################################################
 def comports(Args, serialObj):
 
-	##############################################################################
-	# Local Variables                                                            #
-	##############################################################################
+    ##############################################################################
+    # Local Variables                                                            #
+    ##############################################################################
 
-	# Options Dictionary
-	comports_inputs = { 
-					   '-h' : 'Display help info',
-					   '-l' : 'List available serial ports',
-					   '-c' : 'Connect to a serial port',
-					   '-d' : 'Disconnect from a serial port'
+    # Options Dictionary
+    comports_inputs = {
+                       '-h' : 'Display help info',
+                       '-l' : 'List available serial ports',
+                       '-c' : 'Connect to a serial port',
+                       '-d' : 'Disconnect from a serial port'
                       }
-    
-	# Maximum number of arguments
-	max_args = 3
 
-	# Command type -- subcommand function
-	command_type = 'default'
+    # Maximum number of arguments
+    max_args = 3
 
-	##############################################################################
-	# Basic inputs parsing                                                       #
-	##############################################################################
-	parse_check = parseArgs(
+    # Command type -- subcommand function
+    command_type = 'default'
+
+    ##############################################################################
+    # Basic inputs parsing                                                       #
+    ##############################################################################
+    parse_check = parseArgs(
                             Args,
                             max_args,
                             comports_inputs,
-                            command_type 
+                            command_type
                            )
-	if ( not parse_check ):
-		return serialObj # user inputs failed parse tests
+    if ( not parse_check ):
+        return serialObj # user inputs failed parse tests
 
-	##############################################################################
-	# Command Specific Parsing                                                   #
-	##############################################################################
-	option            = Args[0]
-	port_supplied     = False
-	baudrate_supplied = False
+    ##############################################################################
+    # Command Specific Parsing                                                   #
+    ##############################################################################
+    option            = Args[0]
+    port_supplied     = False
+    baudrate_supplied = False
 
-	# Set variables if they exist 
-	if ( len(Args) >= 2 ):
-		target_port   = Args[1]
-		port_supplied = True
+    # Set variables if they exist
+    if ( len(Args) >= 2 ):
+        target_port   = Args[1]
+        port_supplied = True
 
-	# Check for valid baudrate
-	if ( len(Args) == 3 ):
-		try: 
-			baudrate = int( Args[2] )
-			baudrate_supplied = True
-		except ValueError:
-			print( "Error: invalid baudrate. Check that the " +
+    # Check for valid baudrate
+    if ( len(Args) == 3 ):
+        try:
+            baudrate = int( Args[2] )
+            baudrate_supplied = True
+        except ValueError:
+            print( "Error: invalid baudrate. Check that the " +
                   "baudrate is in bits/s and is an integer" )
-			return serialObj
+            return serialObj
 
-	##############################################################################
+    ##############################################################################
     # List Option (-l)                                                           #
-	##############################################################################
-	if ( option == "-l" ):
+    ##############################################################################
+    if ( option == "-l" ):
 
-		avail_ports = serial.tools.list_ports.comports()
-		print( "\nAvailable COM ports: " )
-		for port_num,port in enumerate( avail_ports ):
-			print( "\t" + str(port_num) + ": " + port.device + 
-                   " - ", end="" ) 
-			if ( port.manufacturer != None ):
-				print( port.manufacturer + ": ", end="" )
-			if ( port.description  != None ):
-				print( port.product )
-			else:
-				print( "device info unavailable" )
-		print()
-		return serialObj
+        avail_ports = serial.tools.list_ports.comports()
+        print( "\nAvailable COM ports: " )
+        for port_num,port in enumerate( avail_ports ):
+            print( "\t" + str(port_num) + ": " + port.device +
+                   " - ", end="" )
+            if ( port.manufacturer != None ):
+                print( port.manufacturer + ": ", end="" )
+            if ( port.description  != None ):
+                print( port.product )
+            else:
+                print( "device info unavailable" )
+        print()
+        return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Help Option (-h)                                                           #
-	##############################################################################
-	elif ( option == "-h" ):
-		display_help_info( 'comports' )
-		return serialObj
+    ##############################################################################
+    elif ( option == "-h" ):
+        display_help_info( 'comports' )
+        return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Connect Option (-c)                                                        #
-	##############################################################################
-	elif ( option == "-c" ):
-		# Check that port has been supplied
-		if   ( not port_supplied     ):
-			print( "Error: no port supplied to comports " +
+    ##############################################################################
+    elif ( option == "-c" ):
+        # Check that port has been supplied
+        if   ( not port_supplied     ):
+            print( "Error: no port supplied to comports " +
                    "function" )
-			return serialObj
+            return serialObj
 
-		# Check that baudrate has been supplied
-		elif ( not baudrate_supplied ):
-			print( "Error: no baudrate supplied to comports " +
+        # Check that baudrate has been supplied
+        elif ( not baudrate_supplied ):
+            print( "Error: no baudrate supplied to comports " +
                    "function" )
-			return serialObj
+            return serialObj
 
-		# Check that inputed port is valid
-		avail_ports = serial.tools.list_ports.comports()
-		avail_ports_devices = []
-		for port in avail_ports:
-			avail_ports_devices.append(port.device)
-		if ( not (target_port in avail_ports_devices) ):
-			print( "Error: Invalid serial port\n" )
-			comports( ["-l"] )
-			return serialObj
+        # Check that inputed port is valid
+        avail_ports = serial.tools.list_ports.comports()
+        avail_ports_devices = []
+        for port in avail_ports:
+            avail_ports_devices.append(port.device)
+        if ( not (target_port in avail_ports_devices) ):
+            print( "Error: Invalid serial port\n" )
+            comports( ["-l"] )
+            return serialObj
 
-		# Initialize Serial Port
-		serialObj.initComport(
-                             baudrate, 
-                             target_port, 
+        # Initialize Serial Port
+        serialObj.initComport(
+                             baudrate,
+                             target_port,
                              default_timeout
                              )
 
-		# Connect to serial port
-		connection_status = serialObj.openComport()
-		if( connection_status ):
-			print( "Connected to port " + target_port + 
+        # Connect to serial port
+        connection_status = serialObj.openComport()
+        if( connection_status ):
+            print( "Connected to port " + target_port +
                    " at " + str(baudrate) + " baud" )
 
-		return serialObj
+        return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Disconnect Option (-d)                                                     #
-	##############################################################################
-	elif ( option == "-d" ):
-		connection_status = serialObj.closeComport()
-		if ( connection_status ):
-			print( "Disconnected from active serial port" )
-			return serialObj
-		else: 
-			print( "An error ocurred while closing port " + 
+    ##############################################################################
+    elif ( option == "-d" ):
+        connection_status = serialObj.closeComport()
+        if ( connection_status ):
+            print( "Disconnected from active serial port" )
+            return serialObj
+        else:
+            print( "An error ocurred while closing port " +
                    target_port )
-			return serialObj
+            return serialObj
 
-	return serialObj
+    return serialObj
 ## comports ##
 
 
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		ping                                                                       #
+#         ping                                                                       #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		transmit a byte over an active USB connection and await response from      # 
+#         transmit a byte over an active USB connection and await response from      #
 #       board                                                                      #
 #                                                                                  #
 ####################################################################################
 def ping( Args, serialObj ):
 
-    # Check for an active serial port connection and valid 
+    # Check for an active serial port connection and valid
     # options/arguments
     if ( not serialObj.serialObj.is_open ):
         print( "Error: no active serial port connection. "  +
@@ -459,15 +463,15 @@ def ping( Args, serialObj ):
                 ping_time = ping_recieve_time - ping_start_time
                 ping_time *= 1000.0
                 if ( pingData in controller_codes ):
-                    print( 
+                    print(
                            ("Response recieved at {0:1.4f} ms " +
                             "from {1}").format(
-                                ping_time, 
+                                ping_time,
                                 controller_descriptions[pingData]
                                               )
                          )
                 else:
-                    print( 
+                    print(
                            ("Response recieved at {0:1.4f} ms " +
                            "from an unknown device").format(
                                                            ping_time
@@ -475,7 +479,7 @@ def ping( Args, serialObj ):
                          )
             return serialObj
 
-        # Ping option 
+        # Ping option
         else:
             print("Error: invalid option supplied to ping function")
             return serialObj
@@ -485,141 +489,141 @@ def ping( Args, serialObj ):
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		connect                                                                    #
+#         connect                                                                    #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
-# 		establish a serial connection with an SDR board                            #
+#         establish a serial connection with an SDR board                            #
 #                                                                                  #
 ####################################################################################
 def connect( Args, serialObj ):
 
-	##############################################################################
-	# local variables                                                            #
-	##############################################################################
-	opcode           = b'\x02'
+    ##############################################################################
+    # local variables                                                            #
+    ##############################################################################
+    opcode           = b'\x02'
 
-	# Options Dictionary
-	connect_inputs   = { 
-					   '-h' : 'Display help info',
-					   '-p' : 'Specify the connection serial port',
-					   '-d' : 'Disconnect from active serial port'
+    # Options Dictionary
+    connect_inputs   = {
+                       '-h' : 'Display help info',
+                       '-p' : 'Specify the connection serial port',
+                       '-d' : 'Disconnect from active serial port'
                        }
-    
-	# Maximum number of arguments
-	max_args         = 2
 
-	# Command type -- subcommand function
-	command_type     = 'default'
+    # Maximum number of arguments
+    max_args         = 2
 
-	# Firmware version
-	firmware_version = None
+    # Command type -- subcommand function
+    command_type     = 'default'
 
-	##############################################################################
-	# Basic inputs parsing                                                       #
-	##############################################################################
-	parse_check = parseArgs(
+    # Firmware version
+    firmware_version = None
+
+    ##############################################################################
+    # Basic inputs parsing                                                       #
+    ##############################################################################
+    parse_check = parseArgs(
                             Args,
                             max_args,
                             connect_inputs,
-                            command_type 
+                            command_type
                            )
-	if ( not parse_check ):
-		return serialObj # user inputs failed parse tests
-	user_option = Args[0]
-	if ( len(Args) > 1 ):
-		user_port = Args[1]
+    if ( not parse_check ):
+        return serialObj # user inputs failed parse tests
+    user_option = Args[0]
+    if ( len(Args) > 1 ):
+        user_port = Args[1]
 
-	##############################################################################
-	# Command-Specific Inputs Parsing                                            #
-	##############################################################################
+    ##############################################################################
+    # Command-Specific Inputs Parsing                                            #
+    ##############################################################################
 
-	# Check if there is an active serial port
-	if ( serialObj.is_active() and user_option == '-p' ):
-		print("Error: Serial port " + serialObj.comport + 
+    # Check if there is an active serial port
+    if ( serialObj.is_active() and user_option == '-p' ):
+        print("Error: Serial port " + serialObj.comport +
                "is active. Disconnect from the active" +
                " serial port before connecting" )
-		return serialObj	
-	elif ( (not serialObj.is_active()) and user_option == '-d' ):
-		print( 'Error: No active serial port to disconnect from' )
-		return serialObj
+        return serialObj
+    elif ( (not serialObj.is_active()) and user_option == '-d' ):
+        print( 'Error: No active serial port to disconnect from' )
+        return serialObj
 
-	# Check for valid serial port
-	if ( len(Args) > 1 ):
-		available_ports = serialObj.list_ports()
-		if ( not (user_port in available_ports) ):
-			print( "Error: Invalid serial port. Valid ports:" )
-			for port_num, port in enumerate( available_ports ):
-				print( "\t" + port )
-			return serialObj
-	else:
-		if ( user_option == '-p' and
-		     len(Args)   == 1):
-			print( "Error: No serial port supplied " )
-			return serialObj
+    # Check for valid serial port
+    if ( len(Args) > 1 ):
+        available_ports = serialObj.list_ports()
+        if ( not (user_port in available_ports) ):
+            print( "Error: Invalid serial port. Valid ports:" )
+            for port_num, port in enumerate( available_ports ):
+                print( "\t" + port )
+            return serialObj
+    else:
+        if ( user_option == '-p' and
+             len(Args)   == 1):
+            print( "Error: No serial port supplied " )
+            return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Help Option (-h)                                                           #
-	##############################################################################
-	if ( user_option == '-h' ):
-		display_help_info( "connect" )
-		return serialObj
+    ##############################################################################
+    if ( user_option == '-h' ):
+        display_help_info( "connect" )
+        return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Port Option (-p)                                                           #
-	##############################################################################
-	elif ( user_option == '-p' ):
-		# Open the serial comport
-		serialObj = comports(
-                            ['-c', user_port, '921600'], 
+    ##############################################################################
+    elif ( user_option == '-p' ):
+        # Open the serial comport
+        serialObj = comports(
+                            ['-c', user_port, '921600'],
                             serialObj
                             )
-		
-		# Send the connect opcode 
-		serialObj.sendByte( opcode )
 
-		# Get the board identifier 
-		controller_response = serialObj.readByte()
-		if ( (controller_response == b''                    ) or
+        # Send the connect opcode
+        serialObj.sendByte( opcode )
+
+        # Get the board identifier
+        controller_response = serialObj.readByte()
+        if ( (controller_response == b''                    ) or
              (not (controller_response in controller_codes) ) ):
-			print( "Controller connection was unsuccessful." )
-			serialObj = comports( ['-d'], serialObj )
-			return serialObj
-		else:
-			# Get the firmware version if supported
-			if ( controller_descriptions[controller_response] in 
-			     firmware_id_supported_boards ):
-				firmware_version = firmware_ids[serialObj.readByte()]
+            print( "Controller connection was unsuccessful." )
+            serialObj = comports( ['-d'], serialObj )
+            return serialObj
+        else:
+            # Get the firmware version if supported
+            if ( controller_descriptions[controller_response] in
+                 firmware_id_supported_boards ):
+                firmware_version = firmware_ids[serialObj.readByte()]
 
-			# Set global controller variable 
-			serialObj.set_SDR_controller(
-						controller_descriptions[controller_response],
-					    firmware_version	
-									    )
+            # Set global controller variable
+            serialObj.set_SDR_controller(
+                        controller_descriptions[controller_response],
+                        firmware_version
+                                        )
 
-            # Display connection info									
-			print( "Connection established with " + 
+            # Display connection info
+            print( "Connection established with " +
                     controller_descriptions[controller_response] )
-			if ( serialObj.controller in firmware_id_supported_boards ):
-				print( "Firmware: " + firmware_version )
-			return serialObj
-		
+            if ( serialObj.controller in firmware_id_supported_boards ):
+                print( "Firmware: " + firmware_version )
+            return serialObj
 
-	##############################################################################
+
+    ##############################################################################
     # Disconnect Option (-d)                                                     #
-	##############################################################################
-	elif ( user_option == '-d' ):
-		serialObj = comports( ['-d'], serialObj )
-		serialObj.reset_SDR_controller()
-		return serialObj
+    ##############################################################################
+    elif ( user_option == '-d' ):
+        serialObj = comports( ['-d'], serialObj )
+        serialObj.reset_SDR_controller()
+        return serialObj
 
-	##############################################################################
+    ##############################################################################
     # Unknown Option                                                             #
-	##############################################################################
-	else:
-		print( "Error: unknown option passed to connect " +
-               "function" )	
-		error_msg()
-		return serialObj
+    ##############################################################################
+    else:
+        print( "Error: unknown option passed to connect " +
+               "function" )
+        error_msg()
+        return serialObj
 ## connect ##
 
 

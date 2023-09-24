@@ -2,3 +2,9 @@ __pycache__
 
 # Output data
 output/*
+
+# Packaged things
+venv/*
+dist/*
+build/*
+*.spec
