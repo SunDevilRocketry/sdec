@@ -441,6 +441,7 @@ sensor_units = {
                            },
                 # Engine Controller rev 5.0
                 controller_names[7]: {
+                           "t"    : "s"   ,
                            "pt0"  : "psi" ,
                            "pt1"  : "psi" ,
                            "pt2"  : "psi" ,
