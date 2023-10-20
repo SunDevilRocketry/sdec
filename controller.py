@@ -612,7 +612,8 @@ firmware_ids = {
 # Boards that report firmware ids with the connect command
 firmware_id_supported_boards = [
                 controller_names[4], # Flight Computer Rev 2.0
-                controller_names[6]  # Valve Controller Rev 3.0
+                controller_names[6], # Valve Controller Rev 3.0
+                controller_names[8]  # Flight Ground Station Controller
                                ]
 
 ##################################################################################
