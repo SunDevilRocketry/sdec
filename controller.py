@@ -28,7 +28,8 @@ controller_codes = [
                   b'\x05', # Flight Computer,      Rev 2.0
                   b'\x06', # Flight Computer Lite, Rev 1.0
                   b'\x07', # Valve Controller,     Rev 3.0
-                  b'\x08'  # Engine Controller,    Rev 5.0
+                  b'\x08', # Engine Controller,    Rev 5.0
+                  b'\xA0'  # Flight Ground Station
                    ]
 
 # Controller Names
@@ -40,7 +41,8 @@ controller_names = [
                    "Flight Computer (A0002 Rev 2.0)"         ,
                    "Flight Computer Lite (A0007 Rev 1.0)"    ,
                    "Valve Controller (L0005 Rev 3.0)"        , 
-                   "Liquid Engine Controller (L0002 Rev 5.0)"
+                   "Liquid Engine Controller (L0002 Rev 5.0)",
+                   "Flight Ground Station Controller"
                    ]
 
 # Controller descriptions from identification codes
@@ -52,7 +54,8 @@ controller_descriptions = {
                   b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
                   b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"    ,
                   b'\x07': "Valve Controller (L0005 Rev 3.0)"        ,
-                  b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)"
+                  b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)",
+                  b'\xA0': "Flight Ground Station Controller"
                           }
 
 # Lists of sensors on each controller
@@ -602,7 +605,8 @@ firmware_ids = {
                 b'\x01': "Terminal"   ,
 				b'\x02': "Data Logger",
 				b'\x03': "Dual Deploy",
-                b'\x04': "Hotfire"
+                b'\x04': "Hotfire",
+                b'\x05': "Transmitter"
                }
 			
 # Boards that report firmware ids with the connect command
