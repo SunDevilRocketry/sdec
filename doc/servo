@@ -1,0 +1,13 @@
+SERVO:
+
+USAGE: SERVO [SUBCOMMAND] -[OPTIONS] [INPUTS]
+
+SUBCOMMANDS:
+	servo turn: Rotates the servo to a specified angle
+	servo test: Tests the servo's functionality
+    servo pid-run: Executes a PID controller sequence for the servo
+	servo help: Displays subcommand information
+
+OPTIONS:
+	-n [SENSOR NUM] : specify a servo
+	-h : display sensor usage information

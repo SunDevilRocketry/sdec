@@ -345,6 +345,123 @@ def dual_deploy( Args, serialObj ):
     return serialObj 
 ## dual_deploy ##
 
+## servo ##
+
+"""
+TODO
+
+servo -[subcommand]
+subcommand: turn -n -degree
+-n servo number
+-deg angle in degrees
+-help
+
+function turn
+    turn -n -degree
+    
+"""
+def servo( Args, serialObj):
+
+    ################################################################################
+    # Local Variables                                                              #
+    ################################################################################
+
+    # Subcommand and Options Dictionary
+    servo_inputs = {
+                    'turn' : {
+                             '-n' : 'Specify the servo number',
+                             '-deg' : 'Specify angle of servo in degrees',
+                             },
+                    'test' : {
+                             },
+                    'pid-run': {
+                            '-kp' : 'Proportional gain',
+                            '-ki' : 'Integral gain',
+                            '-kd' : 'Derivative gain',
+                            },
+                    'help' : {
+                             }
+                    }
+
+    # Maximum number of command arguments
+    max_args = 3
+
+    # Command type -- subcommand function
+    command_type = 'subcommand'
+
+    # Command opcode
+    opcode = b'\x04'  # Change this if you have a different opcode for servo functions
+
+    ################################################################################
+    # Basic Inputs Parsing                                                         #
+    ################################################################################
+    parse_check = commands.parseArgs(
+        Args,
+        max_args,
+        servo_inputs,
+        command_type
+    )
+
+    # Return if user input fails parse checks
+    if (not parse_check):
+        return serialObj
+
+    # Set subcommand, options, and input data
+    user_subcommand = Args[0]
+    if (len(Args) != 1):
+        # Extract option
+        user_option = Args[1]
+
+        # Extract inputs
+        servo_num = Args[2]
+        servo_angle = Args[3]
+
+    ################################################################################
+    # Command-Specific Checks                                                      #
+    ################################################################################
+
+    if (user_subcommand == "turn"):
+        pass
+    # Check if servo number and angle are valid (based on your own conditions)
+    # If not, display an error message
+
+    ################################################################################
+    # Subcommand: servo help                                                       #
+    ################################################################################
+    if (user_subcommand == "help"):
+        commands.display_help_info("servo")
+        return serialObj
+
+    ################################################################################
+    # Subcommand: servo turn                                                       #
+    ################################################################################
+    elif (user_subcommand == "turn"):
+
+        # Send command opcode
+        serialObj.sendByte(opcode)
+
+        # Send the servo number to turn
+        serialObj.sendByte(servo_num.encode())
+
+        # Send the angle to turn the servo to
+        serialObj.sendByte(servo_angle.encode())
+
+        # Wait for acknowledgment or read data from the servo controller if needed
+        # ... (additional code here)
+
+        return serialObj
+
+    ################################################################################
+    # Unknown subcommand                                                           #
+    ################################################################################
+    else:
+        print("Error: Unknown subcommand passed to servo " +
+              "function. ")
+        commands.error_msg()
+        return serialObj
+
+
+
 
 ####################################################################################
 # END OF FILE                                                                      # 
