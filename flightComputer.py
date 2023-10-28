@@ -384,7 +384,7 @@ def servo( Args, serialObj):
                     }
 
     # Maximum number of command arguments
-    max_args = 3
+    max_args = 5
 
     # Command type -- subcommand function
     command_type = 'subcommand'
@@ -409,16 +409,20 @@ def servo( Args, serialObj):
     # Set subcommand, options, and input data
     user_subcommand = Args[0]
     if (len(Args) != 1):
+        """It is better if inputs are extracted depending on their option - Nick"""
         # Extract option
         user_option = Args[1]
-
-        # Extract inputs
         servo_num = Args[2]
-        servo_angle = Args[3]
+        
+        # Extract inputs
+        user_option = Args[3]
+        servo_angle = Args[4]
 
     ################################################################################
     # Command-Specific Checks                                                      #
     ################################################################################
+
+    """This is where to check if option commands exist or not, take line 234 on valveController.py for example - Nick"""
 
     if (user_subcommand == "turn"):
         pass
@@ -437,6 +441,7 @@ def servo( Args, serialObj):
     ################################################################################
     elif (user_subcommand == "turn"):
 
+        """Refer to line 278 or line 299 on valveController.py - Nick"""
         # Send command opcode
         serialObj.sendByte(opcode)
 
