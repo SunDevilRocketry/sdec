@@ -374,11 +374,13 @@ def servo( Args, serialObj):
                              },
                     'test' : {
                              },
-                    'pid-run': {
+                    'pid-init': {
                             '-kp' : 'Proportional gain',
                             '-ki' : 'Integral gain',
                             '-kd' : 'Derivative gain',
                             },
+                    'pid-run' : {
+                             },
                     'help' : {
                              }
                     }
@@ -391,6 +393,20 @@ def servo( Args, serialObj):
 
     # Command opcode
     opcode = b'\x04'  # Change this if you have a different opcode for servo functions
+
+    # Subcommand codes  
+    servo_turn_base_code = b'\x00'
+    servo_test_base_code = b'\x00'
+    servo_pid_init_base_code = b'\x00'
+    servo_pid_run_base_code = b'\x00'
+
+    # Subcommand codes as integers
+    servo_turn_base_code_int = ord(servo_turn_base_code)
+    servo_test_base_code_int = ord(servo_test_base_code)
+    servo_pid_init_base_code_int = ord(servo_pid_init_base_code)
+    servo_pid_run_base_code_int = ord(servo_pid_run_base_code)
+    
+
 
     ################################################################################
     # Basic Inputs Parsing                                                         #
@@ -408,26 +424,18 @@ def servo( Args, serialObj):
 
     # Set subcommand, options, and input data
     user_subcommand = Args[0]
-    if (len(Args) != 1):
-        """It is better if inputs are extracted depending on their option - Nick"""
-        # Extract option
+    if ( len(Args) != 1 ):
         user_option = Args[1]
-        servo_num = Args[2]
-        
-        # Extract inputs
-        user_option = Args[3]
-        servo_angle = Args[4]
+        options_command = True
+    else:
+        options_command = False
+
+    
 
     ################################################################################
     # Command-Specific Checks                                                      #
     ################################################################################
 
-    """This is where to check if option commands exist or not, take line 234 on valveController.py for example - Nick"""
-
-    if (user_subcommand == "turn"):
-        pass
-    # Check if servo number and angle are valid (based on your own conditions)
-    # If not, display an error message
 
     ################################################################################
     # Subcommand: servo help                                                       #
@@ -442,19 +450,67 @@ def servo( Args, serialObj):
     elif (user_subcommand == "turn"):
 
         """Refer to line 278 or line 299 on valveController.py - Nick"""
+
+
         # Send command opcode
         serialObj.sendByte(opcode)
 
-        # Send the servo number to turn
-        serialObj.sendByte(servo_num.encode())
-
-        # Send the angle to turn the servo to
-        serialObj.sendByte(servo_angle.encode())
-
-        # Wait for acknowledgment or read data from the servo controller if needed
-        # ... (additional code here)
-
+        for i in len(Args[1:]):
+            if Args[i] == "-n" and type(Args[i+1]) is int:
+                servo_num = Args[i+1]
+            if Args[i] == "-deg" and type(Args[i+1]) is int:
+                servo_angle = Args[i+1]
+        
+        # Merge all data into one subcommand opcode
+        servo_turn_code_int = servo_turn_base_code_int + servo_num + servo_angle
+        servo_turn_code = servo_turn_code_int.to_bytes(1,
+                                                       byteorder='big',
+                                                       signed=False)
+        # Send Subcommand code
+        serialObj.sendByte(servo_turn_code)
         return serialObj
+
+    ################################################################################
+    # Subcommand: servo test                                                           #
+    ################################################################################
+    elif (user_subcommand == "test"):
+        # Send command opcode
+        serialObj.sendByte(opcode)
+
+        # Send subcommand opcode
+        serialObj.sendByte(servo_test_base_code)
+
+    ################################################################################
+    # Subcommand: servo pid_init -kp p -ki i -kd d                                                           #
+    ################################################################################
+    elif (user_subcommand == "pid_init"):
+        # Send command opcode
+        serialObj.sendByte(opcode)
+        for i in len(Args[1:]):
+            if Args[i] == "-kp" and type(Args[i+1]) is int:
+                kp = Args[i+1]
+            if Args[i] == "-ki" and type(Args[i+1]) is int:
+                ki = Args[i+1]
+            if Args[i] == "-kd" and type(Args[i+1]) is int:
+                kd = Args[i+1]
+
+        servo_pinit_int = servo_pid_init_base_code_int + ki + kp + kd
+        servo_pinit = servo_pinit_int.to_bytes(1,
+                                               byteorder='big',
+                                               signed=False)
+        serialObj.sendByte(servo_pinit)
+        return serialObj
+    
+    ################################################################################
+    # Subcommand: servo pid_run                                                           #
+    ################################################################################
+    elif (user_subcommand == "pid_run"):
+        # Send command opcode
+        serialObj.sendByte(opcode)
+
+        # Send subcommand opcode
+        serialObj.sendByte(servo_pid_run_base_code)
+    
 
     ################################################################################
     # Unknown subcommand                                                           #
