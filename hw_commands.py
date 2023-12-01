@@ -179,7 +179,6 @@ def conv_raw_sensor_readouts( controller, raw_readouts ):
 #                                                                                  #
 ####################################################################################
 def get_sensor_readouts( controller, sensors, sensor_bytes ):
-
     # Convert to integer form
     int_readouts = get_raw_sensor_readouts( controller, sensors, sensor_bytes )
 
@@ -508,13 +507,15 @@ def sensor( Args, serialObj, show_readouts = True ):
 
         # Determine how many bytes are to be recieved
         sensor_dump_size_bytes = serialObj.readByte()
+
         sensor_dump_size_bytes = int.from_bytes( 
                                      sensor_dump_size_bytes, 
                                      "big" )
-
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
             sensor_bytes_list.append( serialObj.readByte() )
+
+        # print(len(sensor_bytes_list))
 
         # Get readouts from byte array
         serialObj.sensor_readouts = get_sensor_readouts( 

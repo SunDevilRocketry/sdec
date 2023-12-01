@@ -98,7 +98,12 @@ controller_sensors = {
                            "magZ" : "Magnetometer Z        ",
                            "imut" : "IMU Die Temperature   ",
                            "pres" : "Barometric Pressure   ",
-                           "temp" : "Barometric Temperature"
+                           "temp" : "Barometric Temperature",
+                           "dec_long": None,
+                           "nmea_long": None,
+                           "dec_lat": None,
+                           "nmea_lat": None,
+                           "utc_time": None
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -173,7 +178,12 @@ sensor_sizes = {
                            "magZ" : 2,
                            "imut" : 2,
                            "pres" : 4,
-                           "temp" : 4 
+                           "temp" : 4 ,
+                           "dec_long": 4,
+                           "nmea_long": 4,
+                           "dec_lat": 4,
+                           "nmea_lat": 4,
+                           "utc_time": 4
                            },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -248,7 +258,12 @@ sensor_codes = {
                            "magZ" : b'\x08',
                            "imut" : b'\x09',
                            "pres" : b'\x0A',
-                           "temp" : b'\x0B' 
+                           "temp" : b'\x0B',
+                           "dec_long": b'\x0C',
+                           "nmea_long": b'\x0D',
+                           "dec_lat": b'\x0E',
+                           "nmea_lat": b'\x0F',
+                           "utc_time": b'\x10'
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -289,7 +304,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 32,
+                    controller_names[4]: 54,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
@@ -347,7 +362,12 @@ sensor_conv_funcs = {
                            "magZ" : None                  ,
                            "imut" : None                  ,
                            "pres" : sensor_conv.baro_press,
-                           "temp" : sensor_conv.baro_temp 
+                           "temp" : sensor_conv.baro_temp ,
+                           "dec_long": None,
+                           "nmea_long": None,
+                           "dec_lat": None,
+                           "nmea_lat": None,
+                           "utc_time": None
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -422,7 +442,12 @@ sensor_units = {
                            "magZ" : None   ,
                            "imut" : None   ,
                            "pres" : "kPa",
-                           "temp" : "C" 
+                           "temp" : "C" ,
+                           "dec_long": None,
+                           "nmea_long": None,
+                           "dec_lat": None,
+                           "nmea_lat": None,
+                           "utc_time": None
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -487,7 +512,12 @@ sensor_indices = {
                             "magZ" : 9,
                             "imut" : 10,
                             "pres" : 11,
-                            "temp" : 12 
+                            "temp" : 12,
+                            "dec_long": 13,
+                            "nmea_long": 14,
+                            "dec_lat": 15,
+                            "nmea_lat": 16,
+                            "utc_time": 17
                                        },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -549,7 +579,12 @@ sensor_formats = {
                            "magZ" : int  ,
                            "imut" : int  ,
                            "pres" : float,
-                           "temp" : float 
+                           "temp" : float,
+                           "dec_long": float,
+                           "nmea_long": float,
+                           "dec_lat": float,
+                           "nmea_lat": float,
+                           "utc_time": float
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
