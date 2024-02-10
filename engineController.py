@@ -466,7 +466,7 @@ def standby( Args, serialObj, show_output = True ):
 	print("thing")
 	# Command opcode
 	#opcode = b'\x93'
-	'''
+
 	# Acknowledge/No Acknowledge byte
 	ack_byte    = b'\x95'
 	no_ack_byte = b'\x98'
@@ -500,7 +500,7 @@ def standby( Args, serialObj, show_output = True ):
 		print( "Standby unsucessful. No response from engine controller" )
 	else:
 		print( "Standby unsucessful. Timeout or unrecognized response" )
-	'''
+
 
 	return serialObj
 ## standby ##
