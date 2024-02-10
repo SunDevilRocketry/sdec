@@ -463,10 +463,10 @@ def standby( Args, serialObj, show_output = True ):
 	################################################################################
     # Local Variables                                                              #
 	################################################################################
-
+	print("thing")
 	# Command opcode
-	opcode = b'\x93' 
-
+	#opcode = b'\x93'
+	'''
 	# Acknowledge/No Acknowledge byte
 	ack_byte    = b'\x95'
 	no_ack_byte = b'\x98'
@@ -500,6 +500,8 @@ def standby( Args, serialObj, show_output = True ):
 		print( "Standby unsucessful. No response from engine controller" )
 	else:
 		print( "Standby unsucessful. Timeout or unrecognized response" )
+	'''
+
 	return serialObj
 ## standby ##
 
@@ -590,7 +592,8 @@ def hotfire_getstate( Args, serialObj, show_output = True ):
 					b'\x06': "Disarm State"        ,
 					b'\x07': "Post-Fire State"     ,
 					b'\x08': "Manual State"        ,
-					b'\x09': "Abort State"
+					b'\x09': "Abort State",
+					#b'\x10': "Reset"
 	               }
 
 	################################################################################
@@ -958,7 +961,41 @@ def manual( Args, serialObj, show_output = True ):
 	else:
 		print( "Unsucessful. Timeout or unrecognized response" )
 	return serialObj
-## lox_purge ## 
+## lox_purge ##
+
+
+# remote reset
+def reset( Args, serialObj, show_output = True ):
+	# Options Dictionary
+	connect_inputs = {
+		'-h': 'Display help info',
+	}
+
+	# Maximum number of arguments
+	max_args = 1
+
+	# Command type -- subcommand function
+	command_type = 'default'
+
+	# Firmware version
+	firmware_version = None
+
+	##############################################################################
+	# Basic inputs parsing                                                       #
+	##############################################################################
+	parse_check = commands.parseArgs(
+		Args,
+		max_args,
+		connect_inputs,
+		command_type
+	)
+	if (not parse_check):
+		return serialObj  # user inputs failed parse tests
+	user_option = Args[0]
+
+	if ( user_option == '-h' ):
+		print( "This is reset" )
+	return serialObj
 
 
 

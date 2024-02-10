@@ -57,6 +57,7 @@ command_list = {
                  "stophotfire": engineController.stop_hotfire    ,
                  "stoppurge"  : engineController.stop_purge      ,
                  "loxpurge"   : engineController.lox_purge       ,
+                "reset" : engineController.reset,
                  "dual-deploy": flightComputer.dual_deploy
                 }
 
