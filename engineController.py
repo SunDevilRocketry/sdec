@@ -966,6 +966,17 @@ def manual( Args, serialObj, show_output = True ):
 
 # remote reset
 def reset( Args, serialObj, show_output = True ):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
+
+	# Command opcode
+	opcode = b'\x04'
+
+	# Acknowledge/No Acknowledge byte
+	ack_byte    = b'\x52'
+	no_ack_byte = b'\x98'
+	
 	# Options Dictionary
 	connect_inputs = {
 		'-h': 'Display help info',
@@ -983,18 +994,31 @@ def reset( Args, serialObj, show_output = True ):
 	##############################################################################
 	# Basic inputs parsing                                                       #
 	##############################################################################
-	parse_check = commands.parseArgs(
-		Args,
-		max_args,
-		connect_inputs,
-		command_type
-	)
-	if (not parse_check):
-		return serialObj  # user inputs failed parse tests
+	# parse_check = commands.parseArgs(
+	# 	Args,
+	# 	max_args,
+	# 	connect_inputs,
+	# 	command_type
+	# # )
+	# if (not parse_check):
+	# 	return serialObj  # user inputs failed parse tests
 	user_option = Args[0]
 
 	if ( user_option == '-h' ):
 		print( "This is reset" )
+		return serialObj
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Wait for and parse acknowledge signal
+	response = serialObj.readByte()
+	if ( response == ack_byte ):
+		print( "Sucessful" )
+	elif ( response == no_ack_byte ):
+		print( "Unsucessful. No response from engine controller" )
+	else:
+		print( "Unsucessful. Timeout or unrecognized response" )
 	return serialObj
 
 
