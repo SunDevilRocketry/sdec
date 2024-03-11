@@ -325,7 +325,7 @@ def telreq( Args, serialObj, show_output = True ):
 	                                                           )
 	
 	# Process the valve data
-	serialObj.valve_states = extract_valve_state( valve_state_byte )
+	# serialObj.valve_states = extract_valve_state( valve_state_byte )
 
 	# Display Sensor readouts
 	if ( show_output ):
