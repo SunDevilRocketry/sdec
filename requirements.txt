@@ -1,0 +1,9 @@
+click==8.1.7
+click-repl @ git+https://github.com/click-contrib/click-repl@b2ef9d95d656bb246d9d1fc48a588968550577cd
+fire==0.5.0
+prompt-toolkit==3.0.43
+setuptools==69.0.3
+six==1.16.0
+termcolor==2.4.0
+wcwidth==0.2.13
+wheel==0.42.0

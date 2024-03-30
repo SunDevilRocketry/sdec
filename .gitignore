@@ -4,3 +4,18 @@ __pycache__
 output/*
 
 .venv
+
+# pyinstaller stuff
+venv
+build
+dist
+*.spec
+
+# generic test file
+_test.py
+
+# click_repl history file
+.myrepl-history
+
+# old sdec code
+sdec_old.py
