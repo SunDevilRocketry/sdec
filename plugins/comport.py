@@ -1,29 +1,23 @@
 import time
 from typing import Union
+from omegaconf import DictConfig
 import serial.tools.list_ports
 
 import click
 
 
 class SerialController():
-    def __init__(self):
+    def __init__(self, conf:DictConfig):
+        self.conf = conf
         self.comport = None
         self.baudrate = None
         self.timeout = None
         self.serial = serial.Serial()
         self.configured = False
-        self.codes = {
-            b'\x01': "Liquid Engine Controller (L0002 Rev 3.0)",
-            b'\x02': "Valve Controller (L0005 Rev 2.0)",
-            b'\x03': "Liquid Engine Controller (L0002 Rev 4.0)",
-            b'\x04': "Flight Computer (A0002 Rev 1.0)",
-            b'\x05': "Flight Computer (A0002 Rev 2.0)",
-            b'\x06': "Flight Computer Lite (A0007 Rev 1.0)",
-            b'\x07': "Valve Controller (L0005 Rev 3.0)",
-            b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)",
-        }
-        self.code = b''
+        self.codes = {k: v.name for k, v in conf.controllers.items()}
+        self.code = None
         self.board = ''
+        self.firmware = ''
 
     def init_comport(self, baudrate:int, comport:str, timeout:float):
         """Initialize the comport.
@@ -146,7 +140,7 @@ class SerialController():
             return self.serial.read()
         except serial.SerialException as e:
             msg = e.args[0]
-            print(f"[ERROR] Reading from port failed with message: {msg}")
+            return f"[ERROR] Reading from port failed with message: {msg}"
 
     def read(self, num_bytes) -> Union[bytes, str]:
         """Read multiple bytes from the serial port.
@@ -180,7 +174,7 @@ class SerialController():
 
         Returns
         -------
-        str | tuple[float, bytes]
+        str | tuple[float, int]
             Returns an error message or a tuple of ping time and response.
         """
         if not self.serial.is_open:
@@ -201,7 +195,64 @@ class SerialController():
 
         ping_stop = time.time()
         ping_time = (ping_stop - ping_start)*1000
-        return (ping_time, ping_data)
+        return (ping_time, ord(ping_data))
+
+    def connect(self, timeout:float):
+        """Connect to the comport.
+
+        Parameters
+        ----------
+        timeout : float
+            Timeout for the ping.
+
+        Returns
+        -------
+        str
+            Returns an error message or the connect response.
+        """
+        if not self.serial.is_open:
+            return "[ERROR] No active serial port connection."
+
+        self.timeout = timeout
+        self.config_comport()
+
+        opcode = 0x02
+        err = self.send_byte(opcode)
+        if err:
+            return err
+
+        res = self.serial.read()
+        if not res:
+            return "[ERROR] Timeout expired. No device response recieved."
+
+        return res
+
+    def set_board(self, board_code:bytes):
+        """Determine the SDR board that is connected.
+
+        Parameters
+        ----------
+        board_code : bytes
+            The code returned by the connect command on the connected board.
+        """
+        board_code = ord(board_code)
+        if board_code not in self.codes:
+            return f"[ERROR] {hex(board_code)} is not a recognized board code."
+
+        controller = self.conf.controllers[board_code]
+
+        # get firmware version if supported
+        firmware = None
+        if controller.firmware:
+            res = self.serial.read()
+            if res:
+                firmware = self.conf.firmware.get(ord(res))
+
+        firmware_desc = f" (Firmware: {firmware})" if firmware else ''
+
+        self.board = controller
+        self.firmware = firmware
+        return f"Connection established with {self.board.name}{firmware_desc}"
 
 
 @click.group(name="comports")
@@ -209,7 +260,7 @@ def comports():
     """Control comport connection"""
     ctx = click.get_current_context().obj
     if 'comport' not in ctx:
-        ctx['comport'] = {'controller': SerialController()}
+        ctx['comport'] = {'controller': SerialController(ctx['globals'])}
 
 @comports.command(name="list")
 def list_comports():
@@ -221,12 +272,12 @@ def list_comports():
     msg = controller.list_comports()
     click.echo(msg)
 
-@comports.command(name="connect")
+@comports.command(name="open")
 @click.argument('port')
 @click.argument('baud')
 @click.option('-t', '--timeout', help="Connection timeout on the port",
               type=float)
-def connect(port:str, baud:int, timeout:float=None):
+def open_(port:str, baud:int, timeout:float=None):
     """
     Connect to a serial device on PORT with baudrate set to BAUD.
 
@@ -249,8 +300,52 @@ def connect(port:str, baud:int, timeout:float=None):
     err = controller.open_comport()
     if err:
         click.echo(err)
+        return
     else:
         click.echo(f"Connected to port {port} at {baud} baud.")
+
+@comports.command(name="connect")
+@click.argument('port')
+@click.option('-t', '--timeout', help="Connection timeout on the port",
+              type=float)
+def connect(port:str, timeout:float=None):
+    """
+    Connect to the SDR board on PORT.
+
+    Supply a timeout value to set the timeout to something other than the
+    default.
+    """
+    ctx = click.get_current_context().obj
+    controller : SerialController
+    controller = ctx['comport']['controller']
+
+    baud = 921600
+
+    if timeout == None:
+        timeout = ctx['timeout']
+
+    available_ports = serial.tools.list_ports.comports()
+    devices = [p.device for p in available_ports]
+    if port not in devices:
+        click.echo(f"[ERROR] Invalid serial port\n{list_comports()}")
+
+    controller.init_comport(baud, port, timeout)
+    err = controller.open_comport()
+    if err:
+        click.echo(err)
+        return
+    else:
+        click.echo(f"Connected to port {port} at {baud} baud.")
+
+    click.echo("Attempting to connect to board...")
+
+    if connect:
+        res = controller.connect(timeout)
+        if isinstance(res, str):
+            click.echo(res)
+            return
+        res = controller.set_board(res)
+        click.echo(res)
 
 @comports.command(name="disconnect")
 def disconnect():

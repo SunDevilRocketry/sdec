@@ -7,3 +7,4 @@ six==1.16.0
 termcolor==2.4.0
 wcwidth==0.2.13
 wheel==0.42.0
+omegaconf

@@ -1,44 +1,35 @@
 from typing import Dict, Literal, Union
 
 import click
+from omegaconf import DictConfig
 import pandas as pd
 from tabulate import tabulate
 
 from . import comport
 
-sol_command = 0x51
-sol_codes = {
-    'on': 0x00,
-    'off': 0x08,
-    'toggle': 0x10,
-    'reset': 0x18,
-    'getstate': 0x20,
-    'open': 0x28,
-    'close': 0x30,
-}
-valve_command = 0x52
-valve_codes = {
-    'enable': 0x00,
-    'disable': 0x02,
-    'open': 0x04,
-    'close': 0x06,
-    'calibrate': 0x08,
-    'crack': 0x0A,
-    'reset': 0x10,
-    'openall': 0x12,
-    'getstate': 0x14,
-}
 
 class Solenoid():
-    def __init__(self, serial_controller:comport.SerialController, name:str,
-                 number:int, off_open=False, active=False):
+    def __init__(self, serial_controller:comport.SerialController, key:str,
+                 active=False):
         self.serial_controller = serial_controller
-        self.name = name
-        self.number = number
-        self.off_open = off_open
-        self.on_state = 'CLOSED' if off_open else 'OPEN'
-        self.off_state = 'OPEN' if off_open else 'CLOSED'
-        self.active = active
+        self.conf = serial_controller.conf.valve
+        self.command = self.conf.opcodes.command.solenoid
+        self.opcodes = self.conf.opcodes.solenoid
+        self.key = key
+        if key:
+            self.name = self.conf.valves[key].name
+            self.number = self.conf.valves[key].number
+            self.on_state = self.conf.valves[key].on_state
+            self.off_state = self.conf.valves[key].off_state
+            self.off_open = self.off_state == "OPEN"
+            self.active = active
+        else:
+            self.name = ''
+            self.number = 0
+            self.on_state = ''
+            self.off_state = ''
+            self.off_open = False
+            self.active = False
 
     def __repr__(self) -> str:
         spaces = 4 - len(str(self.number))
@@ -58,40 +49,40 @@ class Solenoid():
         return self.off_open ^ self.active
 
     def turn_on(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['on'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.on + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
             self.active = True
         return res
 
     def turn_off(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['off'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.off + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
             self.active = False
         return res
 
     def toggle(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['toggle'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.toggle + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
             self.active ^= True
         return res
 
     def open_(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['open'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.open + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
             self.active = not self.off_open
         return res
 
     def close(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['close'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.close + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
             self.active = self.off_open
@@ -119,24 +110,18 @@ class Solenoid():
 class SolenoidController():
     def __init__(self, serial_controller:comport.SerialController):
         self.serial_controller = serial_controller
-        self.codes = self.serial_controller.codes
-        self.allowed_codes = [b'\x02', b'\x07', b'\x03', b'\x08']
-        self.allowed_boards = [c for c in self.codes.values()
-                               if c in self.allowed_codes]
+        self.conf = serial_controller.conf.valve
+        self.codes = serial_controller.codes
+        self.allowed_codes = self.conf.controllers
+        self.allowed_boards = [v for k, v in self.codes.items()
+                               if k in self.allowed_codes]
 
-        ser = serial_controller
-        self.solenoids = {
-            'ox_press': Solenoid(ser, 'LOX Pressurization', 1),
-            'fuel_press': Solenoid(ser, 'Fuel Pressurization', 2),
-            'ox_vent': Solenoid(ser, 'LOX Vent Valve', 3, off_open=True),
-            'fuel_vent': Solenoid(ser, 'Fuel Vent Valve', 4, off_open=True),
-            'ox_purge': Solenoid(ser, 'LOX-side Purge', 5, off_open=True),
-            'fuel_purge': Solenoid(ser, 'Fuel-side Purge', 6, off_open=True),
-        }
+        sols = [k for k, v in self.conf.valves.items() if v.solenoid]
+        self.solenoids = [Solenoid(serial_controller, s) for s in sols]
 
     def __repr__(self) -> str:
         res = 'Solenoids:'
-        for sol in self.solenoids.values():
+        for sol in self.solenoids:
             res += f"\n{sol}"
         return res
 
@@ -158,12 +143,12 @@ class SolenoidController():
             Solenoid satisfies the condition. If multiple solenoids meet the
             criterion, return the first one.
         """
-        dummy = Solenoid(self.serial_controller, '', 0)
+        dummy = Solenoid(self.serial_controller, '')
         if not search_field or not hasattr(dummy, search_field):
             return
-        search = (lambda c: getattr(c[1], search_field) == search_value)
-        channels = list(filter(search, self.solenoids.items()))
-        return channels[0][1] if len(channels) else None
+        search = (lambda c: getattr(c, search_field) == search_value)
+        channels = list(filter(search, self.solenoids))
+        return channels[0] if len(channels) else None
 
     def turn_on(self, solenoid:int):
         sol = self.get_solenoid('number', solenoid)
@@ -186,16 +171,16 @@ class SolenoidController():
         return sol.close()
 
     def reset(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['reset']
+        self.serial_controller.send_byte(self.conf.opcodes.command.solenoid)
+        code = self.conf.opcodes.solenoid.reset
         res = self.serial_controller.send_byte(code)
-        for sol in self.solenoids.values():
+        for sol in self.solenoids:
             sol.reset()
         return res
 
     def getstate(self):
-        self.serial_controller.send_byte(sol_command)
-        code = sol_codes['getstate']
+        self.serial_controller.send_byte(self.conf.opcodes.command.solenoid)
+        code = self.conf.opcodes.solenoid.getstate
         res = self.serial_controller.send_byte(code)
         if res:
             return res
@@ -207,9 +192,9 @@ class SolenoidController():
         # example state for testing
         # state = 0b10100011
 
-        data = [s.to_dict() for s in self.solenoids.values()]
+        data = [s.to_dict() for s in self.solenoids]
         df = pd.DataFrame(data)
-        sol_states = [s.getstate(state) for s in self.solenoids.values()]
+        sol_states = [s.getstate(state) for s in self.solenoids]
         active = [s[0] for s in sol_states]
         states = [s[1] for s in sol_states]
         df.insert(2, 'Active', active, True)
@@ -218,22 +203,35 @@ class SolenoidController():
 
 
 class Valve():
-    def __init__(self, serial_controller:comport.SerialController, name:str,
-                 number:int, state:Literal['open', 'close', 'crack']='close',
-                 active=False, off_open=False):
+    def __init__(self, serial_controller:comport.SerialController, key:str,
+                 active=False):
         self.serial_controller = serial_controller
-        self.name = name
-        self.number = number
-        self.state = state
-        self.active = active
-        self.off_open = off_open
-        self.on_state = 'CLOSED' if off_open else 'OPEN'
-        self.off_state = 'OPEN' if off_open else 'CLOSED'
+        self.conf = serial_controller.conf.valve
+        self.command = self.conf.opcodes.command.valve
+        self.opcodes = self.conf.opcodes.valve
+        self.key = key
+        if key:
+            self.name = self.conf.valves[key].name
+            self.number = self.conf.valves[key].number
+            self.on_state = self.conf.valves[key].on_state
+            self.off_state = self.conf.valves[key].off_state
+            self.off_open = self.off_state == "OPEN"
+            self.active = active
+        else:
+            self.name = ''
+            self.number = 0
+            self.on_state = "OPEN"
+            self.off_state = "CLOSED"
+            self.off_open = False
+            self.active = False
 
     def __repr__(self) -> str:
         spaces = 4 - len(str(self.number))
         res = f"[{self.number}]{' '*spaces}{self.name}"
         return res
+
+    def is_open(self):
+        return self.off_open ^ self.active
 
     def to_dict(self) -> dict:
         res = {
@@ -245,27 +243,27 @@ class Valve():
         return res
 
     def open_(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['open'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.open + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
-            self.state = 'open'
+            self.active = not self.off_open
         return res
 
     def close(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['close'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.close + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
-            self.state = 'close'
+            self.active = self.off_open
         return res
 
     def crack(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['crack'] + self.number
+        self.serial_controller.send_byte(self.command)
+        code = self.opcodes.crack + self.number
         res = self.serial_controller.send_byte(code)
         if not res:
-            self.state = 'crack'
+            self.active = not self.off_open
         return res
 
     def enable(self):
@@ -278,11 +276,10 @@ class Valve():
 
     def reset(self):
         self.active = False
-        self.state = 'close'
         return
 
     def openall(self):
-        self.state = 'open'
+        self.active = not self.off_open
         return
 
     def getstate(self, state:int):
@@ -296,7 +293,7 @@ class Valve():
         state : int
             The one-byte state returned by the valve controller.
         """
-        active = bool(state & (1 << self.number + 6))
+        active = bool(state & (1 << self.number - 1))
         state = self.on_state if active else self.off_state
         return active, state
 
@@ -304,20 +301,18 @@ class Valve():
 class ValveController():
     def __init__(self, serial_controller:comport.SerialController):
         self.serial_controller = serial_controller
-        self.codes = self.serial_controller.codes
-        self.allowed_codes = [b'\x02', b'\x07', b'\x03', b'\x08']
-        self.allowed_boards = [c for c in self.codes.values()
-                               if c in self.allowed_codes]
+        self.conf = serial_controller.conf.valve
+        self.codes = serial_controller.codes
+        self.allowed_codes = self.conf.controllers
+        self.allowed_boards = [v for k, v in self.codes.items()
+                               if k in self.allowed_codes]
 
-        ser = serial_controller
-        self.valves = {
-            'ox': Valve(ser, 'Oxidizer main valve (LOX)', 0),
-            'fuel': Valve(ser, 'Fuel main valve (RP1)', 1),
-        }
+        valves = [k for k, v in self.conf.valves.items() if not v.solenoid]
+        self.valves = [Valve(serial_controller, v) for v in valves]
 
     def __repr__(self) -> str:
         res = 'Valves:'
-        for valve in self.valves.values():
+        for valve in self.valves:
             res += f"\n{valve}"
         return res
 
@@ -339,66 +334,66 @@ class ValveController():
             Valve satisfies the condition. If multiple valves meet the
             criterion, return the first one.
         """
-        dummy = Valve(self.serial_controller, '', 0)
+        dummy = Valve(self.serial_controller, '')
         if not search_field or not hasattr(dummy, search_field):
             return
-        search = (lambda c: getattr(c[1], search_field) == search_value)
-        channels = list(filter(search, self.solenoids.items()))
-        return channels[0][1] if len(channels) else None
+        search = (lambda c: getattr(c, search_field) == search_value)
+        channels = list(filter(search, self.valves))
+        return channels[0] if len(channels) else None
 
     def open_(self, valve:int):
-        sol = self.get_valve('number', valve)
-        return sol.open_()
+        val = self.get_valve('number', valve)
+        return val.open_()
 
     def close(self, valve:int):
-        sol = self.get_valve('number', valve)
-        return sol.close()
+        val = self.get_valve('number', valve)
+        return val.close()
 
     def crack(self, valve:int):
-        sol = self.get_valve('number', valve)
-        return sol.crack()
+        val = self.get_valve('number', valve)
+        return val.crack()
 
     def enable(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['enable']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.enable
         res = self.serial_controller.send_byte(code)
-        for valve in self.valves.values():
+        for valve in self.valves:
             valve.enable()
         return res
 
     def disable(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['disable']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.disable
         res = self.serial_controller.send_byte(code)
-        for valve in self.valves.values():
+        for valve in self.valves:
             valve.disable()
         return res
 
     def calibrate(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['calibrate']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.calibrate
         res = self.serial_controller.send_byte(code)
         return res
 
     def reset(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['reset']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.reset
         res = self.serial_controller.send_byte(code)
-        for valve in self.valves.values():
+        for valve in self.valves:
             valve.reset()
         return res
 
     def openall(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['openall']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.openall
         res = self.serial_controller.send_byte(code)
-        for valve in self.valves.values():
+        for valve in self.valves:
             valve.openall()
         return res
 
     def getstate(self):
-        self.serial_controller.send_byte(valve_command)
-        code = valve_codes['getstate']
+        self.serial_controller.send_byte(self.conf.opcodes.command.valve)
+        code = self.conf.opcodes.valve.getstate
         res = self.serial_controller.send_byte(code)
         if res:
             return res
@@ -410,9 +405,9 @@ class ValveController():
         # example state for testing
         # state = 0b10100011
 
-        data = [s.to_dict() for s in self.valves.values()]
+        data = [v.to_dict() for v in self.valves]
         df = pd.DataFrame(data)
-        valve_states = [v.getstate(state) for v in self.valves.values()]
+        valve_states = [v.getstate(state) for v in self.valves]
         active = [v[0] for v in valve_states]
         states = [v[1] for v in valve_states]
         df.insert(2, 'Active', active, True)
@@ -579,7 +574,7 @@ def valve_crack(num):
     click.echo(msg)
 
 @valve.command(name="enable")
-def valve_enable(num):
+def valve_enable():
     """Enable valve control on the connected board."""
     ctx = click.get_current_context().obj
     controller : ValveController
@@ -589,7 +584,7 @@ def valve_enable(num):
     click.echo(msg)
 
 @valve.command(name="disable")
-def valve_disable(num):
+def valve_disable():
     """Disable valve control on the connected board."""
     ctx = click.get_current_context().obj
     controller : ValveController
@@ -599,7 +594,7 @@ def valve_disable(num):
     click.echo(msg)
 
 @valve.command(name="calibrate")
-def valve_calibrate(num):
+def valve_calibrate():
     """Calibrate valves on the connected board."""
     ctx = click.get_current_context().obj
     controller : ValveController
@@ -609,7 +604,7 @@ def valve_calibrate(num):
     click.echo(msg)
 
 @valve.command(name="reset")
-def valve_reset(num):
+def valve_reset():
     """Reset all valves on the connected board."""
     ctx = click.get_current_context().obj
     controller : ValveController
@@ -619,7 +614,7 @@ def valve_reset(num):
     click.echo(msg)
 
 @valve.command(name="openall")
-def valve_enable(num):
+def valve_enable():
     """Open all valves on the connected board."""
     ctx = click.get_current_context().obj
     controller : ValveController

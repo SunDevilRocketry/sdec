@@ -17,6 +17,7 @@ Purpose: Improve API and CLI interfaces.
 from typing import Callable, Dict, List
 
 import click
+from omegaconf import OmegaConf
 import prompt_toolkit.shortcuts
 import serial
 import serial.tools.list_ports
@@ -33,6 +34,7 @@ PLUGIN_COMMANDS = {
     "comports": comport.comports,
     "sol": valve.solenoid,
     "valve": valve.valve,
+    "hardware": hardware.hardware,
     # "power": engineController.power,
     # "ignite": hw_commands.ignite,
     # "flash": hw_commands.flash,
@@ -50,13 +52,22 @@ PLUGIN_COMMANDS = {
     # "dual-deploy": flightComputer.dual_deploy,
 }
 
+GLOBALS = "globals.yaml"
+
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option('--debug/--no-debug', '-d/', default=False,
               help="Enter debug mode")
 def main(debug=False):
     ctx = click.get_current_context()
     ctx.obj['debug'] = debug
-    ctx.obj['timeout'] = 100 if debug else 1 # seconds
+
+    # load globals from yaml file
+    globs = OmegaConf.load(GLOBALS)
+    ctx.obj['globals'] = globs
+
+    # set timeout in seconds
+    timeout = globs.timeout.debug if debug else globs.timeout.default
+    ctx.obj['timeout'] = timeout
 
 @main.command(name="term")
 def terminal():
