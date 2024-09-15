@@ -1,6 +1,15 @@
 <h1> Sun Devil Embedded Control (sdec)</h1>
 
+## TODO
+
+- [ ] Create pyproject.toml to allow it to be imported via pip
+- [ ] Figure out how the docs will be included in the new package format ( perhaps through [importlib.resources](https://docs.python.org/3.11/library/importlib.resources.html))
+
+Other parts of the project TODO are discussed in the packaging branch  of the [Liquid Engine GUI](https://github.com/SunDevilRocketry/liquid_engine_gui/tree/packaging).
+
 <h2>Description:</h2> 
+
+This specific branch of sdec is part of the attempt to create an easy installer for 
 
 <p>sdec is a python-based terminal program which allows
 the user to access all functionality available on Sun Devil Rocketry PCBs.</p>
@@ -8,7 +17,7 @@ the user to access all functionality available on Sun Devil Rocketry PCBs.</p>
 <h2>Installation:</h2>
 <p>The Terminal-Control program requires a functional python installation and the
 pyserial module, which can be installed using pip. The program is run within a single 
-terminal, and may be invoked from the command line using the python interpreter. Support is
+terminal, and may be invoked from the command line as a python module (```python3 -m sdec```). Support is
 currently available for Windows and Linux operating systems. </p>
 
 <h2>Supported Boards:</h2>
