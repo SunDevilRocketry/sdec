@@ -21,13 +21,13 @@ import datetime
 from   matplotlib import pyplot as plt
 
 # Project imports
-from   config      import *
-from   hw_commands import byte_array_to_int
-from   hw_commands import byte_array_to_float
-from   hw_commands import get_sensor_frames
-from   hw_commands import sensor_extract_data_filter
-import commands
-import sensor_conv
+from   sdec.config      import *
+from   sdec.hw_commands import byte_array_to_int
+from   sdec.hw_commands import byte_array_to_float
+from   sdec.hw_commands import get_sensor_frames
+from   sdec.hw_commands import sensor_extract_data_filter
+from sdec import commands
+from sdec import sensor_conv
 
 ####################################################################################
 # Global Variables                                                                 #

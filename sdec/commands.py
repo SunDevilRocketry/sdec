@@ -19,9 +19,9 @@ import serial.tools.list_ports
 import time
 
 # Project imports
-import sensor_conv
-from   config      import *
-from   controller  import *
+from sdec import sensor_conv
+from   sdec.config      import *
+from   sdec.controller  import *
 
 
 ####################################################################################

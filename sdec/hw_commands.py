@@ -23,10 +23,10 @@ from   matplotlib import pyplot as plt
 import struct
 
 # Project imports
-import sensor_conv
-import commands
-from   config      import *
-from   controller  import *
+from sdec import sensor_conv
+from sdec import commands
+from   sdec.config      import *
+from   sdec.controller  import *
 
 
 ####################################################################################

@@ -30,12 +30,12 @@ import serial.tools.list_ports
 ####################################################################################
 # Project Modules                                                                  #
 ####################################################################################
-import commands         # general terminal commands
-import hw_commands      # general hardware commands
-import valveController  # valve controller commands
-import engineController # engine controller commands
-import flightComputer   # flight computer commands
-from   config import *  # global settings
+from sdec import commands         # general terminal commands
+from sdec import hw_commands      # general hardware commands
+from sdec import valveController  # valve controller commands
+from sdec import engineController # engine controller commands
+from sdec import flightComputer   # flight computer commands
+from sdec.config import *  # global settings
 
 
 ####################################################################################

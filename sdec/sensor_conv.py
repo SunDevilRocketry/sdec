@@ -17,7 +17,7 @@
 import math
 
 # Project imports
-from config import *
+from sdec.config import *
 
 
 ####################################################################################

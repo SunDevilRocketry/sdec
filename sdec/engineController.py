@@ -20,10 +20,10 @@ import time
 ####################################################################################
 # Project Modules                                                                  #
 ####################################################################################
-import commands
-import hw_commands
-import controller
-from   config   import *
+from sdec import commands
+from sdec import hw_commands
+from sdec import controller
+from   sdec.config   import *
 
 
 ####################################################################################
