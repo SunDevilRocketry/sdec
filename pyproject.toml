@@ -14,7 +14,7 @@ authors = [
     {name = "Brian Lew"},
     {name = "Alexander Linderman"},
 ]
-version = "2024.9+packagingdev"
+version = "2024.9+packagingdev1"
 dependencies = [
     "pyserial",
     "matplotlib",

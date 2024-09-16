@@ -18,6 +18,8 @@ import os
 import serial.tools.list_ports
 import time
 
+from importlib.resources import files
+
 # Project imports
 from sdec import sensor_conv
 from   sdec.config      import *
@@ -50,12 +52,15 @@ else:
 #                                                                                  #
 ####################################################################################
 def display_help_info( command ):
-	with open ("doc/" + command ) as file:
+	docs_resource = files("sdec").joinpath("doc").joinpath(command)
+
+	with docs_resource.open() as file:
 		doc_lines = file.readlines()
 	print()
 	for line in doc_lines:
 		print( line, end='' )
 	print()
+
 ## display_help_info ##
 
 
