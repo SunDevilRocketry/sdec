@@ -9,6 +9,9 @@ include = ["sdec"]
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.package-data]
+sdec = ["doc/*"]
+
 [project]
 name = "sdec"
 authors = [
@@ -18,7 +21,7 @@ authors = [
     {name = "Brian Lew"},
     {name = "Alexander Linderman"},
 ]
-version = "2024.9+packagingdev2"
+version = "2024.9+packagingdev3"
 dependencies = [
     "pyserial",
     "matplotlib",
