@@ -4,3 +4,6 @@ __pycache__
 output/*
 
 .venv
+
+build/*
+sdec.egg-info/*

@@ -2,8 +2,12 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[tools.setuptools.packages.find]
-exclude = ["input", "output", "doc"]
+[tool.setuptools.packages.find]
+exclude = ["input", "output"]
+include = ["sdec"]
+
+[tool.setuptools]
+include-package-data = true
 
 [project]
 name = "sdec"
@@ -14,7 +18,7 @@ authors = [
     {name = "Brian Lew"},
     {name = "Alexander Linderman"},
 ]
-version = "2024.9+packagingdev1"
+version = "2024.9+packagingdev2"
 dependencies = [
     "pyserial",
     "matplotlib",
