@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tools.setuptools.packages.find]
+exclude = ["input", "output", "doc"]
+
+[project]
+name = "sdec"
+authors = [
+    {name = "Colton Acosta"},
+    {name = "Nick Nguyen"},
+    {name = "Anton Sazonov"},
+    {name = "Brian Lew"},
+    {name = "Alexander Linderman"},
+]
+version = "2024.9+packagingdev"
+dependencies = [
+    "pyserial",
+    "matplotlib",
+    "numpy"
+]
+readme = "README.md"
