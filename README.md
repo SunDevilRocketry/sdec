@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] Create pyproject.toml to allow it to be imported via pip
+- [ x ] Create pyproject.toml to allow it to be imported via pip
 - [ ] Figure out how the docs will be included in the new package format ( perhaps through [importlib.resources](https://docs.python.org/3.11/library/importlib.resources.html))
 
 Other parts of the project TODO are discussed in the packaging branch  of the [Liquid Engine GUI](https://github.com/SunDevilRocketry/liquid_engine_gui/tree/packaging).
