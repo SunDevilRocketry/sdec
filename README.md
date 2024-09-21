@@ -1,41 +1,67 @@
-<h1> Sun Devil Embedded Control (sdec)</h1>
+# Sun Devil Embedded Control (sdec)
 
-## TODO
+## Description
 
-- [x] Create pyproject.toml to allow it to be imported via pip
-- [x] Figure out how the docs will be included in the new package format ( perhaps through [importlib.resources](https://docs.python.org/3.11/library/importlib.resources.html))
+sdec is a terminal program and Python library which allows
+the user to access all functionality available on Sun Devil Rocketry PCBs either interactively or programatically (which is what our [Liquid Engine GUI](https://github.com/SunDevilRocketry/liquid_engine_gui) does).
 
-Other parts of the project TODO are discussed in the packaging branch  of the [Liquid Engine GUI](https://github.com/SunDevilRocketry/liquid_engine_gui/tree/packaging).
+## Installation
+1. Make sure you have a working Python installation with pip. (Be sure it's added to your path, Windows people!)
+2. Install SDEC with pip. This will pull all dependencies automatically.
 
-<h2>Description:</h2> 
+        pip3 install git+https://github.com/SunDevilRocketry/sdec
+3. Run sdec
 
-This specific branch of sdec is part of the attempt to create an easy installer for 
+        python -m sdec
 
-<p>sdec is a python-based terminal program which allows
-the user to access all functionality available on Sun Devil Rocketry PCBs.</p>
+    Or on some systems:
 
-<h2>Installation:</h2>
-<p>The Terminal-Control program requires a functional python installation and the
-pyserial module, which can be installed using pip. The program is run within a single 
-terminal, and may be invoked from the command line as a python module (```python3 -m sdec```). Support is
-currently available for Windows and Linux operating systems. </p>
+        python3 -m sdec
+    > If you've git cloned the sdec repository, please make sure you run this command in a different folder from the repository to avoid issues.
+When run, if one doesn't already exist, sdec will automically create an output folder. Please make sure you are able to write files in whatever folder you run sdec in.
 
-<h2>Supported Boards:</h2>
-<p>
-L0002: Liquid Engine Controller (Rev 3/Rev 4)
+## Supported Boards:
+- L0002: Liquid Engine Controller (Rev 3/Rev 4)
+- A0002: Flight Computer (Rev 1)
+- L0005: Valve Controller (Rev 2)
 
-A0002: Flight Computer (Rev 1)
+For more information on usage of the above hardware with the Terminal-Control program, please refer to the board's firmware documentation.
 
-L0005: Valve Controller (Rev 2)
+## Developer Information
+### Getting Started
+Clone this repo.
+Read [Project Directory Structure](#project-directory-structure) for where to make modifications.
 
-</p>
-<p>For more information on usage of the above hardware with the Terminal-Control program, please
-refer to the board's firmware documentation </p>
+To test your changes, you have two options.
+Within the repository folder, you can run ```python3 -m sdec``` to use the development version rather than the module installed with pip.
 
-<h2>Developer Information:</h2>
-<p>Commands which communicate with an embedded board inlcude a 1 byte opcode, which is the first byte
-   transmitted to the board when a command is issued. Opcode 0x00 is reserved as the nop command. Nop commands 
-   are ignored by the embedded board.</p>
+Alternatively, you can run ```pip install PATH/TO/GIT/REPO/sdec/sdec``` to install the module with pip to make sure you haven't broken packaging.
+
+### Installing a different git branch
+```pip3 install git+https://github.com/SunDevilRocketry/sdec@branchname```
+
+### Notes for versioning
+When you make a branch, push to main, make a major new commit, etcetera, make sure you update the version accordingly. The version format we are using is as follows:
+```YYYY.Mversion.MINORVERSION(+branch)```
+- ```YYYY```: The year of the commit
+- ```M```: The month of the commit, 1 digit long in 1 digit months and 2 digits long in 2 digit months.
+- ```MINORVERSION```: The sub-version released within the month.
+- ```(+branch)```: The git branch of the library, included only if it is not the main branch.
+
+For instance, for the second version pushed to a branch called "bananas" in September 2024 would be versioned as ```2024.9.1+bananas```.
+### Project Directory Structure
+The sdec source code is in a folder called sdec. Here is the purpose of each file:
+- ```sdec/__main__.py```: Main program loop
+- ```sdec/commands.py```: Implementation of general commands
+- ```sdec/config.py```: Global configuration parameters
+- ```sdec/controller.py```: Hardware information for the supported boards
+- ```sdec/engineController.py```: Implementation of liquid engine-specific commands
+- ```sdec/flightComputer.py```: Implementation of flight computer-specific commands
+- ```sdec/hw_commands.py```: Implementation of general hardware commands
+- ```sdec/plot_data.py```: Sensor data output
+- ```sdev/valveController.py```: Implementation of commands specific to the valve controller.
+### Operating Principle
+Commands which communicate with an embedded board inlcude a 1 byte opcode, which is the first byte transmitted to the board when a command is issued. Opcode 0x00 is reserved as the nop command. Nop commands are ignored by the embedded board.
 
 <h2>General Commands:</h2>
 
