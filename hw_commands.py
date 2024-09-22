@@ -558,30 +558,33 @@ def sensor( Args, serialObj, show_readouts = True ):
 
         # Receive and display sensor readouts 
         timeout_ctr = 0
-        while ( timeout_ctr <= sensor_poll_timeout ):
-            serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
-            sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
-            sensor_readouts   = get_sensor_readouts(
-                                                    serialObj.controller, 
-                                                    user_sensor_nums    ,
-                                                    sensor_bytes_list
-                                                   )
-            for sensor in sensor_readouts:
-                readout_formated = format_sensor_readout(
-                                                         serialObj.controller, 
-                                                         sensor              ,
-                                                         sensor_readouts[sensor] 
-                                                         )
-                print( readout_formated + '\t', end='' )
-            print()
-            # Pause for readibility
-            serialObj.sendByte( sensor_poll_cmds['WAIT'] )
-            time.sleep(0.2)
-            serialObj.sendByte( sensor_poll_cmds['RESUME'])
-            timeout_ctr += 1
-
-        # Stop transmission    
-        serialObj.sendByte( sensor_poll_cmds['STOP'] )
+        try:
+            print("Ctrl+C to exit");
+            while ( timeout_ctr <= sensor_poll_timeout ):
+                serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+                sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+                sensor_readouts   = get_sensor_readouts(
+                                                        serialObj.controller, 
+                                                        user_sensor_nums    ,
+                                                        sensor_bytes_list
+                                                    )
+                for sensor in sensor_readouts:
+                    readout_formated = format_sensor_readout(
+                                                            serialObj.controller, 
+                                                            sensor              ,
+                                                            sensor_readouts[sensor] 
+                                                            )
+                    print( readout_formated + '\t', end='' )
+                print()
+                # Pause for readibility
+                serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+                time.sleep(0.2)
+                serialObj.sendByte( sensor_poll_cmds['RESUME'])
+                timeout_ctr += 1
+        except KeyboardInterrupt:
+            # Stop transmission
+            print("\nPoll exited!")    
+            serialObj.sendByte( sensor_poll_cmds['STOP'] )
 
         return serialObj
 
