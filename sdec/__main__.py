@@ -25,17 +25,18 @@ __credits_2023__ = ["Nick Nguyen"       ,
 import time
 import serial
 import serial.tools.list_ports
+import os
 
 
 ####################################################################################
 # Project Modules                                                                  #
 ####################################################################################
-import commands         # general terminal commands
-import hw_commands      # general hardware commands
-import valveController  # valve controller commands
-import engineController # engine controller commands
-import flightComputer   # flight computer commands
-from   config import *  # global settings
+from sdec import commands         # general terminal commands
+from sdec import hw_commands      # general hardware commands
+from sdec import valveController  # valve controller commands
+from sdec import engineController # engine controller commands
+from sdec import flightComputer   # flight computer commands
+from sdec.config import *  # global settings
 
 
 ####################################################################################
@@ -241,6 +242,14 @@ def parseInput(userin):
 ####################################################################################
 # Application Entry Point                                                          #
 ####################################################################################
+
+# Ensure the output directory exists before startup exists whether the module is
+# directly invoked or imported
+if os.path.exists( "./output" ):
+    os.mkdir( "./output" )
+if os.path.exists( "./output/hotfire" ):
+    os.mkdir( "./output/hotfire" )
+
 if __name__ == '__main__':
     
     # Initialize Serial Port Object
