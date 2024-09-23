@@ -248,7 +248,7 @@ def parseInput(userin):
 if os.path.exists( "./output" ):
     os.mkdir( "./output" )
 if os.path.exists( "./output/hotfire" ):
-    os.major( "./output/hotfire" )
+    os.mkdir( "./output/hotfire" )
 
 if __name__ == '__main__':
     
