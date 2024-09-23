@@ -25,6 +25,7 @@ __credits_2023__ = ["Nick Nguyen"       ,
 import time
 import serial
 import serial.tools.list_ports
+import os
 
 
 ####################################################################################
@@ -241,6 +242,14 @@ def parseInput(userin):
 ####################################################################################
 # Application Entry Point                                                          #
 ####################################################################################
+
+# Ensure the output directory exists before startup exists whether the module is
+# directly invoked or imported
+if os.path.exists( "./output" ):
+    os.mkdir( "./output" )
+if os.path.exists( "./output/hotfire" ):
+    os.major( "./output/hotfire" )
+
 if __name__ == '__main__':
     
     # Initialize Serial Port Object
