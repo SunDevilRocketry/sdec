@@ -294,6 +294,96 @@ def format_sensor_readout( controller, sensor, readout ):
     return output
 ## format_sensor_readout ##
 
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+#         plot_sensor_realtime_init                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#        Initialize sensor readouts plot with labels and units
+#        ARGS: 
+#              controller: SerialController
+#              sensor_readouts: dictionary of sensors and their readouts
+#                                                                                  #
+####################################################################################
+def plot_sensor_realtime_init( controller, sensor_readouts ):
+    # Create a fig with sensor number of axs
+    fig, axs = plt.subplots(len(sensor_readouts));
+    graphs = {}
+    axs_sensor = {}
+    fig.suptitle("Real time sensor polling plot")
+    idx = 0
+    readouts_dict = {}
+    for sensor in sensor_readouts:
+        # Set axis labels containing sensor and unit
+        units = sensor_units[controller][sensor]
+
+        axs[idx].set_xlabel("time (s)")
+
+        if (units):
+            axs[idx].set_ylabel(sensor + " (" + units + ")")
+        else:
+            axs[idx].set_ylabel(sensor)
+        
+        axs_sensor[sensor] = axs[idx]
+
+        # Plot a sample at a time
+        readouts = sensor_readouts[sensor]
+
+        readouts_dict[sensor] = [readouts]
+
+        graph = axs[idx].plot(0, readouts_dict[sensor])
+        graphs[sensor] = graph
+        # Increment an index
+        idx = idx + 1
+
+    plt.pause(1)
+    return graphs, fig, axs, readouts_dict
+## plot_sensor_realtime_init ##
+
+#################################################################################################
+#                                                                                               #
+# PROCEDURE:                                                                                    #
+#         plot_sensor_realtime_start                                                            #
+#                                                                                               #
+# DESCRIPTION:                                                                                  #
+#        Start sensor readouts plot with labels and units                                       #
+#        ARGS:                                                                                  #
+#              controller: SerialController                                                     #
+#              graphs: dictionary of graphs associated with a sensor initialized                #
+#              axs_sensor: dictionary of axs associated with a sensor initialized               #
+#              readouts_dict: dictionary containing list of readouts associated with a sensor   #
+#              sensor_readouts: dictionary of sensors and their readouts                        #
+#              seconds: list of seconds lasted                                                  #
+#                                                                                               #
+#################################################################################################
+def plot_sensor_realtime_start( controller, graphs, axs_sensor, readouts_dict, sensor_readouts, seconds):
+    for sensor in sensor_readouts:
+        # Update values
+        readouts = sensor_readouts[sensor]
+        readouts_dict[sensor].append(readouts)
+
+        # Destroy old graphs 
+        graphs[sensor].remove()
+
+        # Plot new graphs
+        # Set axis labels containing sensor and unit
+        units = sensor_units[controller][sensor]
+
+        axs_sensor[sensor].set_xlabel("time (s)")
+
+        if (units):
+            axs_sensor[sensor].set_ylabel(sensor + " (" + units + ")")
+        else:
+            axs_sensor[sensor].set_ylabel(sensor)
+        
+        graphs[sensor] = axs_sensor[sensor].plot(seconds, readouts_dict[sensor])
+
+        axs_sensor[sensor].set_xlim([readouts_dict[sensor][0], readouts_dict[sensor][-1]])    
+    
+        # plt.pause(0.25)
+    return graphs
+## plot_sensor_realtime_start ##
 
 ####################################################################################
 #                                                                                  #
@@ -377,6 +467,10 @@ def sensor( Args, serialObj, show_readouts = True ):
                              '-n' : 'Specify a sensor number',
                              '-h' : 'Display sensor usage info'
                              },
+                    'pplot' : {
+                                    '-n' : 'Specify a sensor number',
+                                    '-h' : 'Display sensor usage info'
+                                  },
                     'list' : {
                              },
                     'help' : {
@@ -460,7 +554,8 @@ def sensor( Args, serialObj, show_readouts = True ):
 
     # Verify sensor nums supplied are valid
     if (  ( user_subcommand == "poll" ) or
-          ( user_subcommand == "plot" ) ):
+          ( user_subcommand == "plot" ) or
+          ( user_subcommand == "pplot" )):
         if ( user_option == "-n" ):
 
             # Throw error if no sensors were supplied
@@ -536,9 +631,88 @@ def sensor( Args, serialObj, show_readouts = True ):
         return serialObj
 
     ################################################################################
-    # Subcommand: sensor poll                                                      #
+    # Subcommand: sensor ppoll                                                      #
     ################################################################################
-    elif ( user_subcommand == "poll" ):
+    elif ( user_subcommand == "ppoll" ):
+
+        # Send command opcode
+        serialObj.sendByte( opcode )
+
+        # Send sensor poll subcommand code
+        serialObj.sendByte( subcommand_codes[user_subcommand] )
+
+        # Tell the controller how many sensors to use
+        serialObj.sendByte( num_sensors.to_bytes( 1, 'big' ) )
+
+        # Send the controller the sensor codes
+        for sensor_num in user_sensor_nums:
+            serialObj.sendByte( sensor_poll_codes[sensor_num] )
+        
+        # Start the sensor poll sequence
+        serialObj.sendByte( sensor_poll_cmds['START'] )
+
+        # Receive and display sensor readouts 
+        timeout_ctr = 0
+
+        try:
+            # Initialize graph
+            serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+            sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+            sensor_readouts   = get_sensor_readouts(
+                                                    serialObj.controller, 
+                                                    user_sensor_nums    ,
+                                                    sensor_bytes_list
+                                                )
+            
+            plt.ion()
+            graphs, _, axs_sensor, readouts_dict = plot_sensor_realtime_init(serialObj.controller, sensor_readouts)
+            secs = []
+
+
+            print("Ctrl+C to exit");
+            while ( timeout_ctr <= sensor_poll_timeout ):
+                serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+                sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+                sensor_readouts   = get_sensor_readouts(
+                                                        serialObj.controller, 
+                                                        user_sensor_nums    ,
+                                                        sensor_bytes_list
+                                                    )
+                secs.append(time.process_time)
+                plot_sensor_realtime_start(
+                                            serialObj.controller,
+                                            graphs,
+                                            axs_sensor,
+                                            readouts_dict,
+                                            sensor_readouts,
+                                            secs
+                )
+
+                
+                for sensor in sensor_readouts:
+                    readout_formated = format_sensor_readout(
+                                                            serialObj.controller, 
+                                                            sensor              ,
+                                                            sensor_readouts[sensor] 
+                                                            )
+                    print( readout_formated + '\t', end='' )
+                # Pause for readibility
+                serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+                time.sleep(0.2)
+                serialObj.sendByte( sensor_poll_cmds['RESUME'])
+                timeout_ctr += 1
+        except KeyboardInterrupt:
+            # Stop transmission
+            print("\nPoll exited!")    
+            serialObj.sendByte( sensor_poll_cmds['STOP'] )
+            plt.ioff()
+
+        return serialObj
+
+    ################################################################################
+    # Subcommand: sensor plot                                                     #
+    ################################################################################
+    elif ( user_subcommand == "plot" ):
 
         # Send command opcode
         serialObj.sendByte( opcode )
