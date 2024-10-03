@@ -99,11 +99,11 @@ controller_sensors = {
                            "imut" : "IMU Die Temperature   ",
                            "pres" : "Barometric Pressure   ",
                            "temp" : "Barometric Temperature",
-                           "dec_long": None,
-                           "nmea_long": None,
-                           "dec_lat": None,
-                           "nmea_lat": None,
-                           "utc_time": None
+                           "gps_long_dec": "GPS Longtitude in degree unit",
+                           "gps_lat_dec": "GPS Latitude in degree unit",
+                           "gps_long_nmea": "GPS Longtitude in NMEA format",
+                           "gps_lat_nmea": "GPS Latitude in NMEA format",
+                           "utc_time": "GPS Coordinated Universal Time",
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -259,10 +259,10 @@ sensor_codes = {
                            "imut" : b'\x09',
                            "pres" : b'\x0A',
                            "temp" : b'\x0B',
-                           "dec_long": b'\x0C',
-                           "nmea_long": b'\x0D',
-                           "dec_lat": b'\x0E',
-                           "nmea_lat": b'\x0F',
+                           "gps_long_dec": b'\x0C',
+                           "gps_lat_dec": b'\x0D',
+                           "gps_long_nmea": b'\x0E',
+                           "gps_lat_nmea": b'\x0F',
                            "utc_time": b'\x10'
                            },
                 # Flight Computer Lite Rev 1.0
@@ -443,10 +443,10 @@ sensor_units = {
                            "imut" : None   ,
                            "pres" : "kPa",
                            "temp" : "C" ,
-                           "dec_long": None,
-                           "nmea_long": None,
-                           "dec_lat": None,
-                           "nmea_lat": None,
+                           "gps_long_dec": "deg",
+                           "gps_lat_dec": "deg",
+                           "gps_long_nmea": None,
+                           "gps_lat_nmea": None,
                            "utc_time": None
                            },
                 # Flight Computer rev 1.0
@@ -513,10 +513,10 @@ sensor_indices = {
                             "imut" : 10,
                             "pres" : 11,
                             "temp" : 12,
-                            "dec_long": 13,
-                            "nmea_long": 14,
-                            "dec_lat": 15,
-                            "nmea_lat": 16,
+                            "gps_long_dec": 13,
+                            "gps_lat_dec": 14,
+                            "gps_long_nmea": 15,
+                            "gps_lat_nmea": 16,
                             "utc_time": 17
                                        },
                 # Flight Computer Lite rev 1.0
@@ -580,11 +580,11 @@ sensor_formats = {
                            "imut" : int  ,
                            "pres" : float,
                            "temp" : float,
-                           "dec_long": float,
-                           "nmea_long": float,
-                           "dec_lat": float,
-                           "nmea_lat": float,
-                           "utc_time": float
+                           "gps_long_dec": float,
+                           "gps_lat_dec": float,
+                           "gps_long_nmea": float,
+                           "gps_lat_nmea": float,
+                           "utc_time": float    
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
