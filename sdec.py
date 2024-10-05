@@ -68,6 +68,7 @@ command_list = {
                  "stoppurge"  : engineController.stop_purge      ,
                  "loxpurge"   : engineController.lox_purge       ,
                  "dual-deploy": flightComputer.dual_deploy       ,
+                 "idle":        canard_fc.idle,
                  "imu-calibrate":  canard_fc.imu_calibrate,
                  "pid-run": canard_fc.pid_run
                 }

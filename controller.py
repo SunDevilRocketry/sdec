@@ -602,7 +602,8 @@ firmware_ids = {
                 b'\x01': "Terminal"   ,
 				b'\x02': "Data Logger",
 				b'\x03': "Dual Deploy",
-                b'\x04': "Hotfire"
+                b'\x04': "Hotfire",
+                b'\x05': "Active Roll"
                }
 			
 # Boards that report firmware ids with the connect command
