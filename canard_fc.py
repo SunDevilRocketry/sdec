@@ -8,23 +8,25 @@ def idle(Args, serialObj):
 
 def imu_calibrate(Args, serialObj):
     print("IMU CALIBRATING")
-    serialObj.sendByte(b'\x03')
+    serialObj.sendByte(b'\x04')
     return serialObj
 
 def pid_run(Args, serialObj):
     print("PID RUN")
-    serialObj.sendByte(b'\x02')
+    serialObj.sendByte(b'\x05')
     return serialObj
 
 def pid_setup(Args, serialObj):
     print("PID SETUP")
+    serialObj.sendByte(b'\x06')
+    return serialObj
     
 
 def fin_setup(Args, serialObj):
     print("FIN Setup")
     print("CONTROLS: j/k RIGHT-/+, f/d LEFT-/+")
     print("Press q to exit")
-    serialObj.sendByte(b'\x04')
+    serialObj.sendByte(b'\x03')
     # serialObj.sendByte(b'\x05')
 
     handle = partial(fin_handle_key_press, serialObj=serialObj)
