@@ -20,6 +20,8 @@ def pid_run(Args, serialObj):
 
 def pid_setup(Args, serialObj):
     print("PID SETUP")
+    serialObj.sendByte(b'\x06')
+    return serialObj
     
 
 def fin_setup(Args, serialObj):
