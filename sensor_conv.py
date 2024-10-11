@@ -191,7 +191,7 @@ def tc_temp( readout ):
 ####################################################################################
 def imu_accel( readout ):
 	
-	# Convert from 16 bit unsigned to 16 bit sRigned
+	# Convert from 16 bit unsigned to 16 bit signed
 	signed_int = 0
 	if ( readout < 2**(15) ):
 		signed_int = readout	
