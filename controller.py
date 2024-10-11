@@ -87,18 +87,30 @@ controller_sensors = {
                            },
                 # Flight Computer rev 2.0
                 controller_names[4]: {
-                           "accX" : "Accelerometer X       ",
-                           "accY" : "Accelerometer Y       ",
-                           "accZ" : "Accelerometer Z       ",
-                           "gyroX": "gyroscope X           ",
-                           "gyroY": "gyroscope Y           ",
-                           "gyroZ": "gyroscope Z           ",
-                           "magX" : "Magnetometer X        ",
-                           "magY" : "Magnetometer Y        ",
-                           "magZ" : "Magnetometer Z        ",
-                           "imut" : "IMU Die Temperature   ",
-                           "pres" : "Barometric Pressure   ",
-                           "temp" : "Barometric Temperature"
+                           "accX" :         "Accelerometer X       ",
+                           "accY" :         "Accelerometer Y       ",
+                           "accZ" :         "Accelerometer Z       ",
+                           "gyroX":         "gyroscope X           ",
+                           "gyroY":         "gyroscope Y           ",
+                           "gyroZ":         "gyroscope Z           ",
+                           "magX" :         "Magnetometer X        ",
+                           "magY" :         "Magnetometer Y        ",
+                           "magZ" :         "Magnetometer Z        ",
+                           "imut" :         "IMU Die Temperature   ",
+                           "pres" :         "Barometric Pressure   ",
+                           "temp" :         "Barometric Temperature",
+                           "accXconv" :     "Pre-converted Accel X",
+                           "accYconv" :     "Pre-converted Accel Y",
+                           "accZconv" :     "Pre-converted Accel Z",
+                           "gyroXconv" :    "Pre-converted Gyro X",
+                           "gyroYconv" :    "Pre-converted Gyro Y",
+                           "gyroZconv" :    "Pre-converted Gyro Z",
+                           "rollDeg"    :   "Roll Body Angle",
+                           "pitchDeg"    :  "Pitch Body Angle",
+                           "rollRate"    :  "Roll Body Rate",
+                           "pitchRate"    : "Pitch Body Rate",
+                           "velo"   :       "Velocity",
+                           "pos"   :        "Position"
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -158,7 +170,7 @@ sensor_sizes = {
                            "magZ" : 2,
                            "imut" : 2,
                            "pres" : 4,
-                           "temp" : 4 
+                           "temp" : 4
                            },
                 # Flight Computer rev 2.0
                 controller_names[4]: {
@@ -173,7 +185,19 @@ sensor_sizes = {
                            "magZ" : 2,
                            "imut" : 2,
                            "pres" : 4,
-                           "temp" : 4 
+                           "temp" : 4,
+                           "accXconv" :     4,
+                           "accYconv" :     4,
+                           "accZconv" :     4,
+                           "gyroXconv" :    4,
+                           "gyroYconv" :    4,
+                           "gyroZconv" :    4,
+                           "rollDeg"    :   4,
+                           "pitchDeg"    :  4,
+                           "rollRate"    :  4,
+                           "pitchRate"    : 4,
+                           "velo"   :       4,
+                           "pos"   :        4
                            },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -248,7 +272,19 @@ sensor_codes = {
                            "magZ" : b'\x08',
                            "imut" : b'\x09',
                            "pres" : b'\x0A',
-                           "temp" : b'\x0B' 
+                           "temp" : b'\x0B',
+                           "accXconv" :     b'\x0C',
+                           "accYconv" :     b'\x0D',
+                           "accZconv" :     b'\x0E',
+                           "gyroXconv" :    b'\x0F',
+                           "gyroYconv" :    b'\x10',
+                           "gyroZconv" :    b'\x11',
+                           "rollDeg"    :   b'\x12',
+                           "pitchDeg"    :  b'\x13',
+                           "rollRate"    :  b'\x14',
+                           "pitchRate"    : b'\x15',
+                           "velo"   :       b'\x16',
+                           "pos"   :        b'\x17' 
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -289,7 +325,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 32,
+                    controller_names[4]: 93,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
@@ -347,7 +383,19 @@ sensor_conv_funcs = {
                            "magZ" : None                  ,
                            "imut" : None                  ,
                            "pres" : sensor_conv.baro_press,
-                           "temp" : sensor_conv.baro_temp 
+                           "temp" : sensor_conv.baro_temp ,
+                           "accXconv" :     None,
+                           "accYconv" :     None,
+                           "accZconv" :     None,
+                           "gyroXconv" :    None,
+                           "gyroYconv" :    None,
+                           "gyroZconv" :    None,
+                           "rollDeg"    :   None,
+                           "pitchDeg"    :  None,
+                           "rollRate"    :  None,
+                           "pitchRate"    : None,
+                           "velo"   :       None,
+                           "pos"   :        None 
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -422,7 +470,19 @@ sensor_units = {
                            "magZ" : None   ,
                            "imut" : None   ,
                            "pres" : "kPa",
-                           "temp" : "C" 
+                           "temp" : "C",
+                           "accXconv" :     'm/s/s',
+                           "accYconv" :     'm/s/s',
+                           "accZconv" :     'm/s/s',
+                           "gyroXconv" :    'deg/s',
+                           "gyroYconv" :    'deg/s',
+                           "gyroZconv" :    'deg/s',
+                           "rollDeg"    :   'deg',
+                           "pitchDeg"    :  'deg',
+                           "rollRate"    :  'deg/s',
+                           "pitchRate"    : 'deg/s',
+                           "velo"   :       'm/s',
+                           "pos"   :        'm' 
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -487,7 +547,19 @@ sensor_indices = {
                             "magZ" : 9,
                             "imut" : 10,
                             "pres" : 11,
-                            "temp" : 12 
+                            "temp" : 12,
+                            "accXconv" :     13,
+                            "accYconv" :     14,
+                            "accZconv" :     15,
+                            "gyroXconv" :    16,
+                            "gyroYconv" :    17,
+                            "gyroZconv" :    18,
+                            "rollDeg"    :   19,
+                            "pitchDeg"    :  20,
+                            "rollRate"    :  21,
+                            "pitchRate"    : 22,
+                            "velo"   :       23,
+                            "pos"   :        24, 
                                        },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -549,7 +621,19 @@ sensor_formats = {
                            "magZ" : int  ,
                            "imut" : int  ,
                            "pres" : float,
-                           "temp" : float 
+                           "temp" : float,
+                           "accXconv" :     float,
+                           "accYconv" :     float,
+                           "accZconv" :     float,
+                           "gyroXconv" :    float,
+                           "gyroYconv" :    float,
+                           "gyroZconv" :    float,
+                           "rollDeg"    :   float,
+                           "pitchDeg"    :  float,
+                           "rollRate"    :  float,
+                           "pitchRate"    : float,
+                           "velo"   :       float,
+                           "pos"   :        float, 
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
