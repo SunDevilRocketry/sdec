@@ -512,9 +512,13 @@ def sensor( Args, serialObj, show_readouts = True ):
                                      sensor_dump_size_bytes, 
                                      "big" )
 
+        print(sensor_dump_size_bytes)
+
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
             sensor_bytes_list.append( serialObj.readByte() )
+
+        print(sensor_bytes_list)
 
         # Get readouts from byte array
         serialObj.sensor_readouts = get_sensor_readouts( 
