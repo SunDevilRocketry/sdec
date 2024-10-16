@@ -72,7 +72,8 @@ command_list = {
                  "imu-calibrate": canard_fc.imu_calibrate        ,
                  "pid-run"    : canard_fc.pid_run                ,
                  "fin-setup"  : canard_fc.fin_setup              ,
-                 "pid-setup"  : canard_fc.pid_setup
+                 "pid-setup"  : canard_fc.pid_setup              ,
+                 "access-terminal": canard_fc.terminal_access
                 }
 
 

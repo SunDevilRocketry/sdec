@@ -22,7 +22,12 @@ def pid_setup(Args, serialObj):
     print("PID SETUP")
     serialObj.sendByte(b'\x06')
     return serialObj
-    
+
+def terminal_access(Args, serialObj):
+    print("TERMINAL")
+    serialObj.sendByte(b'\x07')
+    return serialObj
+
 
 def fin_setup(Args, serialObj):
     print("FIN Setup")
@@ -31,13 +36,9 @@ def fin_setup(Args, serialObj):
     serialObj.sendByte(b'\x03')
     # serialObj.sendByte(b'\x05')
 
-    time.sleep(4)
-
-    serialObj.sendByte(b'\x05')
 
 
     handle = partial(fin_handle_key_press, serialObj=serialObj)
-    
     with Listener(
         supress=True,
         on_press=handle,
@@ -48,15 +49,17 @@ def fin_setup(Args, serialObj):
 def fin_handle_key_press(key, serialObj):
     match key.char:
         case 'j':
-            serialObj.sendByte(b'\0x04')
+            serialObj.sendByte(b'\x13')
         case 'k':
-            serialObj.sendByte(b'\0x03')
+            serialObj.sendByte(b'\x12')
         case 'f':
-            serialObj.sendByte(b'\0x02')
+            serialObj.sendByte(b'\x11')
         case 'd':
-            serialObj.sendByte(b'\0x01')
+            serialObj.sendByte(b'\x10')
+        case 's':
+            serialObj.sendByte(b'\x14')
         case 'q':
-            serialObj.sendByte(b'\0x05')
+            serialObj.sendByte(b'\x15')
             return False
         case _:
-            return
+            print("")

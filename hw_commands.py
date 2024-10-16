@@ -27,7 +27,7 @@ import sensor_conv
 import commands
 from   config      import *
 from   controller  import *
-
+from datetime import datetime
 
 ####################################################################################
 # Global Variables                                                                 #
@@ -560,6 +560,11 @@ def sensor( Args, serialObj, show_readouts = True ):
         # Start the sensor poll sequence
         serialObj.sendByte( sensor_poll_cmds['START'] )
 
+        # Canard Add-on feature: Logging data during poll
+        filename = "canard_" + str(datetime.now()) + ".txt"
+        file = open("canard/" + filename, "w")
+        
+
         # Receive and display sensor readouts 
         timeout_ctr = 0
         try:
@@ -579,6 +584,8 @@ def sensor( Args, serialObj, show_readouts = True ):
                                                             sensor_readouts[sensor] 
                                                             )
                     print( readout_formated + '\t', end='' )
+                    file.write(readout_formated + '\t')
+                file.write("\n")
                 print()
                 # Pause for readibility
                 serialObj.sendByte( sensor_poll_cmds['WAIT'] )
@@ -589,6 +596,8 @@ def sensor( Args, serialObj, show_readouts = True ):
             # Stop transmission
             print("\nPoll exited!")    
             serialObj.sendByte( sensor_poll_cmds['STOP'] )
+
+        file.close()
 
         return serialObj
 
