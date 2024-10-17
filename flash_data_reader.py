@@ -3,7 +3,7 @@ import pandas as pd
 # Define the file path and column labels
 file_path = 'output/flight_comp_rev2_sensor_data.txt'  # Update this to the actual file path
 columns = [
-    "time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ",
+    "accXOffset", "accYOffset", "accZOffset", "gyroXOffset", "gyroYOffset", "gyroZOffset", "rp_servo1", "rp_servo2", "time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ",
     "magX", "magY", "magZ", "imut", 
     "accXconv", "accYconv", "accZconv", "gyroXconv", "gyroYconv", "gyroZconv",
     "rollDeg", "pitchDeg", "rollRate", "pitchRate", "velo", "pos", "pres", "temp"

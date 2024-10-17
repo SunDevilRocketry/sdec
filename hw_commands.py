@@ -233,17 +233,43 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
         sensor_frames = []
         for int_frame in sensor_frames_int:
             sensor_frame = []
+
+            # IMU Offset struct
+            accel_x_bytes = [int_frame[0].to_bytes(1, 'big' ), int_frame[1].to_bytes(1, 'big' ), int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' )]
+            accel_y_bytes = [int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' ), int_frame[6].to_bytes(1, 'big' ), int_frame[7].to_bytes(1, 'big' )]
+            accel_z_bytes = [int_frame[8].to_bytes(1, 'big' ), int_frame[9].to_bytes(1, 'big' ), int_frame[10].to_bytes(1, 'big' ), int_frame[11].to_bytes(1, 'big' )]
+            
+            gyro_x_bytes = [int_frame[12].to_bytes(1, 'big' ), int_frame[13].to_bytes(1, 'big' ), int_frame[14].to_bytes(1, 'big' ), int_frame[15].to_bytes(1, 'big' )]
+            gyro_y_bytes = [int_frame[16].to_bytes(1, 'big' ), int_frame[17].to_bytes(1, 'big' ), int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' )]
+            gyro_z_bytes = [int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' ), int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' )]
+
+            accel_x_float = byte_array_to_float(accel_x_bytes)
+            accel_y_float = byte_array_to_float(accel_y_bytes)
+            accel_z_float = byte_array_to_float(accel_z_bytes)
+
+            gyro_x_float = byte_array_to_float(gyro_x_bytes)
+            gyro_y_float = byte_array_to_float(gyro_y_bytes)
+            gyro_z_float = byte_array_to_float(gyro_z_bytes)
+
+            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float]
+
+            # Servo 1 Reference point
+            sensor_frame.append(int_frame[24])
+
+            # Servo 2 Reference point
+            sensor_frame.append(int_frame[25])
+            
             # Time of frame measurement
-            time = ( ( int_frame[0]       ) + 
-                     ( int_frame[1] << 8  ) + 
-                     ( int_frame[2] << 16 ) +
-                     ( int_frame[3] << 24 ) )
+            time = ( ( int_frame[26]       ) + 
+                     ( int_frame[27] << 8  ) + 
+                     ( int_frame[28] << 16 ) +
+                     ( int_frame[29] << 24 ) )
             # Conversion to seconds
             sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
 
             # Sensor readouts
             sensor_frame_dict = {}
-            index = 4
+            index = 30
             for i, sensor in enumerate( sensor_sizes[ controller ] ):
                 measurement = 0
                 float_bytes = []

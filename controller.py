@@ -96,7 +96,7 @@ controller_sensors = {
                            "magX" :         "Magnetometer X        ",
                            "magY" :         "Magnetometer Y        ",
                            "magZ" :         "Magnetometer Z        ",
-                        "imut" :         "IMU Die Temperature   ",  
+                           "imut" :         "IMU Die Temperature   ",  
                            "accXconv" :     "Pre-converted Accel X",
                            "accYconv" :     "Pre-converted Accel Y",
                            "accZconv" :     "Pre-converted Accel Z",
@@ -325,7 +325,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 80,
+                    controller_names[4]: 106,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
