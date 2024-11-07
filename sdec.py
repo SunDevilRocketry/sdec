@@ -75,6 +75,14 @@ command_list = {
                  "access-terminal": canard_fc.terminal_access
                 }
 
+command_list_active_roll = {
+                            "idle"       : canard_fc.idle                   ,
+                            "imu-calibrate": canard_fc.imu_calibrate        ,
+                            "pid-run"    : canard_fc.pid_run                ,
+                            "fin-setup"  : canard_fc.fin_setup              ,
+                            "pid-setup"  : canard_fc.pid_setup              ,
+                            "access-terminal": canard_fc.terminal_access
+                        }
 
 ####################################################################################
 #                                                                                  #
@@ -271,8 +279,11 @@ if __name__ == '__main__':
         userCommand    = userin_clean[0]
         userArgs       = userin_clean[1:]
 
+        if (terminalSerObj.firmware_name == "Active Roll"):
+            terminalSerObj = command_list_active_roll[userCommand](userArgs, terminalSerObj)
+
         # Execute Command
-        terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
+        #terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
 ## parseInput ##
 
 
