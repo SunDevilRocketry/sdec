@@ -245,6 +245,10 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             gyro_y_bytes = [int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' ), int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' )]
             gyro_z_bytes = [int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' ), int_frame[24].to_bytes(1, 'big' ), int_frame[25].to_bytes(1, 'big' )]
 
+            baro_pres_bytes = [int_frame[26].to_bytes(1, 'big' ), int_frame[27].to_bytes(1, 'big' ), int_frame[28].to_bytes(1, 'big' ), int_frame[29].to_bytes(1, 'big' )]
+            baro_temp_bytes = [int_frame[30].to_bytes(1, 'big' ), int_frame[31].to_bytes(1, 'big' ), int_frame[32].to_bytes(1, 'big' ), int_frame[33].to_bytes(1, 'big' )]
+
+
             accel_x_float = byte_array_to_float(accel_x_bytes)
             accel_y_float = byte_array_to_float(accel_y_bytes)
             accel_z_float = byte_array_to_float(accel_z_bytes)
@@ -253,14 +257,19 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             gyro_y_float = byte_array_to_float(gyro_y_bytes)
             gyro_z_float = byte_array_to_float(gyro_z_bytes)
 
-            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float]
+            baro_pres_float = byte_array_to_float(baro_pres_bytes)
+            baro_temp_float = byte_array_to_float(baro_temp_bytes)
+
+            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float, baro_pres_float, baro_temp_float]
 
             # Servo 1 Reference point
-            sensor_frame.append(int_frame[26])
+            sensor_frame.append(int_frame[34])
 
             # Servo 2 Reference point
-            sensor_frame.append(int_frame[27])
+            sensor_frame.append(int_frame[35])
             
+
+
             # Time of frame measurement
             time = ( ( int_frame[28]       ) + 
                      ( int_frame[29] << 8  ) + 
