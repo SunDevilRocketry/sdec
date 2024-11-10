@@ -268,19 +268,17 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             # Servo 2 Reference point
             sensor_frame.append(int_frame[35])
             
-
-
             # Time of frame measurement
-            time = ( ( int_frame[28]       ) + 
-                     ( int_frame[29] << 8  ) + 
-                     ( int_frame[30] << 16 ) +
-                     ( int_frame[31] << 24 ) )
+            time = ( ( int_frame[36]       ) + 
+                     ( int_frame[37] << 8  ) + 
+                     ( int_frame[38] << 16 ) +
+                     ( int_frame[39] << 24 ) )
             # Conversion to seconds
             sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
 
             # Sensor readouts
             sensor_frame_dict = {}
-            index = 32
+            index = 40
             for i, sensor in enumerate( sensor_sizes[ controller ] ):
                 measurement = 0
                 float_bytes = []
