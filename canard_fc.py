@@ -34,16 +34,29 @@ def fin_setup(Args, serialObj):
     print("CONTROLS: j/k RIGHT-/+, f/d LEFT-/+")
     print("Press q to exit")
     serialObj.sendByte(b'\x21')
-    # serialObj.sendByte(b'\x05')
-
-
-
     handle = partial(fin_handle_key_press, serialObj=serialObj)
     with Listener(
         supress=True,
         on_press=handle,
     ) as listener:
         listener.join()
+    return serialObj
+
+def read_preset(Args, serialObj):
+    print("Read Preset")
+    serialObj.sendByte(b'\x26')
+
+    # Read serial data
+    rx_bytes = serialObj.readBytes(34)
+
+    print(f"Data receive {rx_bytes}")
+
+    return serialObj
+
+
+def save_preset(Args, serialObj):
+    print("Preset saved!")
+    serialObj.sendByte(b'\x27')
     return serialObj
 
 def fin_handle_key_press(key, serialObj):
