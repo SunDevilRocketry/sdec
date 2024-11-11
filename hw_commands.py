@@ -421,10 +421,8 @@ def plot_sensor_realtime_start( controller, graphs, axs_sensor, readouts_dict, r
 
         graphs[sensor] = axs_sensor[sensor].plot(seconds, readouts_dict[sensor][:len(seconds)], "k")
 
+        axs_sensor[sensor].grid("on")
         axs_sensor[sensor].set_xlim([seconds[0], seconds[-1]])    
-
-        scale = 1
-        
         axs_sensor[sensor].set_ylim([range_dict[sensor]["min"], range_dict[sensor]["max"]])    
     
         plt.pause(0.002)
