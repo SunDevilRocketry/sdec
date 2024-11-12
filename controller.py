@@ -108,9 +108,14 @@ controller_sensors = {
                            "rollRate"    :  "Roll Body Rate",
                            "pitchRate"    : "Pitch Body Rate",
                            "velo"   :       "Velocity",
+                           "velo_x" :       "Velo X",
+                           "velo_y" :       "Velo Y",
+                           "velo_z" :       "Velo Z",
                            "pos"   :        "Position",
                            "pres" :         "Barometric Pressure   ",
                            "temp" :         "Barometric Temperature",
+                           "alt" :         "Barometric Altitude",
+                           "bvelo" :         "Barometric Velocity",
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -195,9 +200,14 @@ sensor_sizes = {
                            "rollRate"    :  4,
                            "pitchRate"    : 4,
                            "velo"   :       4,
+                           "velo_x"   :       4,
+                           "velo_y"   :       4,
+                           "velo_z"   :       4,
                            "pos"   :        4,
                             "pres" : 4,
                            "temp" : 4,
+                           "alt" : 4,
+                           "bvelo" : 4,
                            },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -282,9 +292,14 @@ sensor_codes = {
                            "rollRate"    :  b'\x12',
                            "pitchRate"    : b'\x13',
                            "velo"   :       b'\x14',
-                           "pos"   :        b'\x15',
-                           "pres" : b'\x16',
-                           "temp" : b'\x17',
+                           "velo_x"   :       b'\x15',
+                           "velo_y"   :       b'\x16',
+                           "velo_z"   :       b'\x17',
+                           "pos"   :        b'\x18',
+                           "pres" : b'\x19',
+                           "temp" : b'\x1A',
+                           "alt" : b'\x1B',
+                           "bvelo" : b'\x1C',
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -325,7 +340,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 116,
+                    controller_names[4]: 136,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
@@ -393,9 +408,14 @@ sensor_conv_funcs = {
                            "rollRate"    :  None,
                            "pitchRate"    : None,
                            "velo"   :       None,
+                           "velo_x"   :       None,
+                           "velo_y"   :       None,
+                           "velo_z"   :       None,
                            "pos"   :        None,
-                            "pres" : sensor_conv.baro_press,
+                           "pres" : sensor_conv.baro_press,
                            "temp" : sensor_conv.baro_temp ,
+                           "alt"   :       None,
+                           "bvelo"   :       None,
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -480,9 +500,14 @@ sensor_units = {
                            "rollRate"    :  'deg/s',
                            "pitchRate"    : 'deg/s',
                            "velo"   :       'm/s',
+                           "velo_x"   :       'm/s',
+                           "velo_y"   :       'm/s',
+                           "velo_z"   :       'm/s',
                            "pos"   :        'm',
-                            "pres" : "kPa",
-                           "temp" : "C" 
+                           "pres" : "kPa",
+                           "temp" : "C",
+                           "alt" : "m",
+                           "bvelo" : "m/s" 
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -557,9 +582,14 @@ sensor_indices = {
                             "rollRate"    :  19,
                             "pitchRate"    : 20,
                             "velo"   :       21,
-                            "pos"   :        22, 
-                            "pres" : 23,
-                            "temp" : 24,
+                            "velo_x"   :       22,
+                            "velo_y"   :       23,
+                            "velo_z"   :       24,
+                            "pos"   :        25, 
+                            "pres" : 26,
+                            "temp" : 27,
+                            "alt" : 28,
+                            "bvelo" : 29,
                                        },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -631,9 +661,14 @@ sensor_formats = {
                            "rollRate"    :  float,
                            "pitchRate"    : float,
                            "velo"   :       float,
+                           "velo_x"   :       float,
+                           "velo_y"   :       float,
+                           "velo_z"   :       float,
                            "pos"   :        float, 
-                            "pres" : float,
+                           "pres" : float,
                            "temp" : float,
+                           "alt" : float,
+                           "bvelo" : float,
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
