@@ -26,7 +26,6 @@ import time
 import serial
 import serial.tools.list_ports
 
-
 ####################################################################################
 # Project Modules                                                                  #
 ####################################################################################
@@ -35,6 +34,7 @@ import hw_commands      # general hardware commands
 import valveController  # valve controller commands
 import engineController # engine controller commands
 import flightComputer   # flight computer commands
+import canard_fc        # active roll application commands
 from   config import *  # global settings
 
 
@@ -66,7 +66,15 @@ command_list = {
                  "stophotfire": engineController.stop_hotfire    ,
                  "stoppurge"  : engineController.stop_purge      ,
                  "loxpurge"   : engineController.lox_purge       ,
-                 "dual-deploy": flightComputer.dual_deploy
+                 "dual-deploy": flightComputer.dual_deploy       ,
+                 "idle"       : canard_fc.idle                   ,
+                 "imu-calibrate": canard_fc.imu_calibrate        ,
+                 "pid-run"    : canard_fc.pid_run                ,
+                 "fin-setup"  : canard_fc.fin_setup              ,
+                 "pid-setup"  : canard_fc.pid_setup              ,
+                 "access-terminal": canard_fc.terminal_access    ,
+                 "read-preset": canard_fc.read_preset,
+                 "save-preset": canard_fc.save_preset
                 }
 
 

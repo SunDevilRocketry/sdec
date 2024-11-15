@@ -191,7 +191,7 @@ def tc_temp( readout ):
 ####################################################################################
 def imu_accel( readout ):
 	
-	# Convert from 16 bit unsigned to 16 bit sRigned
+	# Convert from 16 bit unsigned to 16 bit signed
 	signed_int = 0
 	if ( readout < 2**(15) ):
 		signed_int = readout	
@@ -231,7 +231,7 @@ def imu_gyro( readout ):
 
 	# Convert to acceleration	
 	num_bits         = 16
-	gyro_setting     = 250.0 # +- 250 deg/s
+	gyro_setting     = 2000.0 # +- 250 deg/s
 	gyro_sensitivity = float(2**(num_bits) -1 )/(2*gyro_setting)  # LSB/(deg/s)
 	
 	# Final conversion
