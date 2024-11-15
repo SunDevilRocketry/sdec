@@ -236,6 +236,7 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             sensor_frame = []
 
             sensor_frame.append(int_frame[0])
+            sensor_frame.append(int_frame[1])
 
             # IMU Offset struct
             accel_x_bytes = [int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' ), int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' )]
