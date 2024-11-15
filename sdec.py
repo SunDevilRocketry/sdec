@@ -75,14 +75,14 @@ command_list = {
                  "access-terminal": canard_fc.terminal_access
                 }
 
-command_list_active_roll = {
+'''command_list_active_roll = {
                             "idle"       : canard_fc.idle                   ,
                             "imu-calibrate": canard_fc.imu_calibrate        ,
                             "pid-run"    : canard_fc.pid_run                ,
                             "fin-setup"  : canard_fc.fin_setup              ,
                             "pid-setup"  : canard_fc.pid_setup              ,
                             "access-terminal": canard_fc.terminal_access
-                        }
+                        }'''
 
 ####################################################################################
 #                                                                                  #
@@ -279,8 +279,12 @@ if __name__ == '__main__':
         userCommand    = userin_clean[0]
         userArgs       = userin_clean[1:]
 
+        command_list_keys = list(command_list.keys()) # list of commands for safety check
         if (terminalSerObj.firmware_name == "Active Roll"):
-            terminalSerObj = command_list_active_roll[userCommand](userArgs, terminalSerObj)
+            if userCommand in command_list_keys[-6:-1]:  #userCommand only for canard
+                terminalSerObj = command_list[userCommand](userArgs, terminalSerObj) # execute command
+            
+
 
         # Execute Command
         #terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
