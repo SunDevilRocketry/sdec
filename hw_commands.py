@@ -27,6 +27,7 @@ import sensor_conv
 import commands
 from   config      import *
 from   controller  import *
+from sensor_plot import *
 from datetime import datetime
 
 ####################################################################################
@@ -235,6 +236,7 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             sensor_frame = []
 
             sensor_frame.append(int_frame[0])
+            sensor_frame.append(int_frame[1])
 
             # IMU Offset struct
             accel_x_bytes = [int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' ), int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' )]
@@ -245,6 +247,10 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             gyro_y_bytes = [int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' ), int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' )]
             gyro_z_bytes = [int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' ), int_frame[24].to_bytes(1, 'big' ), int_frame[25].to_bytes(1, 'big' )]
 
+            baro_pres_bytes = [int_frame[26].to_bytes(1, 'big' ), int_frame[27].to_bytes(1, 'big' ), int_frame[28].to_bytes(1, 'big' ), int_frame[29].to_bytes(1, 'big' )]
+            baro_temp_bytes = [int_frame[30].to_bytes(1, 'big' ), int_frame[31].to_bytes(1, 'big' ), int_frame[32].to_bytes(1, 'big' ), int_frame[33].to_bytes(1, 'big' )]
+
+
             accel_x_float = byte_array_to_float(accel_x_bytes)
             accel_y_float = byte_array_to_float(accel_y_bytes)
             accel_z_float = byte_array_to_float(accel_z_bytes)
@@ -253,25 +259,28 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             gyro_y_float = byte_array_to_float(gyro_y_bytes)
             gyro_z_float = byte_array_to_float(gyro_z_bytes)
 
-            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float]
+            baro_pres_float = byte_array_to_float(baro_pres_bytes)
+            baro_temp_float = byte_array_to_float(baro_temp_bytes)
+
+            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float, baro_pres_float, baro_temp_float]
 
             # Servo 1 Reference point
-            sensor_frame.append(int_frame[26])
+            sensor_frame.append(int_frame[34])
 
             # Servo 2 Reference point
-            sensor_frame.append(int_frame[27])
+            sensor_frame.append(int_frame[35])
             
             # Time of frame measurement
-            time = ( ( int_frame[28]       ) + 
-                     ( int_frame[29] << 8  ) + 
-                     ( int_frame[30] << 16 ) +
-                     ( int_frame[31] << 24 ) )
+            time = ( ( int_frame[36]       ) + 
+                     ( int_frame[37] << 8  ) + 
+                     ( int_frame[38] << 16 ) +
+                     ( int_frame[39] << 24 ) )
             # Conversion to seconds
             sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
 
             # Sensor readouts
             sensor_frame_dict = {}
-            index = 32
+            index = 40
             for i, sensor in enumerate( sensor_sizes[ controller ] ):
                 measurement = 0
                 float_bytes = []
@@ -321,7 +330,6 @@ def format_sensor_readout( controller, sensor, readout ):
         output = sensor + ": " + readout_str
     return output
 ## format_sensor_readout ##
-
 
 ####################################################################################
 #                                                                                  #
@@ -405,6 +413,10 @@ def sensor( Args, serialObj, show_readouts = True ):
                              '-n' : 'Specify a sensor number',
                              '-h' : 'Display sensor usage info'
                              },
+                    'pplot' : {
+                                    '-n' : 'Specify a sensor number',
+                                    '-h' : 'Display sensor usage info'
+                                  },
                     'list' : {
                              },
                     'help' : {
@@ -440,7 +452,7 @@ def sensor( Args, serialObj, show_readouts = True ):
                         }
 
     # Timeout for sensor poll
-    sensor_poll_timeout = 100
+    sensor_poll_timeout = 1000
 
     # Size of sensor readouts
     readout_sizes = sensor_sizes[serialObj.controller]
@@ -488,7 +500,8 @@ def sensor( Args, serialObj, show_readouts = True ):
 
     # Verify sensor nums supplied are valid
     if (  ( user_subcommand == "poll" ) or
-          ( user_subcommand == "plot" ) ):
+          ( user_subcommand == "plot" ) or
+          ( user_subcommand == "pplot" )):
         if ( user_option == "-n" ):
 
             # Throw error if no sensors were supplied
@@ -568,7 +581,98 @@ def sensor( Args, serialObj, show_readouts = True ):
         return serialObj
 
     ################################################################################
-    # Subcommand: sensor poll                                                      #
+    # Subcommand: sensor pplot                                                      #
+    ################################################################################
+    elif ( user_subcommand == "pplot" ):
+
+        # Send command opcode
+        serialObj.sendByte( opcode )
+
+        user_subcommand = "poll"
+
+        # Send sensor poll subcommand code
+        serialObj.sendByte( subcommand_codes[user_subcommand] )
+
+        # Tell the controller how many sensors to use
+        serialObj.sendByte( num_sensors.to_bytes( 1, 'big' ) )
+
+        # Send the controller the sensor codes
+        for sensor_num in user_sensor_nums:
+            serialObj.sendByte( sensor_poll_codes[sensor_num] )
+        
+        # Start the sensor poll sequence
+        serialObj.sendByte( sensor_poll_cmds['START'] )
+
+        # Receive and display sensor readouts 
+        timeout_ctr = 0
+
+        try:
+            # Initialize graph
+            serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+            sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+            sensor_readouts   = get_sensor_readouts(
+                                                    serialObj.controller, 
+                                                    user_sensor_nums    ,
+                                                    sensor_bytes_list
+                                                )
+            
+            serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+
+            plt.ion()
+            graphs, _, axs_sensor, readouts_dict, range_dict = plot_sensor_realtime_init(serialObj.controller, sensor_readouts)
+            secs = []
+
+            serialObj.sendByte( sensor_poll_cmds['RESUME'])
+
+            print("Ctrl+C to exit");
+            while ( timeout_ctr <= sensor_poll_timeout ):
+                serialObj.sendByte( sensor_poll_cmds['REQUEST'] )
+                sensor_bytes_list = serialObj.readBytes( sensor_poll_frame_size ) 
+                sensor_readouts   = get_sensor_readouts(
+                                                        serialObj.controller, 
+                                                        user_sensor_nums    ,
+                                                        sensor_bytes_list
+                                                    )
+                for sensor in sensor_readouts:
+                    readout_formated = format_sensor_readout(
+                                                            serialObj.controller, 
+                                                            sensor              ,
+                                                            sensor_readouts[sensor] 
+                                                            )
+                    print( readout_formated + '\t', end='' )
+                print()
+            
+                serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+
+                secs.append(time.process_time())
+                plot_sensor_realtime_start(
+                                            serialObj.controller,
+                                            graphs,
+                                            axs_sensor,
+                                            readouts_dict,
+                                            range_dict,
+                                            sensor_readouts,
+                                            secs
+                )
+
+                serialObj.sendByte( sensor_poll_cmds['RESUME'] )
+
+
+                # Pause for readibility
+                serialObj.sendByte( sensor_poll_cmds['WAIT'] )
+                time.sleep(0.05)
+                serialObj.sendByte( sensor_poll_cmds['RESUME'])
+                timeout_ctr += 1
+        except KeyboardInterrupt:
+            # Stop transmission
+            print("\nPoll exited!")    
+            serialObj.sendByte( sensor_poll_cmds['STOP'] )
+            plt.ioff()
+        plt.ioff()
+        return serialObj
+
+    ################################################################################
+    # Subcommand: sensor poll                                                     #
     ################################################################################
     elif ( user_subcommand == "poll" ):
 
@@ -595,7 +699,7 @@ def sensor( Args, serialObj, show_readouts = True ):
 
         # Receive and display sensor readouts 
         timeout_ctr = 0
-        try:
+        try:    
             print("Ctrl+C to exit");
             while ( timeout_ctr <= sensor_poll_timeout ):
                 serialObj.sendByte( sensor_poll_cmds['REQUEST'] )

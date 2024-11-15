@@ -72,7 +72,9 @@ command_list = {
                  "pid-run"    : canard_fc.pid_run                ,
                  "fin-setup"  : canard_fc.fin_setup              ,
                  "pid-setup"  : canard_fc.pid_setup              ,
-                 "access-terminal": canard_fc.terminal_access
+                 "access-terminal": canard_fc.terminal_access    ,
+                 "read-preset": canard_fc.read_preset,
+                 "save-preset": canard_fc.save_preset
                 }
 
 
