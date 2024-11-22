@@ -1,4 +1,7 @@
+import matplotlib.pyplot
 import pandas as pd
+import matplotlib
+
 
 labels = [
             "save_bit",
@@ -35,6 +38,9 @@ labels = [
             "rollRate",
             "pitchRate",
             "velo",
+            "velo_x",
+            "velo_y",
+            "velo_z",
             "pos",
             "pres",
             "temp",
@@ -55,7 +61,11 @@ def converter(txt_File, output_File):
             data.append(number[:-1])   
 
     df = pd.DataFrame.from_records(data, columns=labels)
-    df.to_csv('output.csv',index=False)
 
-converter('doc/flight_comp_rev2_sensor_data_3.txt', 'output.csv')
+    matplotlib.pyplot.plot()
+    # df.to_csv(output_File,index=False)
+
+print(len(labels))
+
+converter('output/flight_comp_rev2_sensor_data.txt', 'nov162024.csv')
 
