@@ -322,6 +322,23 @@ def get_preset_values( controller, preset_bytes, preset_size ):
     for i in preset_bytes:
         print("%b" % i)
 
+    # Current Preset Format (1/23/25):
+    # 24 bytes: IMU struct
+    #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
+    # 8 bytes: Baro struct
+    #   4 bytes each x2: baro pressure, baro temp
+    # 4 bytes: Servo struct
+    #   1 byte each x4: servo 1-4
+    formatted_values = []
+    for i in range(7): # 0-7
+        temp_byte_array = []
+        for j in range (3): # 0-3
+            temp_byte_array.append( preset_bytes[(4 * i) + j] )
+        formatted_values.append( byte_array_to_float(temp_byte_array) )
+        
+    for i in formatted_values:
+        print(i)
+
 
 ####################################################################################
 #                                                                                  #
