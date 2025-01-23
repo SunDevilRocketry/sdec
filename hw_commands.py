@@ -317,12 +317,12 @@ def get_preset_values( controller, preset_bytes, preset_size ):
     if ( preset_size != 38 ):
         print("FLASH EXTRACT FAIL: Preset size was %d (expected %d)" % (preset_size, 38))
 
-    # Convert first (preset_size) elements to integer format
-    preset_int = []
+    # Print raw binary
     for i in preset_bytes:
         print("%b" % i)
 
     # Current Preset Format (1/23/25):
+    # NOTE: Potential issue with float conversion (big vs. little endianness)
     # 24 bytes: IMU struct
     #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
     # 8 bytes: Baro struct
