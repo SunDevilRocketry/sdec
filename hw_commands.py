@@ -302,6 +302,26 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
         return sensor_frames_int 
 ## get_sensor_frame ##
 
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+#         get_preset_value                                                         #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#        Converts a list of preset values into measurements.                        #
+#                                                                                  #
+####################################################################################
+def get_preset_values( controller, preset_bytes, preset_size ):
+
+    # Throw an error if the preset encoding is wrong
+    if ( preset_size != 38 ):
+        print("FLASH EXTRACT FAIL: Preset size was %d (expected %d)" % (preset_size, 38))
+
+    # Convert first (preset_size) elements to integer format
+    preset_int = []
+    for i in preset_bytes:
+        print("%b" % i)
+
 
 ####################################################################################
 #                                                                                  #
@@ -1322,6 +1342,18 @@ def flash(Args, serialObj):
         # Start timer
         start_time = time.perf_counter()
 
+        preset_bytes = []
+        # Recieve preset data if necessary
+        if (serialObj.controller_code == controller_names[4]):
+            preset_size = 38
+            print( "Reading presets..." )
+            preset_bytes = serialObj.readBytes( preset_size )
+
+            # Re-calculate the number of frames to be extracted
+            # This should be moved to their initial definition on cleanup
+            extract_num_frames = ( 524288 - preset_size ) // extract_frame_size
+            extract_num_unused_bytes = ( 524288 - preset_size ) %  extract_frame_size
+
         # Recieve Data in 32 byte blocks
         # Flash contains 4096 blocks of data
         rx_byte_blocks = []
@@ -1340,8 +1372,12 @@ def flash(Args, serialObj):
         # Record ending time
         extract_time = time.perf_counter() - start_time
 
+        # Convert the data from bytes to preset values
+        if (serialObj.controller_code == controller_names[4]):
+            preset_values = get_preset_values( serialObj.controller, rx_byte_blocks, preset_size )
+
         # Convert the data from bytes to measurement readouts
-        sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
+        sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks, preset_size )
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
