@@ -29,6 +29,7 @@ from   config      import *
 from   controller  import *
 from sensor_plot import *
 from datetime import datetime
+import traceback
 
 ####################################################################################
 # Global Variables                                                                 #
@@ -315,8 +316,14 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
 def get_preset_values( controller, preset_bytes, preset_size ):
 
     # Throw an error if the preset encoding is wrong
-    if ( preset_size != 38 ):
+    # The assert is used to induce a stack trace
+    try:
+        assert( preset_size == 38 )
+    except Exception as e:
         print("FLASH EXTRACT FAIL: Preset size was %d (expected %d)" % (preset_size, 38))
+        print(traceback.format_exc())
+        exit(1)
+        
 
     # Current Preset Format (1/23/25):
     # NOTE: Potential issue with float conversion (big vs. little endianness)
@@ -336,10 +343,7 @@ def get_preset_values( controller, preset_bytes, preset_size ):
         temp_array = []
         for j in range(4): # 0-3
             temp_array.append(preset_bytes[(4 * i) + j + 2])
-        #temp_byte_array = temp_array
-        #input( temp_array )
         formatted_values.append( byte_array_to_float(temp_array) )
-        #input( formatted_values )
     formatted_values.append( bytes(preset_bytes[36]) )
     formatted_values.append( bytes(preset_bytes[37]) )
     return formatted_values
