@@ -1405,7 +1405,7 @@ def flash(Args, serialObj):
                 file.write( '\n' )
 
         # Convert the data from bytes to measurement readouts
-        sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks, preset_size )
+        sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
