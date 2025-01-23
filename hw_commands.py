@@ -100,6 +100,7 @@ def byte_array_to_float( byte_array ):
     if ( byte_array == [b'\xFF', b'\xFF', b'\xFF', b'\xFF'] ):
         byte_array = [b'\x00', b'\x00', b'\x00', b'\x00']
     byte_array_joined = b''.join( byte_array )
+    #input( byte_array )    
     return struct.unpack( 'f', byte_array_joined )[0]
 ## byte_array_to_float ##
 
@@ -317,12 +318,9 @@ def get_preset_values( controller, preset_bytes, preset_size ):
     if ( preset_size != 38 ):
         print("FLASH EXTRACT FAIL: Preset size was %d (expected %d)" % (preset_size, 38))
 
-    # Print raw binary
-    for i in preset_bytes:
-        print("%b" % i)
-
     # Current Preset Format (1/23/25):
     # NOTE: Potential issue with float conversion (big vs. little endianness)
+    # 2 bytes: Save bits
     # 24 bytes: IMU struct
     #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
     # 8 bytes: Baro struct
@@ -330,14 +328,21 @@ def get_preset_values( controller, preset_bytes, preset_size ):
     # 4 bytes: Servo struct
     #   1 byte each x4: servo 1-4
     formatted_values = []
-    for i in range(7): # 0-7
-        temp_byte_array = []
-        for j in range (3): # 0-3
-            temp_byte_array.append( preset_bytes[(4 * i) + j] )
-        formatted_values.append( byte_array_to_float(temp_byte_array) )
-        
-    for i in formatted_values:
-        print(i)
+    formatted_values.append( bytes(preset_bytes[0]) )
+    formatted_values.append( bytes(preset_bytes[1]) )
+    print ( "BYTES:" )
+    print( preset_bytes )
+    for i in range(8): # 0-7
+        temp_array = []
+        for j in range(4): # 0-3
+            temp_array.append(preset_bytes[(4 * i) + j + 2])
+        #temp_byte_array = temp_array
+        #input( temp_array )
+        formatted_values.append( byte_array_to_float(temp_array) )
+        #input( formatted_values )
+    formatted_values.append( bytes(preset_bytes[36]) )
+    formatted_values.append( bytes(preset_bytes[37]) )
+    return formatted_values
 
 
 ####################################################################################
@@ -1361,7 +1366,7 @@ def flash(Args, serialObj):
 
         preset_bytes = []
         # Recieve preset data if necessary
-        if (serialObj.controller_code == controller_names[4]):
+        if (serialObj.controller == controller_names[4]):
             preset_size = 38
             print( "Reading presets..." )
             preset_bytes = serialObj.readBytes( preset_size )
@@ -1371,6 +1376,7 @@ def flash(Args, serialObj):
             extract_num_frames = ( 524288 - preset_size ) // extract_frame_size
             extract_num_unused_bytes = ( 524288 - preset_size ) %  extract_frame_size
 
+        print( preset_bytes )
         # Recieve Data in 32 byte blocks
         # Flash contains 4096 blocks of data
         rx_byte_blocks = []
@@ -1390,8 +1396,13 @@ def flash(Args, serialObj):
         extract_time = time.perf_counter() - start_time
 
         # Convert the data from bytes to preset values
-        if (serialObj.controller_code == controller_names[4]):
-            preset_values = get_preset_values( serialObj.controller, rx_byte_blocks, preset_size )
+        if (serialObj.controller == controller_names[4]):
+            preset_values = get_preset_values( serialObj.controller, preset_bytes, preset_size )
+            with open( "output/preset_values.txt", 'w') as file:
+                for value in preset_values:
+                    file.write( str( value ) )
+                    file.write( '\t' )
+                file.write( '\n' )
 
         # Convert the data from bytes to measurement readouts
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks, preset_size )
@@ -1401,7 +1412,7 @@ def flash(Args, serialObj):
             for sensor_frame in sensor_frames:
                 for val in sensor_frame:
                     file.write( str( val ) )
-                    file.write( '\t')
+                    file.write( '\t' )
                 file.write( '\n' )    
 
         # Parse return code
