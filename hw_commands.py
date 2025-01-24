@@ -318,9 +318,9 @@ def get_preset_values( controller, preset_bytes, preset_size ):
     # Throw an error if the preset encoding is wrong
     # The assert is used to induce a stack trace
     try:
-        assert( preset_size == 38 )
+        if( preset_size == 38 ):
+            raise Exception("get_preset_values fail: expected preset_size of 38 bytes")
     except Exception as e:
-        print("FLASH EXTRACT FAIL: Preset size was %d (expected %d)" % (preset_size, 38))
         print(traceback.format_exc())
         exit(1)
         
