@@ -340,7 +340,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 102,
+                    controller_names[4]: 136,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
