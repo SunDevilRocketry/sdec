@@ -48,7 +48,7 @@ def read_preset(Args, serialObj):
     serialObj.sendByte(b'\x26')
 
     # Read serial data
-    rx_bytes = serialObj.readBytes(34)
+    rx_bytes = serialObj.readBytes(38)
 
     sensor_frame_int = []
     for sensor_byte in rx_bytes:
@@ -82,11 +82,21 @@ def read_preset(Args, serialObj):
     # Servo 2 Reference point
     rp_servo2 = sensor_frame_int[33]
 
+    # Servo 3 Reference point
+    rp_servo3 = sensor_frame_int[34]
+
+    # Servo 4 Reference point
+    rp_servo4 = sensor_frame_int[35]
+
+    # Pad bits
+    pad1 = sensor_frame_int[36]
+    pad2 = sensor_frame_int[37]
+
     print(f"Data receive:\n")
     print(f"Acceleration: {[accel_x_float, accel_y_float, accel_z_float]}\n")
     print(f"Gyro: {[gyro_x_float, gyro_y_float, gyro_z_float]}\n")
     print(f"Baro: {[baro_pres_float, baro_temp_float]}\n")
-    print(f"Servo: {[rp_servo1, rp_servo2]}\n")
+    print(f"Servo: {[rp_servo1, rp_servo2, rp_servo3, rp_servo4]}\n")
 
 
     return serialObj

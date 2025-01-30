@@ -239,48 +239,48 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             sensor_frame.append(int_frame[1])
 
             # IMU Offset struct
-            accel_x_bytes = [int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' ), int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' )]
-            accel_y_bytes = [int_frame[6].to_bytes(1, 'big' ), int_frame[7].to_bytes(1, 'big' ), int_frame[8].to_bytes(1, 'big' ), int_frame[9].to_bytes(1, 'big' )]
-            accel_z_bytes = [int_frame[10].to_bytes(1, 'big' ), int_frame[11].to_bytes(1, 'big' ), int_frame[12].to_bytes(1, 'big' ), int_frame[13].to_bytes(1, 'big' )]
+            #accel_x_bytes = [int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' ), int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' )]
+            #accel_y_bytes = [int_frame[6].to_bytes(1, 'big' ), int_frame[7].to_bytes(1, 'big' ), int_frame[8].to_bytes(1, 'big' ), int_frame[9].to_bytes(1, 'big' )]
+            #accel_z_bytes = [int_frame[10].to_bytes(1, 'big' ), int_frame[11].to_bytes(1, 'big' ), int_frame[12].to_bytes(1, 'big' ), int_frame[13].to_bytes(1, 'big' )]
             
-            gyro_x_bytes = [int_frame[14].to_bytes(1, 'big' ), int_frame[15].to_bytes(1, 'big' ), int_frame[16].to_bytes(1, 'big' ), int_frame[17].to_bytes(1, 'big' )]
-            gyro_y_bytes = [int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' ), int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' )]
-            gyro_z_bytes = [int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' ), int_frame[24].to_bytes(1, 'big' ), int_frame[25].to_bytes(1, 'big' )]
+            #gyro_x_bytes = [int_frame[14].to_bytes(1, 'big' ), int_frame[15].to_bytes(1, 'big' ), int_frame[16].to_bytes(1, 'big' ), int_frame[17].to_bytes(1, 'big' )]
+            #gyro_y_bytes = [int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' ), int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' )]
+            #gyro_z_bytes = [int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' ), int_frame[24].to_bytes(1, 'big' ), int_frame[25].to_bytes(1, 'big' )]
 
-            baro_pres_bytes = [int_frame[26].to_bytes(1, 'big' ), int_frame[27].to_bytes(1, 'big' ), int_frame[28].to_bytes(1, 'big' ), int_frame[29].to_bytes(1, 'big' )]
-            baro_temp_bytes = [int_frame[30].to_bytes(1, 'big' ), int_frame[31].to_bytes(1, 'big' ), int_frame[32].to_bytes(1, 'big' ), int_frame[33].to_bytes(1, 'big' )]
+            #baro_pres_bytes = [int_frame[26].to_bytes(1, 'big' ), int_frame[27].to_bytes(1, 'big' ), int_frame[28].to_bytes(1, 'big' ), int_frame[29].to_bytes(1, 'big' )]
+            #baro_temp_bytes = [int_frame[30].to_bytes(1, 'big' ), int_frame[31].to_bytes(1, 'big' ), int_frame[32].to_bytes(1, 'big' ), int_frame[33].to_bytes(1, 'big' )]
 
 
-            accel_x_float = byte_array_to_float(accel_x_bytes)
-            accel_y_float = byte_array_to_float(accel_y_bytes)
-            accel_z_float = byte_array_to_float(accel_z_bytes)
+            #accel_x_float = byte_array_to_float(accel_x_bytes)
+            #accel_y_float = byte_array_to_float(accel_y_bytes)
+            #accel_z_float = byte_array_to_float(accel_z_bytes)
 
-            gyro_x_float = byte_array_to_float(gyro_x_bytes)
-            gyro_y_float = byte_array_to_float(gyro_y_bytes)
-            gyro_z_float = byte_array_to_float(gyro_z_bytes)
+            #gyro_x_float = byte_array_to_float(gyro_x_bytes)
+            #gyro_y_float = byte_array_to_float(gyro_y_bytes)
+            #gyro_z_float = byte_array_to_float(gyro_z_bytes)
 
-            baro_pres_float = byte_array_to_float(baro_pres_bytes)
-            baro_temp_float = byte_array_to_float(baro_temp_bytes)
+            #baro_pres_float = byte_array_to_float(baro_pres_bytes)
+            #baro_temp_float = byte_array_to_float(baro_temp_bytes)
 
-            sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float, baro_pres_float, baro_temp_float]
+            #sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float, baro_pres_float, baro_temp_float]
 
             # Servo 1 Reference point
-            sensor_frame.append(int_frame[34])
+            #sensor_frame.append(int_frame[34])
 
             # Servo 2 Reference point
-            sensor_frame.append(int_frame[35])
+            #sensor_frame.append(int_frame[35])
             
             # Time of frame measurement
-            time = ( ( int_frame[36]       ) + 
-                     ( int_frame[37] << 8  ) + 
-                     ( int_frame[38] << 16 ) +
-                     ( int_frame[39] << 24 ) )
+            time = ( ( int_frame[2]       ) + 
+                     ( int_frame[3] << 8  ) + 
+                     ( int_frame[4] << 16 ) +
+                     ( int_frame[5] << 24 ) )
             # Conversion to seconds
             sensor_frame.append( sensor_conv.time_millis_to_sec( time ) )
 
             # Sensor readouts
             sensor_frame_dict = {}
-            index = 40
+            index = 6
             for i, sensor in enumerate( sensor_sizes[ controller ] ):
                 measurement = 0
                 float_bytes = []
@@ -1332,8 +1332,8 @@ def flash(Args, serialObj):
             rx_byte_blocks.append( rx_sensor_frame_block )
 
         # DEBUG THING HERE:
-        print("First block length: " + len(rx_byte_blocks[0]))
-        print("First block contents: " + rx_byte_blocks[0])
+        print("First block length: " + str(len(rx_byte_blocks[0])))
+        print("First block contents: " + str(rx_byte_blocks[0]))
 
         # Receive the unused bytes
         unused_bytes = serialObj.readBytes( extract_num_unused_bytes )
