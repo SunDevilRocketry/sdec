@@ -1332,8 +1332,8 @@ def flash(Args, serialObj):
             rx_byte_blocks.append( rx_sensor_frame_block )
 
         # DEBUG THING HERE:
-        print("First block length: " + str(len(rx_byte_blocks[0])))
-        print("First block contents: " + str(rx_byte_blocks[0]))
+        #print("First block length: " + str(len(rx_byte_blocks[0])))
+        #print("First block contents: " + str(rx_byte_blocks[0]))
 
         # Receive the unused bytes
         unused_bytes = serialObj.readBytes( extract_num_unused_bytes )
@@ -1344,12 +1344,45 @@ def flash(Args, serialObj):
         # Record ending time
         extract_time = time.perf_counter() - start_time
 
+        # Current Preset Format (1/30/25):
+        # NOTE: Potential issue with float conversion (big vs. little endianness)
+        # 2 bytes: Save bits
+        # 24 bytes: IMU struct
+        #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
+        # 8 bytes: Baro struct
+        #   4 bytes each x2: baro pressure, baro temp
+        # 4 bytes: Servo struct
+        #   1 byte each x4: servo 1-4
+        preset_bytes = rx_byte_blocks[0]
+        formatted_values = []
+        formatted_values.append( bytes(preset_bytes[0]) )
+        formatted_values.append( bytes(preset_bytes[1]) )
+        #print ( "BYTES:" )
+        #print( preset_bytes )
+        for i in range(8): # 0-7
+            temp_array = []
+            for j in range(4): # 0-3
+                temp_array.append(preset_bytes[(4 * i) + j + 2])
+            formatted_values.append( byte_array_to_float(temp_array) )
+        formatted_values.append( str(int.from_bytes(preset_bytes[32], byteorder='big')))
+        formatted_values.append( str(int.from_bytes(preset_bytes[33], byteorder='big')))
+        formatted_values.append( str(int.from_bytes(preset_bytes[34], byteorder='big')))
+        formatted_values.append( str(int.from_bytes(preset_bytes[35], byteorder='big')))
+        formatted_values.append( bytes(preset_bytes[36]) )
+        formatted_values.append( bytes(preset_bytes[37]) )
+
+        with open( "output/preset_values.txt", 'w' ) as file:
+            for v in formatted_values:
+                file.write( str( v ) )
+                file.write( '\t' )
+            file.write( '\n' )
+
         # Convert the data from bytes to measurement readouts
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
-            for sensor_frame in sensor_frames:
+            for sensor_frame in sensor_frames[1:]: # Start from index 1 instead of index 0
                 for val in sensor_frame:
                     file.write( str( val ) )
                     file.write( '\t')

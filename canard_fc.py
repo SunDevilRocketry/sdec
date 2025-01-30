@@ -89,8 +89,8 @@ def read_preset(Args, serialObj):
     rp_servo4 = sensor_frame_int[35]
 
     # Pad bits
-    pad1 = sensor_frame_int[36]
-    pad2 = sensor_frame_int[37]
+    #pad1 = sensor_frame_int[36]
+    #pad2 = sensor_frame_int[37]
 
     print(f"Data receive:\n")
     print(f"Acceleration: {[accel_x_float, accel_y_float, accel_z_float]}\n")
