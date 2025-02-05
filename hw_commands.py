@@ -238,38 +238,6 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             sensor_frame.append(int_frame[0])
             sensor_frame.append(int_frame[1])
 
-            # IMU Offset struct
-            #accel_x_bytes = [int_frame[2].to_bytes(1, 'big' ), int_frame[3].to_bytes(1, 'big' ), int_frame[4].to_bytes(1, 'big' ), int_frame[5].to_bytes(1, 'big' )]
-            #accel_y_bytes = [int_frame[6].to_bytes(1, 'big' ), int_frame[7].to_bytes(1, 'big' ), int_frame[8].to_bytes(1, 'big' ), int_frame[9].to_bytes(1, 'big' )]
-            #accel_z_bytes = [int_frame[10].to_bytes(1, 'big' ), int_frame[11].to_bytes(1, 'big' ), int_frame[12].to_bytes(1, 'big' ), int_frame[13].to_bytes(1, 'big' )]
-            
-            #gyro_x_bytes = [int_frame[14].to_bytes(1, 'big' ), int_frame[15].to_bytes(1, 'big' ), int_frame[16].to_bytes(1, 'big' ), int_frame[17].to_bytes(1, 'big' )]
-            #gyro_y_bytes = [int_frame[18].to_bytes(1, 'big' ), int_frame[19].to_bytes(1, 'big' ), int_frame[20].to_bytes(1, 'big' ), int_frame[21].to_bytes(1, 'big' )]
-            #gyro_z_bytes = [int_frame[22].to_bytes(1, 'big' ), int_frame[23].to_bytes(1, 'big' ), int_frame[24].to_bytes(1, 'big' ), int_frame[25].to_bytes(1, 'big' )]
-
-            #baro_pres_bytes = [int_frame[26].to_bytes(1, 'big' ), int_frame[27].to_bytes(1, 'big' ), int_frame[28].to_bytes(1, 'big' ), int_frame[29].to_bytes(1, 'big' )]
-            #baro_temp_bytes = [int_frame[30].to_bytes(1, 'big' ), int_frame[31].to_bytes(1, 'big' ), int_frame[32].to_bytes(1, 'big' ), int_frame[33].to_bytes(1, 'big' )]
-
-
-            #accel_x_float = byte_array_to_float(accel_x_bytes)
-            #accel_y_float = byte_array_to_float(accel_y_bytes)
-            #accel_z_float = byte_array_to_float(accel_z_bytes)
-
-            #gyro_x_float = byte_array_to_float(gyro_x_bytes)
-            #gyro_y_float = byte_array_to_float(gyro_y_bytes)
-            #gyro_z_float = byte_array_to_float(gyro_z_bytes)
-
-            #baro_pres_float = byte_array_to_float(baro_pres_bytes)
-            #baro_temp_float = byte_array_to_float(baro_temp_bytes)
-
-            #sensor_frame = sensor_frame + [accel_x_float, accel_y_float, accel_z_float, gyro_x_float, gyro_y_float, gyro_z_float, baro_pres_float, baro_temp_float]
-
-            # Servo 1 Reference point
-            #sensor_frame.append(int_frame[34])
-
-            # Servo 2 Reference point
-            #sensor_frame.append(int_frame[35])
-            
             # Time of frame measurement
             time = ( ( int_frame[2]       ) + 
                      ( int_frame[3] << 8  ) + 
@@ -1353,27 +1321,32 @@ def flash(Args, serialObj):
         #   4 bytes each x2: baro pressure, baro temp
         # 4 bytes: Servo struct
         #   1 byte each x4: servo 1-4
+
+        # Convert raw bytes into integer types
         preset_bytes = rx_byte_blocks[0]
-        formatted_values = []
-        formatted_values.append( bytes(preset_bytes[0]) )
-        formatted_values.append( bytes(preset_bytes[1]) )
+        preset_bytes_int = []
+        for sensor_byte in preset_bytes:
+            preset_bytes_int.append( ord( sensor_byte ) )
+
+        # Parse integer bytes into preset values
+        preset_values = []
+        preset_values.append( preset_bytes_int[0] )
+        preset_values.append( preset_bytes_int[1] )
         #print ( "BYTES:" )
         #print( preset_bytes )
         for i in range(8): # 0-7
             temp_array = []
             for j in range(4): # 0-3
-                temp_array.append(preset_bytes[(4 * i) + j + 2])
-            formatted_values.append( byte_array_to_float(temp_array) )
-        formatted_values.append( str(int.from_bytes(preset_bytes[32], byteorder='big')))
-        formatted_values.append( str(int.from_bytes(preset_bytes[33], byteorder='big')))
-        formatted_values.append( str(int.from_bytes(preset_bytes[34], byteorder='big')))
-        formatted_values.append( str(int.from_bytes(preset_bytes[35], byteorder='big')))
-        formatted_values.append( bytes(preset_bytes[36]) )
-        formatted_values.append( bytes(preset_bytes[37]) )
+                temp_array.append(preset_bytes_int[(4 * i) + j + 2].to_bytes(1,'big'))
+            preset_values.append( byte_array_to_float(temp_array) )
+        preset_values.append( preset_bytes_int[32] )
+        preset_values.append( preset_bytes_int[33] )
+        preset_values.append( preset_bytes_int[34] )
+        preset_values.append( preset_bytes_int[35] )
 
         with open( "output/preset_values.txt", 'w' ) as file:
-            for v in formatted_values:
-                file.write( str( v ) )
+            for value in preset_values:
+                file.write( str( value ) )
                 file.write( '\t' )
             file.write( '\n' )
 
