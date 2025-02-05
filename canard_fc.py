@@ -48,7 +48,7 @@ def read_preset(Args, serialObj):
     serialObj.sendByte(b'\x26')
 
     # Read serial data
-    rx_bytes = serialObj.readBytes(38)
+    rx_bytes = serialObj.readBytes(36)
 
     sensor_frame_int = []
     for sensor_byte in rx_bytes:
