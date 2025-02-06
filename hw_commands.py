@@ -1339,10 +1339,10 @@ def flash(Args, serialObj):
             for j in range(4): # 0-3
                 temp_array.append(preset_bytes_int[(4 * i) + j + 2].to_bytes(1,'big'))
             preset_values.append( byte_array_to_float(temp_array) )
-        preset_values.append( preset_bytes_int[32] )
-        preset_values.append( preset_bytes_int[33] )
         preset_values.append( preset_bytes_int[34] )
         preset_values.append( preset_bytes_int[35] )
+        preset_values.append( preset_bytes_int[36] )
+        preset_values.append( preset_bytes_int[37] )
 
         with open( "output/preset_values.txt", 'w' ) as file:
             for value in preset_values:
