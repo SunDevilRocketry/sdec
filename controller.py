@@ -353,7 +353,7 @@ sensor_frame_sizes = {
 
                     # Engine Controller rev 5.0
                     controller_names[7]: 44
-                     }
+                    }
 
 # Sensor raw readout conversion functions
 sensor_conv_funcs = {
@@ -715,6 +715,80 @@ sensor_data_filenames = {
                         # Engine Controller rev 5.0
                         controller_names[7]: "output/engine_controller_rev5_sensor_data.txt"
                         }
+
+# How many sensor frames are needed for the presets
+preset_frames = {  
+                    # Engine Controller rev 4.0
+                    controller_names[2]: 0,
+
+                    # Flight Computer rev 1.0
+                    controller_names[3]: 0,
+
+                    # Flight Computer rev 2.0
+                    controller_names[4]: 1,
+
+                    # Flight Computer Lite rev 1.0
+                    controller_names[5]: 0,
+
+                    # Valve Controller rev 2.0
+                    controller_names[1]: 0,
+
+                    # Valve Controller rev 3.0
+                    controller_names[6]: 0,
+
+                    # Engine Controller rev 5.0
+                    controller_names[7]: 0
+}
+
+# Preset struct formats
+preset_sizes = {
+            # Flight Computer rev 2.0
+            controller_names[4]: {
+                # IMU offsets (24 bytes)
+                "accX" : 4,
+                "accY" : 4,
+                "accZ" : 4,
+                "gyroX": 4,
+                "gyroY": 4,
+                "gyroZ": 4,
+                # Baro preset (8 bytes)
+                "baroPres" : 4,
+                "baroTemp" : 4,
+                # Servo presets (4 bytes)
+                "servo1" : 1,
+                "servo2" : 1,
+                "servo3" : 1,
+                "servo4" : 1
+            }
+}
+
+# Sensor raw readout formats
+preset_formats = {
+            # Flight Computer rev 2.0
+            controller_names[4]: {
+                # IMU offsets (24 bytes)
+                "accX" : float,
+                "accY" : float,
+                "accZ" : float,
+                "gyroX": float,
+                "gyroY": float,
+                "gyroZ": float,
+                # Baro preset (8 bytes)
+                "baroPres" : float,
+                "baroTemp" : float,
+                # Servo presets (4 bytes)
+                "servo1" : int,
+                "servo2" : int,
+                "servo3" : int,
+                "servo4" : int
+            }
+}
+
+# Preset Data Filenames
+preset_filenames = {
+        # Flight Computer rev 2.0
+        controller_names[4]: "output/flight_comp_rev2_preset_data.txt"
+}
 
 # Firmware Ids
 firmware_ids = {
