@@ -100,6 +100,7 @@ class terminalData:
         self.flash_write_enabled = False 
         self.sensor_readouts     = {}
         self.engine_state        = None
+        self.engine_status       = True
         self.valve_states        = {}
 
     # Initialize Serial Port
@@ -209,6 +210,12 @@ class terminalData:
     # Set the state of the liquid engine
     def set_engine_state( self, engine_state ):
         self.engine_state = engine_state
+
+    def set_engine_status( self, engine_status ):
+        self.engine_status = engine_status
+    
+    def get_engine_status( self ):
+        return self.engine_status
 ## class terminalData ##
 
 

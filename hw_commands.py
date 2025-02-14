@@ -1442,6 +1442,18 @@ def ignite(Args, serialObj):
     ignite_drogue_fail_switch_code = b'\x45'
     ignite_drogue_fail_cont_code   = b'\x48'
     ignite_drogue_fail_code        = b'\x49'
+    ignite_unrecognized_command    = b'\x4A'
+    ignite_pre_fire_start          = b'\x4B'
+    ignite_fill_chill_start        = b'\x4C'
+    ignite_hot_fire_start          = b'\x4D'
+    ignite_stand_by_start          = b'\x4E'
+    ignite_pre_fire_done           = b'\x50'
+    ignite_fill_chill_done         = b'\x51'
+    ignite_stand_by_done           = b'\x52'
+    ignite_pre_fire_fail           = b'\x54'
+    ignite_fill_chill_fail         = b'\x55'
+    ignite_hot_fire_fail           = b'\x56'
+    ignite_standy_by_fail          = b'\x57'
 
     ################################################################################
     # Basic Inputs Parsing                                                         #

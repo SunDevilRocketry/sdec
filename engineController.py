@@ -349,9 +349,13 @@ def telreq( Args, serialObj, show_output = True ):
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 # 		Pre-fire purge, initiates a system purge prior to hotfire                  #
+#       Sets state and status. If engine_status is false, that                     #
+#       means the stage has failed.                                                #
 #                                                                                  #
 ####################################################################################
 def pfpurge( Args, serialObj, show_output = True ):
+	# If serialObj.get_engine_status = False, then that means the state after its
+	# current state has failed
 	################################################################################
     # Local Variables                                                              #
 	################################################################################
@@ -382,16 +386,47 @@ def pfpurge( Args, serialObj, show_output = True ):
 
 	# Send opcode
 	serialObj.sendByte( opcode )
-
+	# We set the state. If on a state and a status is false after the function, it failed,
+	# and if true, it was successful.
+	serialObj.set_engine_state( "Pre-Fire Purge State" )
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Pre-Hotfire purge sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Pre-Fire Purge State" )
-	elif ( response == no_ack_byte ):
-		print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
-	else:
-		print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte): # Apparently this typecast is necessary in Python
+			print( "Pre-Hotfire purge sequence command sucessfully received" )
+		case bytes(no_ack_byte):
+			print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj # Note: These returns abort the the function, since we shouldn't bother if a fail occurs
+		case default:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	response = serialObj.readByte()
+	# Wait for and parse start signal
+	match response:
+		case bytes(ignite_pre_fire_start):
+			print( "Pre-Hotfire purge started." )
+		case default:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	response = serialObj.readByte()
+	# Wait for success or failure signal
+	match( response ):
+		case bytes(ignite_pre_fire_done):
+			print( "Pre-Hotfire purge sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_pre_fire_fail):
+			print( "Pre-Hotfire purge unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+			return serialObj
+		case default:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			return serialObj
+			serialObj.set_engine_status( False )
 	return serialObj
 ## pfpurge ##
 
