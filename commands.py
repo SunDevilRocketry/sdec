@@ -310,11 +310,14 @@ def comports(Args, serialObj):
 	##############################################################################
 	if ( option == "-l" ):
 
+		ports_f = []
+
 		avail_ports = serial.tools.list_ports.comports()
 		print( "\nAvailable COM ports: " )
 		for port_num,port in enumerate( avail_ports ):
 			print( "\t" + str(port_num) + ": " + port.device + 
-                   " - ", end="" ) 
+                   " - ", end="" )
+			ports_f.append(port.device)
 			if ( port.manufacturer != None ):
 				print( port.manufacturer + ": ", end="" )
 			if ( port.description  != None ):
@@ -322,7 +325,7 @@ def comports(Args, serialObj):
 			else:
 				print( "device info unavailable" )
 		print()
-		return serialObj
+		return serialObj, ports_f
 
 	##############################################################################
     # Help Option (-h)                                                           #
