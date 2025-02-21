@@ -398,7 +398,7 @@ def pfpurge( Args, serialObj, show_output = True ):
 			print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
 			serialObj.set_engine_status( False )
 			return serialObj # Note: These returns abort the the function, since we shouldn't bother if a fail occurs
-		case default:
+		case _:
 			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
 			serialObj.set_engine_status( False )
 			return serialObj
@@ -408,7 +408,7 @@ def pfpurge( Args, serialObj, show_output = True ):
 	match response:
 		case bytes(ignite_pre_fire_start):
 			print( "Pre-Hotfire purge started." )
-		case default:
+		case _:
 			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
 			serialObj.set_engine_status( False )
 			return serialObj
@@ -422,10 +422,8 @@ def pfpurge( Args, serialObj, show_output = True ):
 		case bytes(ignite_pre_fire_fail):
 			print( "Pre-Hotfire purge unsucessful. Controller detected error" )
 			serialObj.set_engine_status( False )
-			return serialObj
 		case default:
 			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
-			return serialObj
 			serialObj.set_engine_status( False )
 	return serialObj
 ## pfpurge ##
@@ -472,15 +470,48 @@ def fillchill( Args, serialObj, show_output = True ):
 	# Send opcode
 	serialObj.sendByte( opcode )
 
+	# We set the state. If on a state and a status is false after the function, it failed,
+	# and if true, it was successful.
+	serialObj.set_engine_state( "Fill and Chill State" )
+
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Fill and Chill sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Fill and Chill State" )
-	elif ( response == no_ack_byte ):
-		print( "Fill and Chill unsucessful. No response from engine controller" )
-	else:
-		print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte):
+			print( "Fill and Chill sequence sucessfully initiated" )
+		case bytes(no_ack_byte):
+			print( "Fill and Chill unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj # Abort rest of function
+		case _:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj # Abort rest of function
+
+	# Wait for and parse start signal
+	response = serialObj.readByte()
+
+	match response:
+		case bytes(ignite_fill_chill_start):
+			print( "Fill and Chill started." )
+		case _:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+	
+	# Wait for success or failure signal
+	response = serialObj.readByte()
+
+	match( response ):
+		case bytes(ignite_fill_chill_done):
+			print( "Fill and Chill sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_fill_chill_fail):
+			print( "Fill and Chill unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+		case default:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
 	return serialObj
 ## fillchill ##
 
