@@ -553,12 +553,12 @@ def connect( Args, serialObj ):
 			print( "Error: Invalid serial port. Valid ports:" )
 			for port_num, port in enumerate( available_ports ):
 				print( "\t" + port )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 	else:
 		if ( user_option == '-p' and
 		     len(Args)   == 1):
 			print( "Error: No serial port supplied " )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 
 	##############################################################################
     # Help Option (-h)                                                           #
@@ -586,7 +586,7 @@ def connect( Args, serialObj ):
              (not (controller_response in controller_codes) ) ):
 			print( "Controller connection was unsuccessful." )
 			serialObj = comports( ['-d'], serialObj )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 		else:
 			# Get the firmware version if supported
 			if ( controller_descriptions[controller_response] in 
@@ -604,7 +604,7 @@ def connect( Args, serialObj ):
                     controller_descriptions[controller_response] )
 			if ( serialObj.controller in firmware_id_supported_boards ):
 				print( "Firmware: " + firmware_version )
-			return serialObj
+			return serialObj, {"status": "successful", "controller": {"name":controller_descriptions[controller_response], "firmware":firmware_version}}
 		
 
 	##############################################################################
