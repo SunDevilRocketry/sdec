@@ -6,16 +6,16 @@ import matplotlib
 labels = [
             "save_bit",
             "acc_launch_flag",
-            "accel_x_offset",
-            "accel_y_offset",
-            "accel_z_offset",
-            "gyro_x_offset",
-            "gyro_y_offset",
-            "gyro_z_offset",
-            "pres_offset",
-            "pres_temp_offset",
-            "rp_servo1",
-            "rp_servo2",
+            # "accel_x_offset",
+            # "accel_y_offset",
+            # "accel_z_offset",
+            # "gyro_x_offset",
+            # "gyro_y_offset",
+            # "gyro_z_offset",
+            # "pres_offset",
+            # "pres_temp_offset",
+            # "rp_servo1",
+            # "rp_servo2",
             "time",
             "accX",
             "accY",
@@ -63,9 +63,9 @@ def converter(txt_File, output_File):
     df = pd.DataFrame.from_records(data, columns=labels)
 
     matplotlib.pyplot.plot()
-    # df.to_csv(output_File,index=False)
+    df.to_csv(output_File,index=False)
 
 print(len(labels))
 
-converter('output/flight_comp_rev2_sensor_data.txt', 'nov162024.csv')
+converter('output/flight_comp_rev2_sensor_data.txt', 'feb0425.csv')
 
