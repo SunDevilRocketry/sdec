@@ -16,7 +16,8 @@
 __credits_2023__ = ["Nick Nguyen"       ,
                     "Anton Sazonov"     ,
                     "Brian Lew"         ,
-                    "Alexander Linderman"]
+                    "Alexander Linderman",
+                    "Eli Sells"]
 
 
 ####################################################################################
@@ -35,6 +36,7 @@ import valveController  # valve controller commands
 import engineController # engine controller commands
 import flightComputer   # flight computer commands
 import canard_fc        # active roll application commands
+import state_estimator  # state estimation commands
 from   config import *  # global settings
 
 
@@ -74,7 +76,8 @@ command_list = {
                  "pid-setup"  : canard_fc.pid_setup              ,
                  "access-terminal": canard_fc.terminal_access    ,
                  "read-preset": canard_fc.read_preset,
-                 "save-preset": canard_fc.save_preset
+                 "save-preset": canard_fc.save_preset,
+                 "state-estimator" : state_estimator.state_estimator
                 }
 
 
