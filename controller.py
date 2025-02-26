@@ -551,8 +551,8 @@ sensor_units = {
                            "lat":           "deg",
                            "ns":            "N/S",
                            "ew":            "E/W",
-                           "gll_s":         "N/A",
-                           "rmc_s":         "N/A"
+                           "gll_s":         None,
+                           "rmc_s":         None
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {

@@ -285,9 +285,14 @@ def format_sensor_readout( controller, sensor, readout ):
     # Readout units
     units = sensor_units[controller][sensor] 
 
+    readout_datatype = sensor_formats[controller][sensor]
+
     # Rounded readout
     if ( units != None ):
-        readout_str = "{:.3f}".format( readout )
+        if readout_datatype == chr:
+            readout_str = chr(readout)
+        else:
+            readout_str = "{:.3f}".format( readout )
     else:
         readout_str = str( readout )
 
