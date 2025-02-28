@@ -12,6 +12,7 @@
 # IMPORTS
 import os
 import csv
+import numpy as np
 
 import controller
 
@@ -82,9 +83,30 @@ def parse_data_file( sensor_data_file ):
 
 def convert_outputs( sensorOutputs, platform ):
     sensors = list(controller.controller_sensors[platform].keys())
-    for line in sensorOutputs:
-        for output in line[2:]:
-            return
+    idx = 0
+
+    conv = {}
+    conv['time'] = []
+    for sensor in sensors:
+        conv[sensor] = []
+
+    #print(conv)
+    #print(sensorOutputs)
+    
+    #print(len(conv))
+    #print(len(sensorOutputs))
+    #print("--")
+    #for i in range(len(sensorOutputs)):
+    #    print(len(sensorOutputs[i]))
+
+    for i in range(len(sensorOutputs[0])):
+        conv['time'].append(sensorOutputs[i][2])
+
+    for i in range(len(sensorOutputs)):
+            for j, sensor in enumerate(sensors):
+                conv[sensor].append(sensorOutputs[i][j+3])
+
+    return conv
 
 
 
@@ -103,16 +125,27 @@ def state_estimator( userArgs, terminalSerObj ):
     print("Parsing file...")
     sensorOutputs = parse_data_file( sensor_data_file )
 
+    print("Converting columns...")
+    columns = convert_outputs( sensorOutputs, platform )
+
     print("Available subroutines:")
     print("1 - All outputs")
-    validInput = False
-    while not validInput:
+    print("2 - Velocity from Acceleration")
+    print("3 - Position from Acceleration")
+    print("4 - Exit")
+
+    exit = False
+    while not exit:
         selection = int(input("Select option: "))
         match selection:
             case 1:
-                validInput = True
-                print("Converting columns...")
-                columns = convert_outputs( sensorOutputs, platform )
+                print(columns)
+
+            case 2:
+                hAL = []
+
+            case 4:
+                exit = True
 
             case _:
                 print("Invalid input. Try again.")
