@@ -310,11 +310,13 @@ def comports(Args, serialObj):
 	##############################################################################
 	if ( option == "-l" ):
 
+		ports = []
 		avail_ports = serial.tools.list_ports.comports()
 		print( "\nAvailable COM ports: " )
 		for port_num,port in enumerate( avail_ports ):
 			print( "\t" + str(port_num) + ": " + port.device + 
                    " - ", end="" ) 
+			ports.append(port.device)
 			if ( port.manufacturer != None ):
 				print( port.manufacturer + ": ", end="" )
 			if ( port.description  != None ):
@@ -322,7 +324,7 @@ def comports(Args, serialObj):
 			else:
 				print( "device info unavailable" )
 		print()
-		return serialObj
+		return serialObj, ports
 
 	##############################################################################
     # Help Option (-h)                                                           #
@@ -379,11 +381,11 @@ def comports(Args, serialObj):
 		connection_status = serialObj.closeComport()
 		if ( connection_status ):
 			print( "Disconnected from active serial port" )
-			return serialObj
+			return serialObj, "Disconnected"
 		else: 
 			print( "An error ocurred while closing port " + 
                    target_port )
-			return serialObj
+			return serialObj, "Error ocurred"
 
 	return serialObj
 ## comports ##
@@ -473,7 +475,7 @@ def ping( Args, serialObj ):
                                                            ping_time
                                                            )
                          )
-            return serialObj
+            return serialObj, "Response received at {0:1.4f} ms".format(ping_time)
 
         # Ping option 
         else:
