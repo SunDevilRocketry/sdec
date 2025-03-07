@@ -671,9 +671,6 @@ def sensor( Args, serialObj, show_readouts = True ):
         filename = "canard_" + str(datetime.now()) + ".txt"
         file = open("canard/" + filename, "w")
 
-        # SDEC API poll file 
-        file_poll = open("poll.txt", "w")
-
         # Receive and display sensor readouts 
         timeout_ctr = 0
         try:    
@@ -694,9 +691,7 @@ def sensor( Args, serialObj, show_readouts = True ):
                                                             )
                     print( readout_formated + '\t', end='' )
                     file.write(readout_formated + '\t')
-                    file_poll.write(readout_formated + "\t")
                 file.write("\n")
-                file_poll.write("\n")
                 print()
                 # Pause for readibility
                 serialObj.sendByte( sensor_poll_cmds['WAIT'] )
@@ -709,7 +704,6 @@ def sensor( Args, serialObj, show_readouts = True ):
             serialObj.sendByte( sensor_poll_cmds['STOP'] )
 
         file.close()
-        file_poll.close()
 
         return serialObj
 
