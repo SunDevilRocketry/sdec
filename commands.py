@@ -309,14 +309,14 @@ def comports(Args, serialObj):
     # List Option (-l)                                                           #
 	##############################################################################
 	if ( option == "-l" ):
-
-		ports = []
+		ports_f = []
 		avail_ports = serial.tools.list_ports.comports()
 		print( "\nAvailable COM ports: " )
 		for port_num,port in enumerate( avail_ports ):
 			print( "\t" + str(port_num) + ": " + port.device + 
-                   " - ", end="" ) 
-			ports.append(port.device)
+                   " - ", end="" )
+			ports_f.append(port.device)
+
 			if ( port.manufacturer != None ):
 				print( port.manufacturer + ": ", end="" )
 			if ( port.description  != None ):
@@ -324,7 +324,7 @@ def comports(Args, serialObj):
 			else:
 				print( "device info unavailable" )
 		print()
-		return serialObj, ports
+		return serialObj, ports_f
 
 	##############################################################################
     # Help Option (-h)                                                           #
@@ -552,12 +552,12 @@ def connect( Args, serialObj ):
 			print( "Error: Invalid serial port. Valid ports:" )
 			for port_num, port in enumerate( available_ports ):
 				print( "\t" + port )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 	else:
 		if ( user_option == '-p' and
 		     len(Args)   == 1):
 			print( "Error: No serial port supplied " )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 
 	##############################################################################
     # Help Option (-h)                                                           #
@@ -585,7 +585,7 @@ def connect( Args, serialObj ):
              (not (controller_response in controller_codes) ) ):
 			print( "Controller connection was unsuccessful." )
 			serialObj = comports( ['-d'], serialObj )
-			return serialObj
+			return serialObj, {"status": "unsuccessful", "controller": None}
 		else:
 			# Get the firmware version if supported
 			if ( controller_descriptions[controller_response] in 
@@ -605,8 +605,7 @@ def connect( Args, serialObj ):
 			api_status.append("Connection established with " + description)
 			if ( serialObj.controller in firmware_id_supported_boards ):
 				print( "Firmware: " + firmware_version )
-				api_status.append("Firmware: " + firmware_version)
-			return serialObj, api_status
+			return serialObj, {"status": "successful", "controller": {"name":controller_descriptions[controller_response], "firmware":firmware_version}}
 		
 
 	##############################################################################
