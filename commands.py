@@ -598,12 +598,15 @@ def connect( Args, serialObj ):
 					    firmware_version	
 									    )
 
-            # Display connection info									
-			print( "Connection established with " + 
-                    controller_descriptions[controller_response] )
+            # Display connection info	
+			api_status = []
+			description = controller_descriptions[controller_response]
+			print( "Connection established with " + description )
+			api_status.append("Connection established with " + description)
 			if ( serialObj.controller in firmware_id_supported_boards ):
 				print( "Firmware: " + firmware_version )
-			return serialObj
+				api_status.append("Firmware: " + firmware_version)
+			return serialObj, api_status
 		
 
 	##############################################################################

@@ -274,7 +274,11 @@ if __name__ == '__main__':
         userArgs       = userin_clean[1:]
 
         # Execute Command
-        terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
+        execute = command_list[userCommand](userArgs, terminalSerObj)
+        if isinstance(execute, tuple): 
+            terminalSerObj, sdec_api_ignore = execute
+        else:
+            terminalSerObj = execute
 ## parseInput ##
 
 

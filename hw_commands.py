@@ -523,9 +523,15 @@ def sensor( Args, serialObj, show_readouts = True ):
 
         print(sensor_dump_size_bytes)
 
+        # Readouts list for SDEC-API
+        readouts = []
+
         # Recieve data from controller
         for byteNum in range( sensor_dump_size_bytes ):
-            sensor_bytes_list.append( serialObj.readByte() )
+            to_append = serialObj.readByte()
+            #readouts.append(to_append) bytes not json readable
+            sensor_bytes_list.append( to_append)
+
 
         print(sensor_bytes_list)
 
@@ -545,9 +551,9 @@ def sensor( Args, serialObj, show_readouts = True ):
                                                         serialObj.sensor_readouts[sensor]
                                                         )
                 print( readout_formatted )
-                return serialObj, readout_formated
+                readouts.append(readout_formatted)
             
-        return serialObj
+        return serialObj, readouts
 
     ################################################################################
     # Subcommand: sensor pplot                                                      #
