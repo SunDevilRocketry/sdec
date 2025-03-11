@@ -77,3 +77,27 @@ def converter(txt_File, output_File):
 print(len(labels))
 converter('output\\flight_comp_rev2_sensor_data.txt', 'feb0425.csv')
 
+def readData(txtfile):
+    reader = "readerCSV.csv"
+    converter(txtfile, reader)
+    print(reader.read())
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		readData                                                                   #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Reads CSV data from txt file                                               #
+#                                                                                  #
+####################################################################################
+def readData( Args, serialObj, show_output = True ):
+     filename = Args[0]
+     if (filename == ""):
+        print("please specify file name")
+     reader = "readerCSV.csv"
+     converter(filename, reader)
+     with open(reader, 'r') as f:
+         for line in f:
+             print(line)
+## readData ##

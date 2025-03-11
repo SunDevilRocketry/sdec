@@ -74,8 +74,9 @@ command_list = {
                  "fin-setup"  : canard_fc.fin_setup              ,
                  "pid-setup"  : canard_fc.pid_setup              ,
                  "access-terminal": canard_fc.terminal_access    ,
-                 "read-preset": canard_fc.read_preset,
-                 "save-preset": canard_fc.save_preset
+                 "read-preset": canard_fc.read_preset            ,
+                 "save-preset": canard_fc.save_preset            ,
+                 "read-data": parser.readData
                 }
 
 
@@ -278,19 +279,6 @@ if __name__ == '__main__':
         terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
 ## parseInput ##
 
-####################################################################################
-#                                                                                  #
-# PROCEDURE:                                                                       #
-# 		readData                                                                   #
-#                                                                                  #
-# DESCRIPTION:                                                                     #
-# 		Given a file, returns the CSV output from that file                        #
-#                                                                                  #
-####################################################################################
-
-def readData(txtfile, csvfile):
-    parser.converter(txtfile, csvfile)
-    print(csvfile.read())
 
         
 
