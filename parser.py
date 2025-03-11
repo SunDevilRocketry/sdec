@@ -45,7 +45,16 @@ labels = [
             "pres",
             "temp",
             "baro_alt",
-            "baro_velo"
+            "baro_velo",
+            "gps_altitude_feet",
+            "gps_speed_kmh",
+            "gps_utc_time",
+            "gps_dec_longitude",
+            "gps_dec_latitude",
+            "gps_ns",
+            "gps_ew",
+            "gll",
+            "rms"
           ]
 data = []
 
@@ -66,6 +75,5 @@ def converter(txt_File, output_File):
     df.to_csv(output_File,index=False)
 
 print(len(labels))
-
-converter('output/flight_comp_rev2_sensor_data.txt', 'feb0425.csv')
+converter('output\\flight_comp_rev2_sensor_data.txt', 'feb0425.csv')
 
