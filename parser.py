@@ -95,6 +95,10 @@ def readData( Args, serialObj, show_output = True ):
      filename = Args[0]
      if (filename == ""):
         print("please specify file name")
+     try:
+         f = open(filename, 'r')
+     except OSError:
+         print("Could not read file")
      reader = "readerCSV.csv"
      converter(filename, reader)
      with open(reader, 'r') as f:
