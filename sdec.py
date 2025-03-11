@@ -36,6 +36,7 @@ import engineController # engine controller commands
 import flightComputer   # flight computer commands
 import canard_fc        # active roll application commands
 from   config import *  # global settings
+import parser
 
 
 ####################################################################################
@@ -276,6 +277,23 @@ if __name__ == '__main__':
         # Execute Command
         terminalSerObj = command_list[userCommand](userArgs, terminalSerObj)
 ## parseInput ##
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		readData                                                                   #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Given a file, returns the CSV output from that file                        #
+#                                                                                  #
+####################################################################################
+
+def readData(txtfile, csvfile):
+    parser.converter(txtfile, csvfile)
+    print(csvfile.read())
+
+        
+
 
 
 ####################################################################################
