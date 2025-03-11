@@ -75,12 +75,8 @@ def converter(txt_File, output_File):
     df.to_csv(output_File,index=False)
 
 print(len(labels))
-converter('output\\flight_comp_rev2_sensor_data.txt', 'feb0425.csv')
+converter('output\\flight_comp_rev2_sensor_data_cool.txt', 'feb0425.csv')
 
-def readData(txtfile):
-    reader = "readerCSV.csv"
-    converter(txtfile, reader)
-    print(reader.read())
 
 ####################################################################################
 #                                                                                  #
