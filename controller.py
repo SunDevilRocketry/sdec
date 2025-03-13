@@ -116,6 +116,15 @@ controller_sensors = {
                            "temp" :         "Barometric Temperature",
                            "alt" :         "Barometric Altitude",
                            "bvelo" :         "Barometric Velocity",
+                           "gps_altitude_feet": "GPS Altitude",
+                           "gps_speed_kmh":    "GPS Speed",
+                           "gps_utc_time": "GPS Time",
+                           "gps_dec_longitude": "GPS Longitude",
+                           "gps_dec_latitude": "GPS Latitude",
+                           "gps_ns": "GPS North/South",
+                           "gps_ew": "GPS East/West",
+                           "gll_status": "GLL Status",
+                           "rms_status": "RMS Status",
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {

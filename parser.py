@@ -1,9 +1,22 @@
 import matplotlib.pyplot
 import pandas as pd
 import matplotlib
+from controller import controller_sensors, controller_names
+
+            
+
+data = []
 
 
-labels = [
+length = len(data)
+
+def converter(txt_File, output_File):
+    hardware = ""
+    for i in range(0,len(controller_names) - 1):
+        print(str(i) + ". " + controller_names[i])
+    number = input("Which Hardware would you like to select? Enter a number. \n")
+    hardware = controller_names[int(number)]
+    labels = [
             "save_bit",
             "acc_launch_flag",
             # "accel_x_offset",
@@ -17,52 +30,9 @@ labels = [
             # "rp_servo1",
             # "rp_servo2",
             "time",
-            "accX",
-            "accY",
-            "accZ",
-            "gyroX",
-            "gyroY",
-            "gyroZ",
-            "magX",
-            "magY",
-            "magZ",
-            "imut",
-            "accXconv",
-            "accYconv",
-            "accZconv",
-            "gyroXconv",
-            "gyroYconv",
-            "gyroZconv",
-            "rollDeg",
-            "pitchDeg",
-            "rollRate",
-            "pitchRate",
-            "velo",
-            "velo_x",
-            "velo_y",
-            "velo_z",
-            "pos",
-            "pres",
-            "temp",
-            "baro_alt",
-            "baro_velo",
-            "gps_altitude_feet",
-            "gps_speed_kmh",
-            "gps_utc_time",
-            "gps_dec_longitude",
-            "gps_dec_latitude",
-            "gps_ns",
-            "gps_ew",
-            "gll",
-            "rms"
-          ]
-data = []
-
-
-length = len(data)
-
-def converter(txt_File, output_File):
-     
+    ]
+    for value in controller_sensors[hardware]:
+        labels.append(value)
     with open(txt_File,'r') as file:
 
         for line in file:
@@ -70,24 +40,21 @@ def converter(txt_File, output_File):
             data.append(number[:-1])   
 
     df = pd.DataFrame.from_records(data, columns=labels)
-
-    matplotlib.pyplot.plot()
     df.to_csv(output_File,index=False)
-
-print(len(labels))
+    print("Done! Total Length: " + str(len(labels)))
 converter('output\\flight_comp_rev2_sensor_data_cool.txt', 'feb0425.csv')
 
 
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		readData                                                                   #
+# 		readdata                                                                   #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 # 		Reads CSV data from txt file                                               #
 #                                                                                  #
 ####################################################################################
-def readData( Args, serialObj, show_output = True ):
+def readdata( Args, serialObj, show_output = True ):
      filename = Args[0]
      if (filename == ""):
         print("please specify file name")
