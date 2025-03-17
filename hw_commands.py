@@ -1360,24 +1360,15 @@ def flash(Args, serialObj):
         # Record ending time
         extract_time = time.perf_counter() - start_time
 
-        # Current Preset Format (1/30/25):
-        # NOTE: Potential issue with float conversion (big vs. little endianness)
-        # 2 bytes: Save bits
-        # 24 bytes: IMU struct
-        #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
-        # 8 bytes: Baro struct
-        #   4 bytes each x2: baro pressure, baro temp
-        # 4 bytes: Servo struct
-        #   1 byte each x4: servo 1-4
-
-        preset_blocks = preset_frames[serialObj.controller]
-        if (preset_blocks > 0):
-            preset_values = get_preset_values( serialObj.controller, rx_byte_blocks )
-            with open( preset_filenames[serialObj.controller], 'w' ) as file:
-                for value in preset_values:
-                    file.write( str( value ) )
-                    file.write( '\t' )
-                file.write( '\n' )
+        if not (commands.firmware_version == None):
+            preset_blocks = preset_frames[commands.firmware_version]
+            if (preset_blocks > 0):
+                preset_values = get_preset_values( commands.firmware_version, rx_byte_blocks )
+                with open( preset_filenames[commands.firmware_version], 'w' ) as file:
+                    for value in preset_values:
+                        file.write( str( value ) )
+                        file.write( '\t' )
+                    file.write( '\n' )
 
         # Convert the data from bytes to measurement readouts
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )

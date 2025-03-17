@@ -34,6 +34,9 @@ if ( sdr_debug ):
 else:
 	default_timeout = 1   # 1 second timeout
 
+# Firmware version
+firmware_version = None
+
 
 ####################################################################################
 # Shared Procedures                                                                #
@@ -510,9 +513,6 @@ def connect( Args, serialObj ):
 
 	# Command type -- subcommand function
 	command_type     = 'default'
-
-	# Firmware version
-	firmware_version = None
 
 	##############################################################################
 	# Basic inputs parsing                                                       #

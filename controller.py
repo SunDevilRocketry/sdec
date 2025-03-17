@@ -55,6 +55,21 @@ controller_descriptions = {
                   b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)"
                           }
 
+# Firmware Ids
+firmware_ids = {
+                b'\x01': "Terminal"   ,
+				b'\x02': "Data Logger",
+				b'\x03': "Dual Deploy",
+                b'\x04': "Hotfire",
+                b'\x05': "Active Roll"
+               }
+			
+# Boards that report firmware ids with the connect command
+firmware_id_supported_boards = [
+                controller_names[4], # Flight Computer Rev 2.0
+                controller_names[6]  # Valve Controller Rev 3.0
+                               ]
+
 # Lists of sensors on each controller
 controller_sensors = {
                 # Engine Controller rev 4.0
@@ -780,33 +795,31 @@ sensor_data_filenames = {
                         }
 
 # How many sensor frames are needed for the presets
-preset_frames = {  
-                    # Engine Controller rev 4.0
-                    controller_names[2]: 0,
-
-                    # Flight Computer rev 1.0
-                    controller_names[3]: 0,
-
-                    # Flight Computer rev 2.0
-                    controller_names[4]: 1,
-
-                    # Flight Computer Lite rev 1.0
-                    controller_names[5]: 0,
-
-                    # Valve Controller rev 2.0
-                    controller_names[1]: 0,
-
-                    # Valve Controller rev 3.0
-                    controller_names[6]: 0,
-
-                    # Engine Controller rev 5.0
-                    controller_names[7]: 0
+preset_frames = { 
+            firmware_ids[b'\x01'] : 0,
+            firmware_ids[b'\x02'] : 1, # Data Logger
+            firmware_ids[b'\x03'] : 0,
+            firmware_ids[b'\x04'] : 0,
+            firmware_ids[b'\x05'] : 1, # Active Roll
 }
 
 # Preset struct formats
 preset_sizes = {
-            # Flight Computer rev 2.0
-            controller_names[4]: {
+            # Data Logger
+            firmware_ids[b'\x01']: {
+                # IMU offsets (24 bytes)
+                "accX" : 4,
+                "accY" : 4,
+                "accZ" : 4,
+                "gyroX": 4,
+                "gyroY": 4,
+                "gyroZ": 4,
+                # Baro preset (8 bytes)
+                "baroPres" : 4,
+                "baroTemp" : 4
+            },
+            # Canard
+            firmware_ids[b'\x05']: {
                 # IMU offsets (24 bytes)
                 "accX" : 4,
                 "accY" : 4,
@@ -827,8 +840,21 @@ preset_sizes = {
 
 # Sensor raw readout formats
 preset_formats = {
-            # Flight Computer rev 2.0
-            controller_names[4]: {
+            # Data Logger
+            firmware_ids[b'\x01']: {
+                # IMU offsets (24 bytes)
+                "accX" : float,
+                "accY" : float,
+                "accZ" : float,
+                "gyroX": float,
+                "gyroY": float,
+                "gyroZ": float,
+                # Baro preset (8 bytes)
+                "baroPres" : float,
+                "baroTemp" : float
+            },
+            # Canard
+            firmware_ids[b'\x05']: {
                 # IMU offsets (24 bytes)
                 "accX" : float,
                 "accY" : float,
@@ -849,24 +875,12 @@ preset_formats = {
 
 # Preset Data Filenames
 preset_filenames = {
-        # Flight Computer rev 2.0
-        controller_names[4]: "output/flight_comp_rev2_preset_data.txt"
+        # Data logger presets
+        firmware_ids[b'\x01']: "output/data_logger_preset_data.txt",
+        # Canard Presets
+        firmware_ids[b'\x05']: "output/active_roll_preset_data.txt"
 }
 
-# Firmware Ids
-firmware_ids = {
-                b'\x01': "Terminal"   ,
-				b'\x02': "Data Logger",
-				b'\x03': "Dual Deploy",
-                b'\x04': "Hotfire",
-                b'\x05': "Active Roll"
-               }
-			
-# Boards that report firmware ids with the connect command
-firmware_id_supported_boards = [
-                controller_names[4], # Flight Computer Rev 2.0
-                controller_names[6]  # Valve Controller Rev 3.0
-                               ]
 
 ##################################################################################
 # END OF FILE                                                                    #
