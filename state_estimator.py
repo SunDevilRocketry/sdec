@@ -159,6 +159,56 @@ def get_displacement_from_velocity( velocity ):
 
     return displacement
 
+# Returns list of values corresponding to each time
+def get_rot_velocity_from_position( columns ):
+    time = columns["time"]
+    accX = columns["gyroX"]
+    accY = columns["gyroY"]
+    accZ = columns["gyroZ"]
+
+    # Calculate the velocity: deltaV = deltaT * a
+    velocity = {}
+    velocity['time'] = time
+    velocity['rotvelX'] = [0]
+    for i in range(1, len(time)):
+        delta = columns["time"][i] - columns["time"][i - 1]
+        velocity['rotvelX'].append(delta * columns["gyroX"][i])
+    velocity['rotvelY'] = [0]
+    for i in range(1, len(time)):
+        delta = columns["time"][i] - columns["time"][i - 1]
+        velocity['rotvelY'].append(delta * columns["gyroY"][i])
+    velocity['rotvelZ'] = [0]
+    for i in range(1, len(time)):
+        delta = columns["time"][i] - columns["time"][i - 1]
+        velocity['rotvelZ'].append(delta * columns["gyroZ"][i])
+
+    velocity['rotvel'] = [0]
+    for val in range(len(velocity['rotvelX'])):
+        velocity['rotvel'].append( math.sqrt( (velocity['rotvelX'][val] ** 2) + (velocity['rotvelY'][val] ** 2) + (velocity['rotvelZ'][val] ** 2) ) )
+
+    return velocity
+
+def get_rot_displacement_from_rot_velocity( velocity ):
+    # Calculate the velocity: deltaV = deltaT * a
+    displacement = {}
+    displacement['rotdispX'] = [0]
+    for i in range(1, len(velocity['time'])):
+        delta = velocity["time"][i] - velocity["time"][i - 1]
+        displacement['rotdispX'].append(delta * velocity["rotvelX"][i])
+    displacement['rotdispY'] = [0]
+    for i in range(1, len(velocity['time'])):
+        delta = velocity["time"][i] - velocity["time"][i - 1]
+        displacement['rotdispY'].append(delta * velocity["rotvelY"][i])
+    displacement['rotdispZ'] = [0]
+    for i in range(1, len(velocity['time'])):
+        delta = velocity["time"][i] - velocity["time"][i - 1]
+        displacement['rotdispZ'].append(delta * velocity["rotvelZ"][i])
+
+    displacement['rotdisp'] = [0]
+    for val in range(len(velocity['time'])):
+        displacement['rotdisp'].append( math.sqrt( (displacement['rotdispX'][val] ** 2) + (displacement['rotdispY'][val] ** 2) + (displacement['rotdispZ'][val] ** 2) ) )
+
+    return displacement
 
         
 # These function parameters are unused, but passed in by the terminal. When invoking,
@@ -178,25 +228,43 @@ def state_estimator( userArgs, terminalSerObj ):
 
     print("Available subroutines:")
     print("1 - All outputs")
-    print("2 - Velocity from Acceleration")
-    print("3 - Position from Acceleration")
+    print("2 - Translational Displacement/Velo")
+    print("3 - Rotational Displacement/Velo")
     print("q - Exit")
 
     exit = False
     while not exit:
         selection = input("Select option: ")
         match selection:
-            case 1:
+            case '1':
                 velocity = get_velocity_from_position( columns )
                 displacement = get_displacement_from_velocity( velocity )
-                print(velocity)
-                print(displacement)
+                with open("output/velocity_state_estimation", 'w') as f: 
+                    f.write(str(velocity))
+                with open("output/displacement_state_estimation", 'w') as f: 
+                    f.write(str(displacement))
+                rotvelocity = get_rot_velocity_from_position( columns )
+                rotdisplacement = get_rot_displacement_from_rot_velocity( rotvelocity )
+                with open("output/rotational_velocity_state_estimation", 'w') as f: 
+                    f.write(str(rotvelocity))
+                with open("output/rotational_displacement_state_estimation", 'w') as f: 
+                    f.write(str(rotdisplacement))
 
-            case 2:
-                print( get_velocity_from_position( columns ) )
+            case '2':
+                velocity = get_velocity_from_position( columns )
+                displacement = get_displacement_from_velocity( velocity )
+                with open("output/velocity_state_estimation", 'w') as f: 
+                    f.write(str(velocity))
+                with open("output/displacement_state_estimation", 'w') as f: 
+                    f.write(str(displacement))
 
-            case 3:
-                print( get_displacement_from_velocity( get_velocity_from_position( columns ) ) )
+            case '3':
+                rotvelocity = get_rot_velocity_from_position( columns )
+                rotdisplacement = get_rot_displacement_from_rot_velocity( rotvelocity )
+                with open("output/rotational_velocity_state_estimation", 'w') as f: 
+                    f.write(str(rotvelocity))
+                with open("output/rotational_displacement_state_estimation", 'w') as f: 
+                    f.write(str(rotdisplacement))
 
             case 'q':
                 exit = True
@@ -206,6 +274,3 @@ def state_estimator( userArgs, terminalSerObj ):
 
     # -.-.-.-.-.-
     return
-
-
-state_estimator( 0, 0 )
