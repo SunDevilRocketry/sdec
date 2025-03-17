@@ -280,7 +280,7 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
 #        Gets the preset values for a given controller type                        #
 #                                                                                  #
 ####################################################################################
-def get_preset_values( controller, rx_byte_blocks, format = 'converted' ):
+def get_preset_values( firmware, rx_byte_blocks, format = 'converted' ):
 
     # Convert raw bytes into integer types
     preset_bytes = rx_byte_blocks[0]
@@ -297,18 +297,18 @@ def get_preset_values( controller, rx_byte_blocks, format = 'converted' ):
     # Convert values and append to preset values
     preset_frame_dict = {}
     index = 2
-    for i, sensor in enumerate( preset_sizes[ controller ] ):
+    for i, sensor in enumerate( preset_sizes[ firmware ] ):
         measurement = 0
         float_bytes = []
-        for byte_num in range( preset_sizes[controller][sensor] ):
-            if ( preset_formats[controller][sensor] != float ):
+        for byte_num in range( preset_sizes[firmware][sensor] ):
+            if ( preset_formats[firmware][sensor] != float ):
                 measurement += ( preset_bytes_int[index + byte_num] << 8*byte_num )
             else:
                 float_bytes.append( ( preset_bytes_int[index + byte_num] ).to_bytes(1, 'big' ) ) 
-        if ( preset_formats[controller][sensor] == float ):
+        if ( preset_formats[firmware][sensor] == float ):
             measurement = byte_array_to_float( float_bytes )
         preset_values.append(measurement)
-        index += preset_sizes[controller][sensor]
+        index += preset_sizes[firmware][sensor]
 
     return preset_values
 ## get_preset_values ##
@@ -1359,12 +1359,12 @@ def flash(Args, serialObj):
 
         # Record ending time
         extract_time = time.perf_counter() - start_time
-
-        if not (commands.firmware_version == None):
-            preset_blocks = preset_frames[commands.firmware_version]
-            if (preset_blocks > 0):
-                preset_values = get_preset_values( commands.firmware_version, rx_byte_blocks )
-                with open( preset_filenames[commands.firmware_version], 'w' ) as file:
+        num_preset_frames = 0
+        if not ( serialObj.firmware == None ):
+            num_preset_frames = preset_frames[serialObj.firmware]
+            if (num_preset_frames > 0):
+                preset_values = get_preset_values( serialObj.firmware, rx_byte_blocks )
+                with open( preset_filenames[serialObj.firmware], 'w' ) as file:
                     for value in preset_values:
                         file.write( str( value ) )
                         file.write( '\t' )
@@ -1375,7 +1375,7 @@ def flash(Args, serialObj):
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
-            for sensor_frame in sensor_frames[preset_frames[serialObj.controller]:]: # Start from first non-preset frame instead of index 0
+            for sensor_frame in sensor_frames[num_preset_frames:]: # Start from first non-preset frame instead of index 0
                 for val in sensor_frame:
                     file.write( str( val ) )
                     file.write( '\t')

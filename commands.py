@@ -35,7 +35,7 @@ else:
 	default_timeout = 1   # 1 second timeout
 
 # Firmware version
-firmware_version = None
+global firmware_version
 
 
 ####################################################################################
@@ -568,6 +568,9 @@ def connect( Args, serialObj ):
     # Port Option (-p)                                                           #
 	##############################################################################
 	elif ( user_option == '-p' ):
+		# Bring in the global "firmware_version" variable
+		global firmware_version
+		
 		# Open the serial comport
 		serialObj = comports(
                             ['-c', user_port, '921600'], 

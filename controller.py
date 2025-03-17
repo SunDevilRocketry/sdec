@@ -806,7 +806,7 @@ preset_frames = {
 # Preset struct formats
 preset_sizes = {
             # Data Logger
-            firmware_ids[b'\x01']: {
+            firmware_ids[b'\x02']: {
                 # IMU offsets (24 bytes)
                 "accX" : 4,
                 "accY" : 4,
@@ -841,7 +841,7 @@ preset_sizes = {
 # Sensor raw readout formats
 preset_formats = {
             # Data Logger
-            firmware_ids[b'\x01']: {
+            firmware_ids[b'\x02']: {
                 # IMU offsets (24 bytes)
                 "accX" : float,
                 "accY" : float,
@@ -876,7 +876,7 @@ preset_formats = {
 # Preset Data Filenames
 preset_filenames = {
         # Data logger presets
-        firmware_ids[b'\x01']: "output/data_logger_preset_data.txt",
+        firmware_ids[b'\x02']: "output/data_logger_preset_data.txt",
         # Canard Presets
         firmware_ids[b'\x05']: "output/active_roll_preset_data.txt"
 }
