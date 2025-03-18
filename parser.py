@@ -55,9 +55,9 @@ def converter(txt_File, output_File):
 #                                                                                  #
 ####################################################################################
 def parse_output( Args, serialObj, show_output = True ):
-     filename = Args[0]
+     filename = input("Enter file path")
      if (filename == ""):
-        print("please specify file name")
+        print("please specify file path")
      try:
          f = open(filename, 'r')
      except OSError:
