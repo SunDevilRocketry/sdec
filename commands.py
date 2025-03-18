@@ -34,9 +34,6 @@ if ( sdr_debug ):
 else:
 	default_timeout = 1   # 1 second timeout
 
-# Firmware version
-global firmware_version
-
 
 ####################################################################################
 # Shared Procedures                                                                #
@@ -568,8 +565,7 @@ def connect( Args, serialObj ):
     # Port Option (-p)                                                           #
 	##############################################################################
 	elif ( user_option == '-p' ):
-		# Bring in the global "firmware_version" variable
-		global firmware_version
+		firmware_version = None
 		
 		# Open the serial comport
 		serialObj = comports(
