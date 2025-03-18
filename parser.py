@@ -55,16 +55,13 @@ def converter(txt_File, output_File):
 #                                                                                  #
 ####################################################################################
 def parse_output( Args, serialObj, show_output = True ):
-     filename = input("Enter file path")
+     filename = input("Enter file path: ")
      if (filename == ""):
-        print("please specify file path")
+        print("Please specify file path: ")
      try:
          f = open(filename, 'r')
      except OSError:
-         print("Could not read file")
-     reader = "readerCSV.csv"
+         print("Could not read file: ")
+     reader = "output/parsedCSV.csv"
      converter(filename, reader)
-     with open(reader, 'r') as f:
-         for line in f:
-             print(line)
 ## parse_output ##
