@@ -42,19 +42,19 @@ def converter(txt_File, output_File):
     df = pd.DataFrame.from_records(data, columns=labels)
     df.to_csv(output_File,index=False)
     print("Done! Total Length: " + str(len(labels)))
-converter('output\\flight_comp_rev2_sensor_data_cool.txt', 'feb0425.csv')
+#converter('output\flight_comp_rev2_sensor_data_cool.txt', 'output\feb0425.csv')
 
 
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
-# 		readdata                                                                   #
+# 		parse-output                                                               #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 # 		Reads CSV data from txt file                                               #
 #                                                                                  #
 ####################################################################################
-def readdata( Args, serialObj, show_output = True ):
+def parse_output( Args, serialObj, show_output = True ):
      filename = Args[0]
      if (filename == ""):
         print("please specify file name")
@@ -67,4 +67,4 @@ def readdata( Args, serialObj, show_output = True ):
      with open(reader, 'r') as f:
          for line in f:
              print(line)
-## readData ##
+## parse_output ##
