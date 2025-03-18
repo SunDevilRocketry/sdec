@@ -31,9 +31,11 @@ def terminal_access(Args, serialObj):
 
 
 def fin_setup(Args, serialObj):
-    print("FIN Setup")
-    print("CONTROLS: j/k RIGHT-/+, f/d LEFT-/+")
-    print("Press q to exit")
+    print( "FIN Setup" )
+    print( "CONTROLS:" )
+    print( "SERVO 1: d/f -/+, SERVO 2: j/k -/+" )
+    print( "SERVO 3: e/r -/+, SERVO 4: u/i -/+" )
+    print( "Press q to exit" )
     serialObj.sendByte(b'\x21')
     handle = partial(fin_handle_key_press, serialObj=serialObj)
     with Listener(
@@ -109,17 +111,25 @@ def save_preset(Args, serialObj):
 
 def fin_handle_key_press(key, serialObj):
     match key.char:
-        case 'j':
-            serialObj.sendByte(b'\x13')
-        case 'k':
-            serialObj.sendByte(b'\x12')
-        case 'f':
+        case 'f': # Servo 1 -
             serialObj.sendByte(b'\x11')
-        case 'd':
+        case 'd': # Servo 1 +
             serialObj.sendByte(b'\x10')
-        case 's':
+        case 'k': # Servo 2 -
+            serialObj.sendByte(b'\x13')
+        case 'j': # Servo 2 +
+            serialObj.sendByte(b'\x12')
+        case 'r': # Servo 3 -
+            serialObj.sendByte(b'\x31')
+        case 'e': # Servo 3 +
+            serialObj.sendByte(b'\x30')
+        case 'i': # Servo 4 -
+            serialObj.sendByte(b'\x33')
+        case 'u': # Servo 4 +
+            serialObj.sendByte(b'\x32')
+        case 's': # Save (unused)
             serialObj.sendByte(b'\x14')
-        case 'q':
+        case 'q': # Quit
             serialObj.sendByte(b'\x15')
             return False
         case _:
