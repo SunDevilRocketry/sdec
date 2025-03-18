@@ -112,21 +112,21 @@ def save_preset(Args, serialObj):
 def fin_handle_key_press(key, serialObj):
     match key.char:
         case 'f': # Servo 1 -
-            serialObj.sendByte(b'\x11')
-        case 'd': # Servo 1 +
             serialObj.sendByte(b'\x10')
+        case 'd': # Servo 1 +
+            serialObj.sendByte(b'\x11')
         case 'k': # Servo 2 -
-            serialObj.sendByte(b'\x13')
-        case 'j': # Servo 2 +
             serialObj.sendByte(b'\x12')
+        case 'j': # Servo 2 +
+            serialObj.sendByte(b'\x13')
         case 'r': # Servo 3 -
-            serialObj.sendByte(b'\x31')
-        case 'e': # Servo 3 +
             serialObj.sendByte(b'\x30')
+        case 'e': # Servo 3 +
+            serialObj.sendByte(b'\x31')
         case 'i': # Servo 4 -
-            serialObj.sendByte(b'\x33')
-        case 'u': # Servo 4 +
             serialObj.sendByte(b'\x32')
+        case 'u': # Servo 4 +
+            serialObj.sendByte(b'\x33')
         case 's': # Save (unused)
             serialObj.sendByte(b'\x14')
         case 'q': # Quit
