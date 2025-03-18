@@ -41,7 +41,7 @@ def converter(txt_File, output_File):
 
     df = pd.DataFrame.from_records(data, columns=labels)
     df.to_csv(output_File,index=False)
-    print("Done! Total Length: " + str(len(labels)))
+    print("Done! Number of columns: " + str(len(labels)))
 #converter('output\flight_comp_rev2_sensor_data_cool.txt', 'output\feb0425.csv')
 
 
@@ -61,7 +61,12 @@ def parse_output( Args, serialObj, show_output = True ):
      try:
          f = open(filename, 'r')
      except OSError:
-         print("Could not read file: ")
+         try:
+            filename = "output/" + filename
+            f = open(filename, 'r')
+         except OSError:
+            print("Could not read file: ")
+            return
      reader = "output/parsedCSV.csv"
      converter(filename, reader)
 ## parse_output ##
