@@ -53,6 +53,80 @@ supported_boards = [
 ####################################################################################
 #                                                                                  #
 # COMMAND:                                                                         #
+#         servo                                                                    #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#         Turn and reset servos in Flight Computer                                 #
+#                                                                                  #
+####################################################################################
+def servo( Args, serialObj ):
+     # Options Dictionary
+    servo_inputs = { 
+                       'help'   : {},
+                       'sweep' : {},
+                       'reset': {},
+                         }
+    # Maximum number of arguments
+    max_args = 2
+
+    # Opcode
+    opcode = b'\x08'
+
+    # Subcommand opcodes
+    sub_opcodes = {
+                  'sweep' : b'\x00',
+                  'reset':  b'\x01'
+                  }
+
+    # Command type -- subcommand function
+    command_type = 'subcommand'
+
+    ################################################################################
+    # Basic inputs parsing                                                         #
+    ################################################################################
+    parse_check = commands.parseArgs( Args              ,
+                                      max_args          ,
+                                      servo_inputs,
+                                      command_type )
+    if ( not parse_check ):
+        return serialObj # user inputs failed parse tests
+
+    ################################################################################
+    # Command Specific Parsing                                                     #
+    ################################################################################
+
+    # Check for active flight computer connection running the dual deploy firmware
+    if ( serialObj.controller not in supported_boards ):
+        print( "Error: The servo command requires an active connection to " +
+               "a flight computer.")
+        return serialObj
+    
+    # Check that the flight computer is running the dual deploy firmware
+    if ( serialObj.firmware != "Terminal" or serialObj.firmware != "Active Roll"):
+        print( "Error: The servo command requires the flight computer to " + 
+               "be running the terminal or active roll firmware. The flight computer is "    + 
+               "currently running the " + serialObj.firmware + " firmware" )
+        return serialObj
+
+    # Set the subcommand
+    subcommand = Args[0]
+
+    if (subcommand == "sweep"):
+        serialObj.sendByte( opcode )
+        serialObj.sendByte( sub_opcodes["sweep"] )
+        degree = Args[1]
+        serialObj.sendByte( degree )
+        return serialObj
+    elif (subcommand == "reset"):
+        serialObj.sendByte( opcode )
+        serialObj.sendByte( sub_opcodes["reset"] )
+    
+
+    return serialObj
+
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
 #         dual_deploy                                                              #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
