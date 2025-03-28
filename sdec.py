@@ -254,14 +254,14 @@ if __name__ == '__main__':
     # Initialize Serial Port Object
     terminalSerObj = terminalData()
 
-    # Look for possible connections
-    avail_ports = serial.tools.list_ports.comports()
-    for port_num, port in enumerate( avail_ports ):
-        if ( 'CP2102' in port.description ):
-            # Connect
-            port_num = port.device
-            connect_args  = [ '-p', port_num]
-            commands.connect( connect_args, terminalSerObj )
+    # # Look for possible connections
+    # avail_ports = serial.tools.list_ports.comports()
+    # for port_num, port in enumerate( avail_ports ):
+    #     if ( 'CP2102' in port.description ):
+    #         # Connect
+    #         port_num = port.device
+    #         connect_args  = [ '-p', port_num]
+    #         commands.connect( connect_args, terminalSerObj )
             
     # Display command prompt
     while(True):

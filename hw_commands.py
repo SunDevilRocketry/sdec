@@ -553,7 +553,7 @@ def sensor( Args, serialObj, show_readouts = True ):
                 print( readout_formatted )
                 readouts.append(readout_formatted)
             
-        return serialObj, readouts
+        return serialObj, serialObj.sensor_readouts
 
     ################################################################################
     # Subcommand: sensor pplot                                                      #
