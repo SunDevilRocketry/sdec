@@ -274,6 +274,49 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
 ####################################################################################
 #                                                                                  #
 # PROCEDURE:                                                                       #
+#         get_preset_values                                                        #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+#        Gets the preset values for a given controller type                        #
+#                                                                                  #
+####################################################################################
+def get_preset_values( firmware, rx_byte_blocks, format = 'converted' ):
+
+    # Convert raw bytes into integer types
+    preset_bytes = rx_byte_blocks[0]
+    preset_bytes_int = []
+    for sensor_byte in preset_bytes:
+        preset_bytes_int.append( ord( sensor_byte ) )
+
+    # Parse integer bytes into preset values
+    # Start with save bits (universal)
+    preset_values = []
+    preset_values.append( preset_bytes_int[0] )
+    preset_values.append( preset_bytes_int[1] )
+
+    # Convert values and append to preset values
+    preset_frame_dict = {}
+    index = 2
+    for i, sensor in enumerate( preset_sizes[ firmware ] ):
+        measurement = 0
+        float_bytes = []
+        for byte_num in range( preset_sizes[firmware][sensor] ):
+            if ( preset_formats[firmware][sensor] != float ):
+                measurement += ( preset_bytes_int[index + byte_num] << 8*byte_num )
+            else:
+                float_bytes.append( ( preset_bytes_int[index + byte_num] ).to_bytes(1, 'big' ) ) 
+        if ( preset_formats[firmware][sensor] == float ):
+            measurement = byte_array_to_float( float_bytes )
+        preset_values.append(measurement)
+        index += preset_sizes[firmware][sensor]
+
+    return preset_values
+## get_preset_values ##
+
+
+####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
 #         format_sensor_readout                                                    #
 #                                                                                  #
 # DESCRIPTION:                                                                     #
@@ -285,9 +328,14 @@ def format_sensor_readout( controller, sensor, readout ):
     # Readout units
     units = sensor_units[controller][sensor] 
 
+    readout_datatype = sensor_formats[controller][sensor]
+
     # Rounded readout
     if ( units != None ):
-        readout_str = "{:.3f}".format( readout )
+        if readout_datatype == chr:
+            readout_str = chr(readout)
+        else:
+            readout_str = "{:.3f}".format( readout )
     else:
         readout_str = str( readout )
 
@@ -521,7 +569,7 @@ def sensor( Args, serialObj, show_readouts = True ):
                                      sensor_dump_size_bytes, 
                                      "big" )
 
-        print(sensor_dump_size_bytes)
+        # print(sensor_dump_size_bytes)
 
         # Readouts list for SDEC-API
         readouts = []
@@ -533,7 +581,7 @@ def sensor( Args, serialObj, show_readouts = True ):
             sensor_bytes_list.append( to_append)
 
 
-        print(sensor_bytes_list)
+        # print(sensor_bytes_list)
 
         # Get readouts from byte array
         serialObj.sensor_readouts = get_sensor_readouts( 
@@ -1317,51 +1365,23 @@ def flash(Args, serialObj):
 
         # Record ending time
         extract_time = time.perf_counter() - start_time
-
-        # Current Preset Format (1/30/25):
-        # NOTE: Potential issue with float conversion (big vs. little endianness)
-        # 2 bytes: Save bits
-        # 24 bytes: IMU struct
-        #   4 bytes each x6: acceleration x,y,z // gyro x,y,z
-        # 8 bytes: Baro struct
-        #   4 bytes each x2: baro pressure, baro temp
-        # 4 bytes: Servo struct
-        #   1 byte each x4: servo 1-4
-
-        # Convert raw bytes into integer types
-        preset_bytes = rx_byte_blocks[0]
-        preset_bytes_int = []
-        for sensor_byte in preset_bytes:
-            preset_bytes_int.append( ord( sensor_byte ) )
-
-        # Parse integer bytes into preset values
-        preset_values = []
-        preset_values.append( preset_bytes_int[0] )
-        preset_values.append( preset_bytes_int[1] )
-        #print ( "BYTES:" )
-        #print( preset_bytes )
-        for i in range(8): # 0-7
-            temp_array = []
-            for j in range(4): # 0-3
-                temp_array.append(preset_bytes_int[(4 * i) + j + 2].to_bytes(1,'big'))
-            preset_values.append( byte_array_to_float(temp_array) )
-        preset_values.append( preset_bytes_int[34] )
-        preset_values.append( preset_bytes_int[35] )
-        preset_values.append( preset_bytes_int[36] )
-        preset_values.append( preset_bytes_int[37] )
-
-        with open( "output/preset_values.txt", 'w' ) as file:
-            for value in preset_values:
-                file.write( str( value ) )
-                file.write( '\t' )
-            file.write( '\n' )
+        num_preset_frames = 0
+        if not ( serialObj.firmware == None ):
+            num_preset_frames = preset_frames[serialObj.firmware]
+            if (num_preset_frames > 0):
+                preset_values = get_preset_values( serialObj.firmware, rx_byte_blocks )
+                with open( preset_filenames[serialObj.firmware], 'w' ) as file:
+                    for value in preset_values:
+                        file.write( str( value ) )
+                        file.write( '\t' )
+                    file.write( '\n' )
 
         # Convert the data from bytes to measurement readouts
         sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
-            for sensor_frame in sensor_frames[1:]: # Start from index 1 instead of index 0
+            for sensor_frame in sensor_frames[num_preset_frames:]: # Start from first non-preset frame instead of index 0
                 for val in sensor_frame:
                     file.write( str( val ) )
                     file.write( '\t')

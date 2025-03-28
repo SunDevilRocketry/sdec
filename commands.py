@@ -513,9 +513,6 @@ def connect( Args, serialObj ):
 	# Command type -- subcommand function
 	command_type     = 'default'
 
-	# Firmware version
-	firmware_version = None
-
 	##############################################################################
 	# Basic inputs parsing                                                       #
 	##############################################################################
@@ -570,6 +567,8 @@ def connect( Args, serialObj ):
     # Port Option (-p)                                                           #
 	##############################################################################
 	elif ( user_option == '-p' ):
+		firmware_version = None
+		
 		# Open the serial comport
 		serialObj = comports(
                             ['-c', user_port, '921600'], 

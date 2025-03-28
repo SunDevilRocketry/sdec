@@ -36,6 +36,7 @@ import engineController # engine controller commands
 import flightComputer   # flight computer commands
 import canard_fc        # active roll application commands
 from   config import *  # global settings
+import parser
 
 
 ####################################################################################
@@ -73,8 +74,9 @@ command_list = {
                  "fin-setup"  : canard_fc.fin_setup              ,
                  "pid-setup"  : canard_fc.pid_setup              ,
                  "access-terminal": canard_fc.terminal_access    ,
-                 "read-preset": canard_fc.read_preset,
-                 "save-preset": canard_fc.save_preset
+                 "read-preset": canard_fc.read_preset            ,
+                 "save-preset": canard_fc.save_preset            ,
+                 "parse-output": parser.parse_output
                 }
 
 
@@ -151,11 +153,11 @@ class terminalData:
 
 	# List available serial port connections
     def list_ports(self):
-	    available_ports = serial.tools.list_ports.comports()
-	    available_port_names = []
-	    for port in available_ports:
-		    available_port_names.append(port.device)
-	    return available_port_names
+        available_ports = serial.tools.list_ports.comports()
+        available_port_names = []
+        for port in available_ports:
+            available_port_names.append(port.device)
+        return available_port_names
 
     # Write a single Byte to the serial port
     def sendByte(self, byte):
@@ -280,6 +282,10 @@ if __name__ == '__main__':
         else:
             terminalSerObj = execute
 ## parseInput ##
+
+
+        
+
 
 
 ####################################################################################

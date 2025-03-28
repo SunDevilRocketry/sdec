@@ -55,6 +55,21 @@ controller_descriptions = {
                   b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)"
                           }
 
+# Firmware Ids
+firmware_ids = {
+                b'\x01': "Terminal"   ,
+				b'\x02': "Data Logger",
+				b'\x03': "Dual Deploy",
+                b'\x04': "Hotfire",
+                b'\x05': "Active Roll"
+               }
+			
+# Boards that report firmware ids with the connect command
+firmware_id_supported_boards = [
+                controller_names[4], # Flight Computer Rev 2.0
+                controller_names[6]  # Valve Controller Rev 3.0
+                               ]
+
 # Lists of sensors on each controller
 controller_sensors = {
                 # Engine Controller rev 4.0
@@ -114,8 +129,17 @@ controller_sensors = {
                            "pos"   :        "Position",
                            "pres" :         "Barometric Pressure   ",
                            "temp" :         "Barometric Temperature",
-                           "alt" :         "Barometric Altitude",
-                           "bvelo" :         "Barometric Velocity",
+                           "alt" :          "Barometric Altitude",
+                           "bvelo" :        "Barometric Velocity",
+                           "altg" :         "GPS Altitude (ft)",
+                           "speedg":        "GPS Speed (KmH)",
+                           "utc_time":      "GPS UTC time",
+                           "long":          "GPS Longitude (deg)",
+                           "lat":           "GPS Latitude (deg)",
+                           "ns":            "GPS North/South",
+                           "ew":            "GPS East/West",
+                           "gll_s":         "GPS GLL status",
+                           "rmc_s":         "GPS RMC status"
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -204,10 +228,19 @@ sensor_sizes = {
                            "velo_y"   :       4,
                            "velo_z"   :       4,
                            "pos"   :        4,
-                            "pres" : 4,
+                           "pres" : 4,
                            "temp" : 4,
                            "alt" : 4,
                            "bvelo" : 4,
+                           "altg" :         4,
+                           "speedg":        4,
+                           "utc_time":      4,
+                           "long":          4,
+                           "lat":           4,
+                           "ns":            1,
+                           "ew":            1,
+                           "gll_s":         1,
+                           "rmc_s":         1,
                            },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -300,6 +333,15 @@ sensor_codes = {
                            "temp" : b'\x1A',
                            "alt" : b'\x1B',
                            "bvelo" : b'\x1C',
+                           "altg" :     b'\x1D',
+                           "speedg":        b'\x1E',
+                           "utc_time":      b'\x1F',
+                           "long":          b'\x20',
+                           "lat":           b'\x21',
+                           "ns":            b'\x22',
+                           "ew":            b'\x23',
+                           "gll_s":         b'\x24',
+                           "rmc_s":         b'\x25'
                            },
                 # Flight Computer Lite Rev 1.0
                 controller_names[5]: {
@@ -340,7 +382,7 @@ sensor_frame_sizes = {
                     controller_names[3]: 32,
 
                     # Flight Computer rev 2.0
-                    controller_names[4]: 102,
+                    controller_names[4]: 126,
 
                     # Flight Computer Lite rev 1.0
                     controller_names[5]: 12,
@@ -353,7 +395,7 @@ sensor_frame_sizes = {
 
                     # Engine Controller rev 5.0
                     controller_names[7]: 44
-                     }
+                    }
 
 # Sensor raw readout conversion functions
 sensor_conv_funcs = {
@@ -416,6 +458,15 @@ sensor_conv_funcs = {
                            "temp" : sensor_conv.baro_temp ,
                            "alt"   :       None,
                            "bvelo"   :       None,
+                           "altg" :         None,
+                           "speedg":        None,
+                           "utc_time":      None,
+                           "long":          None,
+                           "lat":           None,
+                           "ns":            None,
+                           "ew":            None,
+                           "gll_s":         None,
+                           "rmc_s":         None
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -507,7 +558,16 @@ sensor_units = {
                            "pres" : "kPa",
                            "temp" : "C",
                            "alt" : "m",
-                           "bvelo" : "m/s" 
+                           "bvelo" : "m/s",
+                           "altg" :         "ft",
+                           "speedg":        "km/h",
+                           "utc_time":      "s",
+                           "long":          "deg",
+                           "lat":           "deg",
+                           "ns":            "N/S",
+                           "ew":            "E/W",
+                           "gll_s":         None,
+                           "rmc_s":         None
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -590,6 +650,15 @@ sensor_indices = {
                             "temp" : 27,
                             "alt" : 28,
                             "bvelo" : 29,
+                            "altg" : 30,
+                            "speedg": 31,
+                            "utc_time": 32,
+                            "long": 33,
+                            "lat": 34,
+                            "ns": 35,
+                            "ew": 36,
+                            "gll_s": 37,
+                            "rmc_s": 38
                                        },
                 # Flight Computer Lite rev 1.0
                 controller_names[5]: {
@@ -669,6 +738,15 @@ sensor_formats = {
                            "temp" : float,
                            "alt" : float,
                            "bvelo" : float,
+                           "altg" :         float,
+                           "speedg":        float,
+                           "utc_time":      float,
+                           "long":          float,
+                           "lat":           float,
+                           "ns":            chr,
+                           "ew":            chr,
+                           "gll_s":         chr,
+                           "rmc_s":         chr,
                            },
                 # Flight Computer rev 1.0
                 controller_names[5]: {
@@ -716,20 +794,93 @@ sensor_data_filenames = {
                         controller_names[7]: "output/engine_controller_rev5_sensor_data.txt"
                         }
 
-# Firmware Ids
-firmware_ids = {
-                b'\x01': "Terminal"   ,
-				b'\x02': "Data Logger",
-				b'\x03': "Dual Deploy",
-                b'\x04': "Hotfire",
-                b'\x05': "Active Roll"
-               }
-			
-# Boards that report firmware ids with the connect command
-firmware_id_supported_boards = [
-                controller_names[4], # Flight Computer Rev 2.0
-                controller_names[6]  # Valve Controller Rev 3.0
-                               ]
+# How many sensor frames are needed for the presets
+preset_frames = { 
+            firmware_ids[b'\x01'] : 0,
+            firmware_ids[b'\x02'] : 1, # Data Logger
+            firmware_ids[b'\x03'] : 0,
+            firmware_ids[b'\x04'] : 0,
+            firmware_ids[b'\x05'] : 1, # Active Roll
+}
+
+# Preset struct formats
+preset_sizes = {
+            # Data Logger
+            firmware_ids[b'\x02']: {
+                # IMU offsets (24 bytes)
+                "accX" : 4,
+                "accY" : 4,
+                "accZ" : 4,
+                "gyroX": 4,
+                "gyroY": 4,
+                "gyroZ": 4,
+                # Baro preset (8 bytes)
+                "baroPres" : 4,
+                "baroTemp" : 4
+            },
+            # Canard
+            firmware_ids[b'\x05']: {
+                # IMU offsets (24 bytes)
+                "accX" : 4,
+                "accY" : 4,
+                "accZ" : 4,
+                "gyroX": 4,
+                "gyroY": 4,
+                "gyroZ": 4,
+                # Baro preset (8 bytes)
+                "baroPres" : 4,
+                "baroTemp" : 4,
+                # Servo presets (4 bytes)
+                "servo1" : 1,
+                "servo2" : 1,
+                "servo3" : 1,
+                "servo4" : 1
+            }
+}
+
+# Sensor raw readout formats
+preset_formats = {
+            # Data Logger
+            firmware_ids[b'\x02']: {
+                # IMU offsets (24 bytes)
+                "accX" : float,
+                "accY" : float,
+                "accZ" : float,
+                "gyroX": float,
+                "gyroY": float,
+                "gyroZ": float,
+                # Baro preset (8 bytes)
+                "baroPres" : float,
+                "baroTemp" : float
+            },
+            # Canard
+            firmware_ids[b'\x05']: {
+                # IMU offsets (24 bytes)
+                "accX" : float,
+                "accY" : float,
+                "accZ" : float,
+                "gyroX": float,
+                "gyroY": float,
+                "gyroZ": float,
+                # Baro preset (8 bytes)
+                "baroPres" : float,
+                "baroTemp" : float,
+                # Servo presets (4 bytes)
+                "servo1" : int,
+                "servo2" : int,
+                "servo3" : int,
+                "servo4" : int
+            }
+}
+
+# Preset Data Filenames
+preset_filenames = {
+        # Data logger presets
+        firmware_ids[b'\x02']: "output/data_logger_preset_data.txt",
+        # Canard Presets
+        firmware_ids[b'\x05']: "output/active_roll_preset_data.txt"
+}
+
 
 ##################################################################################
 # END OF FILE                                                                    #
