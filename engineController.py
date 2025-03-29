@@ -349,9 +349,13 @@ def telreq( Args, serialObj, show_output = True ):
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 # 		Pre-fire purge, initiates a system purge prior to hotfire                  #
+#       Sets state and status. If engine_status is false, that                     #
+#       means the stage has failed.                                                #
 #                                                                                  #
 ####################################################################################
 def pfpurge( Args, serialObj, show_output = True ):
+	# If serialObj.get_engine_status = False, then that means the state after its
+	# current state has failed
 	################################################################################
     # Local Variables                                                              #
 	################################################################################
@@ -382,16 +386,45 @@ def pfpurge( Args, serialObj, show_output = True ):
 
 	# Send opcode
 	serialObj.sendByte( opcode )
-
+	# We set the state. If on a state and a status is false after the function, it failed,
+	# and if true, it was successful.
+	serialObj.set_engine_state( "Pre-Fire Purge State" )
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Pre-Hotfire purge sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Pre-Fire Purge State" )
-	elif ( response == no_ack_byte ):
-		print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
-	else:
-		print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte): # Apparently this typecast is necessary in Python
+			print( "Pre-Hotfire purge sequence command sucessfully received" )
+		case bytes(no_ack_byte):
+			print( "Pre-Hotfire purge unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj # Note: These returns abort the the function, since we shouldn't bother if a fail occurs
+		case _:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	response = serialObj.readByte()
+	# Wait for and parse start signal
+	match response:
+		case bytes(ignite_pre_fire_start):
+			print( "Pre-Hotfire purge started." )
+		case _:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	response = serialObj.readByte()
+	# Wait for success or failure signal
+	match response:
+		case bytes(ignite_pre_fire_done):
+			print( "Pre-Hotfire purge sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_pre_fire_fail):
+			print( "Pre-Hotfire purge unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+		case _:
+			print( "Pre-Hotfire purge unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
 	return serialObj
 ## pfpurge ##
 
@@ -437,15 +470,48 @@ def fillchill( Args, serialObj, show_output = True ):
 	# Send opcode
 	serialObj.sendByte( opcode )
 
+	# We set the state. If on a state and a status is false after the function, it failed,
+	# and if true, it was successful.
+	serialObj.set_engine_state( "Fill and Chill State" )
+
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Fill and Chill sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Fill and Chill State" )
-	elif ( response == no_ack_byte ):
-		print( "Fill and Chill unsucessful. No response from engine controller" )
-	else:
-		print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte):
+			print( "Fill and Chill sequence sucessfully initiated" )
+		case bytes(no_ack_byte):
+			print( "Fill and Chill unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj # Abort rest of function
+		case _:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj # Abort rest of function
+
+	# Wait for and parse start signal
+	response = serialObj.readByte()
+
+	match response:
+		case bytes(ignite_fill_chill_start):
+			print( "Fill and Chill started." )
+		case _:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+	
+	# Wait for success or failure signal
+	response = serialObj.readByte()
+
+	match( response ):
+		case bytes(ignite_fill_chill_done):
+			print( "Fill and Chill sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_fill_chill_fail):
+			print( "Fill and Chill unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+		case _:
+			print( "Fill and Chill unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
 	return serialObj
 ## fillchill ##
 
@@ -491,15 +557,44 @@ def standby( Args, serialObj, show_output = True ):
 	# Send opcode
 	serialObj.sendByte( opcode )
 
+	serialObj.set_engine_state( "Standby State" )
+
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Standby sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Standby State" )
-	elif ( response == no_ack_byte ):
-		print( "Standby unsucessful. No response from engine controller" )
-	else:
-		print( "Standby unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte):
+			print( "Standby sequence sucessfully initiated" )
+		case bytes(no_ack_byte):
+			print( "Standby unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj
+		case _:
+			print( "Standby unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	# Wait for and parse start signal
+	response = serialObj.readByte()
+	match response:
+		case bytes(ignite_stand_by_start):
+			print( "Standby started." )
+		case _:
+			print( "Standby unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+	response = serialObj.readByte()
+	# Wait for success or failure signal
+	match response:
+		case bytes(ignite_stand_by_done):
+			print( "Standby sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_stand_by_done):
+			print( "Standby unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+		case _:
+			print( "Standby unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
 	return serialObj
 ## standby ##
 
@@ -544,16 +639,44 @@ def hotfire( Args, serialObj, show_output = True ):
 
 	# Send opcode
 	serialObj.sendByte( opcode )
+	serialObj.set_engine_state( "Fire State" )
 
 	# Wait for and parse acknowledge signal
 	response = serialObj.readByte()
-	if ( response == ack_byte ):
-		print( "Ignition sequence sucessfully initiated" )
-		serialObj.set_engine_state( "Fire State" )
-	elif ( response == no_ack_byte ):
-		print( "Ignition unsucessful. No response from engine controller" )
-	else:
-		print( "Ignition unsucessful. Timeout or unrecognized response" )
+	match response:
+		case bytes(ack_byte): # Apparently this typecast is necessary in Python
+			print( "Ignition sequence sucessfully initiated" )
+		case bytes(no_ack_byte):
+			print( "Ignition unsucessful. No response from engine controller" )
+			serialObj.set_engine_status( False )
+			return serialObj # Note: These returns abort the the function, since we shouldn't bother if a fail occurs
+		case _:
+			print( "Ignition unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+
+		response = serialObj.readByte()
+	# Wait for and parse start signal
+	match response:
+		case bytes(ignite_hot_fire_start):
+			print( "Ignition started." )
+		case _:
+			print( "Ignition unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
+			return serialObj
+		
+		response = serialObj.readByte()
+	# Wait for success or failure signal
+	match response:
+		case bytes(ignnite_hot_fire_done):
+			print( "Ignition sucessful." )
+			serialObj.set_engine_status( True )
+		case bytes(ignite_hot_fire_fail):
+			print( "Ignition unsucessful. Controller detected error" )
+			serialObj.set_engine_status( False )
+		case _:
+			print( "Ignition unsucessful. Timeout or unrecognized response" )
+			serialObj.set_engine_status( False )
 	return serialObj
 ## hotfire ##
 
