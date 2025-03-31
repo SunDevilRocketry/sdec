@@ -112,6 +112,9 @@ def servo( Args, serialObj ):
     subcommand = Args[0]
 
     if (subcommand == "sweep"):
+        if (len(Args) != 2):
+            print("Make sure you specify the angle!")
+            return serialObj
         serialObj.sendByte( opcode )
         serialObj.sendByte( sub_opcodes["sweep"] )
         degree = int(Args[1]).to_bytes(1,
