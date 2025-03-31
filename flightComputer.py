@@ -114,8 +114,12 @@ def servo( Args, serialObj ):
     if (subcommand == "sweep"):
         serialObj.sendByte( opcode )
         serialObj.sendByte( sub_opcodes["sweep"] )
-        degree = Args[1]
-        serialObj.sendByte( int(degree) )
+        degree = int(Args[1]).to_bytes(1,
+                                  byteorder = "big",
+                                  signed = False)
+
+
+        serialObj.sendByte( degree )
         return serialObj
     elif (subcommand == "reset"):
         serialObj.sendByte( opcode )
