@@ -102,7 +102,7 @@ def servo( Args, serialObj ):
         return serialObj
     
     # Check that the flight computer is running the dual deploy firmware
-    if ( serialObj.firmware != "Terminal" or serialObj.firmware != "Active Roll"):
+    if ( serialObj.firmware != "Terminal" and serialObj.firmware != "Active Roll"):
         print( "Error: The servo command requires the flight computer to " + 
                "be running the terminal or active roll firmware. The flight computer is "    + 
                "currently running the " + serialObj.firmware + " firmware" )
