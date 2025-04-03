@@ -204,7 +204,7 @@ def get_sensor_frame_bytes( serialObj ):
     # Determine the size of the frame
     frame_size = sensor_frame_sizes[serialObj.controller]
 
-    if serialObj.firmware == "Active Roll":
+    if serialObj.controller in firmware_id_supported_boards and serialObj.firmware == "Active Roll":
         frame_size += 4
 
     # Get bytes
@@ -938,7 +938,7 @@ def flash(Args, serialObj):
     
     # Extract blocks
     extract_frame_size       = sensor_frame_sizes[serialObj.controller]
-    if serialObj.firmware == "Active Roll":
+    if serialObj.controller in firmware_id_supported_boards and serialObj.firmware == "Active Roll":
         extract_frame_size += 4
     extract_num_frames       = 524288 // extract_frame_size
     extract_num_unused_bytes = 524288 %  extract_frame_size
