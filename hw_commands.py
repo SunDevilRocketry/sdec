@@ -222,7 +222,7 @@ def get_sensor_frame_bytes( serialObj ):
 #        Converts a list of sensor frames into measurements                        #
 #                                                                                  #
 ####################################################################################
-def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
+def get_sensor_frames( controller, firmware, sensor_frames_bytes, format = 'converted' ):
 
     # Convert to integer format
     sensor_frames_int = []
@@ -268,11 +268,12 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             for val in sensor_vals_list:
                 sensor_frame.append( val )
             
-            if controller_codes[controller] == b'x05' and firmware_ids[controller] == "Active Roll":
+            if controller in firmware_id_supported_boards and firmware == 'Active Roll':
                 # parse the word at bytes 126-129
                 pid_frame = int_frame[-4:]
                 float_bytes = []
-                float_bytes.append(pid_frame.to_bytes(1, 'big'))
+                for frame in pid_frame:
+                    float_bytes.append(frame.to_bytes(1, 'big'))
                 measurement = byte_array_to_float(float_bytes)
                 sensor_frame.append(measurement)
                 # append float to sensor_frame.append(float)
@@ -937,6 +938,8 @@ def flash(Args, serialObj):
     
     # Extract blocks
     extract_frame_size       = sensor_frame_sizes[serialObj.controller]
+    if serialObj.firmware == "Active Roll":
+        extract_frame_size += 4
     extract_num_frames       = 524288 // extract_frame_size
     extract_num_unused_bytes = 524288 %  extract_frame_size
 
@@ -1364,6 +1367,8 @@ def flash(Args, serialObj):
         #print("First block length: " + str(len(rx_byte_blocks[0])))
         #print("First block contents: " + str(rx_byte_blocks[0]))
 
+        print( "Parsing frames..." )
+
         # Receive the unused bytes
         unused_bytes = serialObj.readBytes( extract_num_unused_bytes )
 
@@ -1382,9 +1387,13 @@ def flash(Args, serialObj):
                         file.write( str( value ) )
                         file.write( '\t' )
                     file.write( '\n' )
+        
+        print( "Presets parsed and written!" )
 
         # Convert the data from bytes to measurement readouts
-        sensor_frames = get_sensor_frames( serialObj.controller, rx_byte_blocks )
+        sensor_frames = get_sensor_frames( serialObj.controller, serialObj.firmware, rx_byte_blocks )
+
+        print( "Flash frames parsed!" )
 
         # Export the data to txt files
         with open( sensor_data_filenames[serialObj.controller], 'w' ) as file:
@@ -1393,6 +1402,8 @@ def flash(Args, serialObj):
                     file.write( str( val ) )
                     file.write( '\t')
                 file.write( '\n' )    
+
+        print( "Flash frames written!" )
 
         # Parse return code
         if (return_code == b''):
