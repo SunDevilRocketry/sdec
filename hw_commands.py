@@ -204,6 +204,9 @@ def get_sensor_frame_bytes( serialObj ):
     # Determine the size of the frame
     frame_size = sensor_frame_sizes[serialObj.controller]
 
+    if serialObj.firmware == "Active Roll":
+        frame_size += 4
+
     # Get bytes
     rx_bytes = serialObj.readBytes( frame_size )
     return rx_bytes
@@ -264,6 +267,16 @@ def get_sensor_frames( controller, sensor_frames_bytes, format = 'converted' ):
             sensor_vals_list = list( conv_raw_sensor_readouts( controller, sensor_frame_dict ).values() )
             for val in sensor_vals_list:
                 sensor_frame.append( val )
+            
+            if controller_codes[controller] == b'x05' and firmware_ids[controller] == "Active Roll":
+                # parse the word at bytes 126-129
+                pid_frame = int_frame[-4:]
+                float_bytes = []
+                float_bytes.append(pid_frame.to_bytes(1, 'big'))
+                measurement = byte_array_to_float(float_bytes)
+                sensor_frame.append(measurement)
+                # append float to sensor_frame.append(float)
+
             sensor_frames.append( sensor_frame )
         return sensor_frames
     elif ( format == 'bytes' ):
