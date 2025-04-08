@@ -2,6 +2,7 @@ import matplotlib.pyplot
 import pandas as pd
 import matplotlib
 from controller import controller_sensors, controller_names
+from controller import firmware_ids
 
             
 
@@ -12,10 +13,21 @@ length = len(data)
 
 def converter(txt_File, output_File):
     hardware = ""
-    for i in range(0,len(controller_names) - 1):
-        print(str(i) + ". " + controller_names[i])
+    for i in range(0,len(controller_names)):
+        print(str(i + 1) + ". " + controller_names[i])
     number = input("Which Hardware would you like to select? Enter a number. \n")
-    hardware = controller_names[int(number)]
+    
+    firmware_names = list(firmware_ids.values())
+    for i in range(0, len(firmware_names)):
+        print(str(i + 1) + ". " + firmware_names[i])
+    firmware_num = int(input("Which Firmware would you like to select? Enter a number. \n"))
+    
+    hardware = controller_names[int(number) - 1]
+    firmware = firmware_names[firmware_num - 1]
+
+    print(f"Selected Hardware: {hardware}")
+    print(f"Selected firmware: {firmware}")
+
     labels = [
             "save_bit",
             "acc_launch_flag",
@@ -33,6 +45,9 @@ def converter(txt_File, output_File):
     ]
     for value in controller_sensors[hardware]:
         labels.append(value)
+    if firmware_num - 1 == 4: # Checking if firmware = 4, the index of Active Roll 
+        labels.append("PID")
+
     with open(txt_File,'r') as file:
 
         for line in file:
