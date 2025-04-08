@@ -444,7 +444,10 @@ def ping( Args, serialObj ):
                 return serialObj
 
             # Set timeout
-            serialObj.timeout = input_timeout
+            if (timeout_supplied):
+                serialObj.timeout = input_timeout
+            else:
+                serialObj.timeout = 10
             serialObj.configComport()
 
             # Ping
@@ -456,6 +459,7 @@ def ping( Args, serialObj ):
             if ( pingData == b'' ):
                 print( "Timeout expired. No device " +
                        "response recieved." )
+                return serialObj, "Timeout expired. No device response."
             else:
                 ping_recieve_time = time.time()
                 ping_time = ping_recieve_time - ping_start_time
