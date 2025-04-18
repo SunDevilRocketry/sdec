@@ -100,8 +100,13 @@ def read_preset(Args, serialObj):
     print(f"Baro: {[baro_pres_float, baro_temp_float]}\n")
     print(f"Servo: {[rp_servo1, rp_servo2, rp_servo3, rp_servo4]}\n")
 
+    data_return = {}
+    data_return["acceleration"] = [accel_x_float, accel_y_float, accel_z_float]
+    data_return["gyro"] = [gyro_x_float, gyro_y_float, gyro_z_float]
+    data_return["baro"] = [baro_pres_float, baro_temp_float]
+    data_return["servo"] = [rp_servo1, rp_servo2, rp_servo3, rp_servo4]
 
-    return serialObj
+    return serialObj, data_return
 
 
 def save_preset(Args, serialObj):
