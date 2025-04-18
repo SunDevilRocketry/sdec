@@ -1,5 +1,5 @@
 # List of hardware to be controlled
-engine_hardware = ["sol1", "sol2", "valve1", "valve2", "stepper1", "stepper2"]
+engine_hardware = ["sol1", "sol2", "valve1", "valve2"]
 # List of commands to send
 engine_commands = ["ignite", 
                    "abort", 
@@ -12,7 +12,7 @@ engine_commands = ["ignite",
                    "stophotfire",
                    "stoppurge",
                    "loxpurge",
-                   "datalog"]
+                   "logdata"]
 
 # List of allowed variants of on or off
 allowed_on_off = ["on", "On", "oN", "ON", "1",
@@ -126,8 +126,9 @@ def print_sequence(sequence_dict):
 
 def main():
     sequence_list = parse_CSV("Liquid Avionics Sequencing Document - Sheet1.csv")
-    print(sequence_list)
+    #print(sequence_list)
     syntax_result = syntax_checking(sequence_list)
+    print("Parsing passed")
     if (not syntax_result[0]):
         print(f"Syntax Error: <{syntax_result[2]}> at command number: {syntax_result[1]}")
         exit(-1)
