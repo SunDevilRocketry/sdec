@@ -1,3 +1,10 @@
+# Custom syntax error
+class SyntaxErrorException(Exception):
+        def __init__(self, line_no, message):
+            super().__init__(f"Synax error <{message}> at line: {line_no}")
+            self.line_no = line_no
+            self.meessage = message
+
 # List of hardware to be controlled
 engine_hardware = ["sol1", "sol2", "valve1", "valve2"]
 # List of commands to send
@@ -21,8 +28,7 @@ allowed_on_off = ["on", "On", "oN", "ON", "1",
 
 # Syntax error function for parse_CSV() can use to throw syntax errors
 def syntax_error(line_no, message):
-    print(f"Syntax Error <{message}> at line: {line_no} while parsing")
-    exit(-1)
+    raise SyntaxErrorException(line_no, message)
 
 # Parse a given CSV file following the sample sheet rules
 # Place each time and command in a list which is appended to the sequence list
@@ -38,13 +44,20 @@ def parse_CSV(file):
             if start_char != ",":
                 if start_char.isdigit():
                     line = line.split(",")
+                    if (len(line) != 3):
+                        print(f"Unexpected line length '{line}'")
+                        return None
                     time = line[0]
-                    time = float(time)
+                    try:
+                        time = float(time)
+                    except ValueError:
+                        print(f"Incorrect time format '{time}'")
+                        return None
                     command = line[1].lower()
                     new_line = [time, command]
                     sequence_commands.append(new_line)
                 else:
-                    syntax_error(line_no, "Unexpected Character: Commands start with digits")
+                    syntax_error(line_no, "Unexpected Character: Commands must start with digits")
     
     return sequence_commands
 
@@ -75,17 +88,29 @@ def syntax_checking(sequence_list):
         # Determine if command is a hardware access or a command
         command = pair[1].split(" ")
         hardware_or_command = command[0]
-        on_or_off = command[1]
 
         if hardware_or_command in engine_hardware:
             # Command is to control hardware
+            # This means ON or OFF must be provided
+            on_or_off = command[1]
             if on_or_off not in allowed_on_off or on_or_off not in allowed_on_off:
                 # ON or OFF prompt not provided
                 return False, command_no, "Hardware Access requires an ON or OFF"
         elif hardware_or_command in engine_commands:
             # Command is to send an engine command
-            if on_or_off != "on":
-                # ON prompt not provided
+            # This means ON is optional
+            on_or_off
+            if (len(command) < 2):
+                # input not provided so make it ON
+                on_or_off = "ON"
+                # provide the data structure with the ON instruction
+                sequence_list[command_no - 1][1] += " on"
+            else:
+                # input provided
+                on_or_off = command[1]
+
+            if on_or_off not in allowed_on_off:
+                # ON prompt not provided and is not blank
                 return False, command_no, "Command send requires an ON"
         else:
             # Command does not exist
@@ -125,17 +150,25 @@ def print_sequence(sequence_dict):
             print(str(time) + ": " + hardware_or_command + " " + on_or_off)
 
 def main():
-    sequence_list = parse_CSV("Liquid Avionics Sequencing Document - Sheet1.csv")
-    #print(sequence_list)
-    syntax_result = syntax_checking(sequence_list)
-    print("Parsing passed")
-    if (not syntax_result[0]):
-        print(f"Syntax Error: <{syntax_result[2]}> at command number: {syntax_result[1]}")
-        exit(-1)
-    else:
-        print("Syntax checking passed")
-        sequence_dict = format_as_dict(sequence_list)
-        print_sequence(sequence_dict)
+    try: 
+        sequence_list = parse_CSV("sequence.csv")
+        if (sequence_list == None):
+            print("Parsing failed")
+            return 
+        
+        syntax_result = syntax_checking(sequence_list)
+        print("Parsing passed")
+
+        if (not syntax_result[0]):
+            print(f"Syntax Error: <{syntax_result[2]}> at command number: {syntax_result[1]}")
+            exit(-1)
+        else:
+            print("Syntax checking passed")
+            sequence_dict = format_as_dict(sequence_list)
+            print_sequence(sequence_dict)
+    except SyntaxErrorException as e:
+        print(e)
+        return
 
 if __name__ == "__main__":
     main()
