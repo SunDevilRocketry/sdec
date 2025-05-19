@@ -25,6 +25,7 @@ import struct
 # Project imports
 import sensor_conv
 import commands
+import appa
 from   config      import *
 from   controller  import *
 from sensor_plot import *
@@ -1377,8 +1378,15 @@ def flash(Args, serialObj):
 
         # Record ending time
         extract_time = time.perf_counter() - start_time
+
+        # Parse presets
         num_preset_frames = 0
         if not ( serialObj.firmware == None ):
+            # Call the APPA specific parser if applicable
+            if ( serialObj.firmware == 'APPA' ):
+                appa.flash_extract_parse(serialObj, rx_byte_blocks)
+
+            # Otherwise, check preset_frames
             num_preset_frames = preset_frames[serialObj.firmware]
             if (num_preset_frames > 0):
                 preset_values = get_preset_values( serialObj.firmware, rx_byte_blocks )

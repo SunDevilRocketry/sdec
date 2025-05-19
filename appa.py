@@ -176,6 +176,93 @@ appa_sensor_types = {
     }
 }
 
+def appa_parse_preset(serialObj, sensor_frame_int):
+
+    output_strings = []
+
+    output_strings.append("==CONFIG DATA==")
+    output_strings.append("Checksum:              {value}".format(value= (sensor_frame_int[3] << 8 ^ 3) | (sensor_frame_int[2] << 8 ^ 2) | (sensor_frame_int[1] << 8 ^ 1) | (sensor_frame_int[0])))
+    output_strings.append("Feature bitmask:       {value}".format(value= sensor_frame_int[4]))
+    output_strings.append("Data bitmask:          {value}".format(value=sensor_frame_int[5]))
+    output_strings.append("Sensor calib samples:  {value}".format(value=(sensor_frame_int[7] << 8) | sensor_frame_int[6]))
+    output_strings.append("LD timeout:            {value}".format(value= (sensor_frame_int[9] << 8) | sensor_frame_int[8]))
+    output_strings.append("LD accel threshold:    {value}".format(value= sensor_frame_int[10]))
+    output_strings.append("LD accel samples:      {value}".format(value= sensor_frame_int[11]))
+    output_strings.append("LD baro threshold:     {value}".format(value= (sensor_frame_int[13] << 8)| sensor_frame_int[12]))
+    output_strings.append("LD baro samples:       {value}".format(value= sensor_frame_int[14]))
+    output_strings.append("AR max deflect angle:  {value}".format(value= sensor_frame_int[15]))
+    pid_p_const = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
+    output_strings.append("AR PID P const:        {value}".format(value= hw_commands.byte_array_to_float(pid_p_const)))
+    pid_i_const = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
+    output_strings.append("AR PID I const:        {value}".format(value= hw_commands.byte_array_to_float(pid_i_const)))
+    pid_d_const = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
+    output_strings.append("AR PID D const:        {value}".format(value= hw_commands.byte_array_to_float(pid_d_const)))
+    output_strings.append("AR Delay after launch: {value}".format(value= (sensor_frame_int[29] << 8)| sensor_frame_int[28]))
+    output_strings.append("Minimum Frame Delta:   {value}".format(value= sensor_frame_int[30]))
+    # 31 is empty due to padding
+    del sensor_frame_int[:32]
+
+    accel_x_bytes = [sensor_frame_int[0].to_bytes(1, 'big' ), sensor_frame_int[1].to_bytes(1, 'big' ), sensor_frame_int[2].to_bytes(1, 'big' ), sensor_frame_int[3].to_bytes(1, 'big' )]
+    accel_y_bytes = [sensor_frame_int[4].to_bytes(1, 'big' ), sensor_frame_int[5].to_bytes(1, 'big' ), sensor_frame_int[6].to_bytes(1, 'big' ), sensor_frame_int[7].to_bytes(1, 'big' )]
+    accel_z_bytes = [sensor_frame_int[8].to_bytes(1, 'big' ), sensor_frame_int[9].to_bytes(1, 'big' ), sensor_frame_int[10].to_bytes(1, 'big' ), sensor_frame_int[11].to_bytes(1, 'big' )]
+    
+    gyro_x_bytes = [sensor_frame_int[12].to_bytes(1, 'big' ), sensor_frame_int[13].to_bytes(1, 'big' ), sensor_frame_int[14].to_bytes(1, 'big' ), sensor_frame_int[15].to_bytes(1, 'big' )]
+    gyro_y_bytes = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
+    gyro_z_bytes = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
+
+    baro_pres_bytes = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
+    baro_temp_bytes = [sensor_frame_int[28].to_bytes(1, 'big' ), sensor_frame_int[29].to_bytes(1, 'big' ), sensor_frame_int[30].to_bytes(1, 'big' ), sensor_frame_int[31].to_bytes(1, 'big' )]
+
+    accel_x_float = hw_commands.byte_array_to_float(accel_x_bytes)
+    accel_y_float = hw_commands.byte_array_to_float(accel_y_bytes)
+    accel_z_float = hw_commands.byte_array_to_float(accel_z_bytes)
+
+    gyro_x_float = hw_commands.byte_array_to_float(gyro_x_bytes)
+    gyro_y_float = hw_commands.byte_array_to_float(gyro_y_bytes)
+    gyro_z_float = hw_commands.byte_array_to_float(gyro_z_bytes)
+
+    baro_pres_float = hw_commands.byte_array_to_float(baro_pres_bytes)
+    baro_temp_float = hw_commands.byte_array_to_float(baro_temp_bytes)
+
+    output_strings.append("==IMU OFFSETS==")
+    output_strings.append("Accel x offset:        {value}".format(value= accel_x_float))
+    output_strings.append("Accel y offset:        {value}".format(value= accel_y_float))
+    output_strings.append("Accel z offset:        {value}".format(value= accel_z_float))
+    output_strings.append("Gyro x offset:         {value}".format(value= gyro_x_float))
+    output_strings.append("Gyro y offset:         {value}".format(value= gyro_y_float))
+    output_strings.append("Gyro z offset:         {value}".format(value= gyro_z_float))
+    output_strings.append("==BARO OFFSETS==")
+    output_strings.append("Baro pres offset:      {value}".format(value= baro_pres_float))
+    output_strings.append("Baro temp offset:      {value}".format(value= baro_temp_float))
+    output_strings.append("==SERVO REF PTS==")
+
+    # Servo 1 Reference point
+    rp_servo1 = sensor_frame_int[32]
+
+    # Servo 2 Reference point
+    rp_servo2 = sensor_frame_int[33]
+
+    # Servo 3 Reference point
+    rp_servo3 = sensor_frame_int[34]
+
+    # Servo 4 Reference point
+    rp_servo4 = sensor_frame_int[35]
+
+    output_strings.append("Servo 1 RP:            {value}".format(value= rp_servo1))
+    output_strings.append("Servo 2 RP:            {value}".format(value= rp_servo2))
+    output_strings.append("Servo 3 RP:            {value}".format(value= rp_servo3))
+    output_strings.append("Servo 4 RP:            {value}".format(value= rp_servo4))
+
+    with open( "output/appa_preset_data.txt", 'w' ) as file:
+        for line in output_strings:
+            file.write(line + '\n')
+
+    return output_strings
+
+
+################################################################################
+# Command: Preset                                                              #
+################################################################################
 
 def preset(Args, serialObj):
 
@@ -203,11 +290,17 @@ def preset(Args, serialObj):
     # Set subcommand, options, and input data
     user_subcommand = Args[0]
 
+    serialObj.sendByte(b'\x24')
+
     ################################################################################
     # Subcommand: preset download                                                  #
     ################################################################################
     if (user_subcommand == "download"):
         download_preset(Args, serialObj)
+        return serialObj
+    
+    elif (user_subcommand == "verify"):
+        verify_preset(Args, serialObj)
         return serialObj
 
 
@@ -218,6 +311,8 @@ def download_preset(Args, serialObj):
     # Read serial data
     rx_bytes = serialObj.readBytes(preset_size)
 
+    print("Data received, beginning processing...")
+
     sensor_frame_int = []
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
@@ -225,24 +320,24 @@ def download_preset(Args, serialObj):
     output_strings = []
 
     output_strings.append("==CONFIG DATA==")
-    output_strings.append("Checksum:              {value}".format((sensor_frame_int[0] << 8 ^ 3) | (sensor_frame_int[1] << 8 ^ 2) | (sensor_frame_int[2] << 8 ^ 1) | (sensor_frame_int[3])))
-    output_strings.append("Feature bitmask:       {value}".format(sensor_frame_int[4]))
-    output_strings.append("Data bitmask:          {value}".format(sensor_frame_int[5]))
-    output_strings.append("Sensor calib samples:  {value}".format((sensor_frame_int[6] << 8) | sensor_frame_int[7]))
-    output_strings.append("LD timeout:            {value}".format((sensor_frame_int[8] << 8) | sensor_frame_int[9]))
-    output_strings.append("LD accel threshold:    {value}".format(sensor_frame_int[10]))
-    output_strings.append("LD accel samples:      {value}".format(sensor_frame_int[11]))
-    output_strings.append("LD baro threshold:     {value}".format((sensor_frame_int[12] << 8)| sensor_frame_int[13]))
-    output_strings.append("LD baro samples:       {value}".format(sensor_frame_int[14]))
-    output_strings.append("AR max deflect angle:  {value}".format(sensor_frame_int[15]))
+    output_strings.append("Checksum:              {value}".format(value= (sensor_frame_int[3] << 8 ^ 3) | (sensor_frame_int[2] << 8 ^ 2) | (sensor_frame_int[1] << 8 ^ 1) | (sensor_frame_int[0])))
+    output_strings.append("Feature bitmask:       {value}".format(value= sensor_frame_int[4]))
+    output_strings.append("Data bitmask:          {value}".format(value=sensor_frame_int[5]))
+    output_strings.append("Sensor calib samples:  {value}".format(value=(sensor_frame_int[7] << 8) | sensor_frame_int[6]))
+    output_strings.append("LD timeout:            {value}".format(value= (sensor_frame_int[9] << 8) | sensor_frame_int[8]))
+    output_strings.append("LD accel threshold:    {value}".format(value= sensor_frame_int[10]))
+    output_strings.append("LD accel samples:      {value}".format(value= sensor_frame_int[11]))
+    output_strings.append("LD baro threshold:     {value}".format(value= (sensor_frame_int[13] << 8)| sensor_frame_int[12]))
+    output_strings.append("LD baro samples:       {value}".format(value= sensor_frame_int[14]))
+    output_strings.append("AR max deflect angle:  {value}".format(value= sensor_frame_int[15]))
     pid_p_const = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
-    output_strings.append("AR PID P const:        {value}".format(hw_commands.byte_array_to_float(pid_p_const)))
+    output_strings.append("AR PID P const:        {value}".format(value= hw_commands.byte_array_to_float(pid_p_const)))
     pid_i_const = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
-    output_strings.append("AR PID I const:        {value}".format(hw_commands.byte_array_to_float(pid_i_const)))
+    output_strings.append("AR PID I const:        {value}".format(value= hw_commands.byte_array_to_float(pid_i_const)))
     pid_d_const = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
-    output_strings.append("AR PID D const:        {value}".format(hw_commands.byte_array_to_float(pid_d_const)))
-    output_strings.append("LD baro threshold:     {value}".format((sensor_frame_int[28] << 8)| sensor_frame_int[29]))
-    output_strings.append("LD baro samples:       {value}".format(sensor_frame_int[30]))
+    output_strings.append("AR PID D const:        {value}".format(value= hw_commands.byte_array_to_float(pid_d_const)))
+    output_strings.append("AR Delay after launch: {value}".format(value= (sensor_frame_int[29] << 8)| sensor_frame_int[28]))
+    output_strings.append("Minimum Frame Delta:   {value}".format(value= sensor_frame_int[30]))
     # 31 is empty due to padding
     del sensor_frame_int[:32]
 
@@ -269,15 +364,15 @@ def download_preset(Args, serialObj):
     baro_temp_float = hw_commands.byte_array_to_float(baro_temp_bytes)
 
     output_strings.append("==IMU OFFSETS==")
-    output_strings.append("Accel x offset:        {value}".format(accel_x_float))
-    output_strings.append("Accel y offset:        {value}".format(accel_y_float))
-    output_strings.append("Accel z offset:        {value}".format(accel_z_float))
-    output_strings.append("Gyro x offset:         {value}".format(gyro_x_float))
-    output_strings.append("Gyro y offset:         {value}".format(gyro_y_float))
-    output_strings.append("Gyro z offset:         {value}".format(gyro_z_float))
+    output_strings.append("Accel x offset:        {value}".format(value= accel_x_float))
+    output_strings.append("Accel y offset:        {value}".format(value= accel_y_float))
+    output_strings.append("Accel z offset:        {value}".format(value= accel_z_float))
+    output_strings.append("Gyro x offset:         {value}".format(value= gyro_x_float))
+    output_strings.append("Gyro y offset:         {value}".format(value= gyro_y_float))
+    output_strings.append("Gyro z offset:         {value}".format(value= gyro_z_float))
     output_strings.append("==BARO OFFSETS==")
-    output_strings.append("Baro pres offset:      {value}".format(baro_pres_float))
-    output_strings.append("Baro temp offset:      {value}".format(baro_temp_float))
+    output_strings.append("Baro pres offset:      {value}".format(value= baro_pres_float))
+    output_strings.append("Baro temp offset:      {value}".format(value= baro_temp_float))
     output_strings.append("==SERVO REF PTS==")
 
     # Servo 1 Reference point
@@ -292,16 +387,28 @@ def download_preset(Args, serialObj):
     # Servo 4 Reference point
     rp_servo4 = sensor_frame_int[35]
 
-    output_strings.append("Servo 1 RP:            {value}".format(rp_servo1))
-    output_strings.append("Servo 2 RP:            {value}".format(rp_servo2))
-    output_strings.append("Servo 3 RP:            {value}".format(rp_servo3))
-    output_strings.append("Servo 4 RP:            {value}".format(rp_servo4))
+    output_strings.append("Servo 1 RP:            {value}".format(value= rp_servo1))
+    output_strings.append("Servo 2 RP:            {value}".format(value= rp_servo2))
+    output_strings.append("Servo 3 RP:            {value}".format(value= rp_servo3))
+    output_strings.append("Servo 4 RP:            {value}".format(value= rp_servo4))
 
     with open( "output/appa_preset_data.txt", 'w' ) as file:
         for line in output_strings:
             file.write(line + '\n')
 
-    print("Data received and written!\n")
+    print("Data processed and written!\n")
 
 
     return serialObj
+
+def verify_preset(Args, serialObj):
+    print("Verify Preset")
+    serialObj.sendByte(b'\x03')
+
+    # Read serial data
+    rx_bytes = serialObj.readBytes(1)
+
+    if (rx_bytes[0] == b'\x00'):
+        print("Invalid Checksum.")
+    else:
+        print("Valid Checksum.")
