@@ -6,3 +6,4 @@ output/*
 .venv
 
 canard/*
+LAS/*.csv
