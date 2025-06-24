@@ -362,6 +362,11 @@ def preset(Args, serialObj):
                             'subcommand' 
                             )
     
+    # Return if firmware version is incompatible 
+    if serialObj.firemware != "APPA":
+        print("Incompatible firmware version")
+        return serialObj
+    
     # Return if user input fails parse checks
     if ( not parse_check ):
         return serialObj 
@@ -401,10 +406,7 @@ def download_preset(Args, serialObj):
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
 
-    if serialObj.firmware == "APPA": 
-        output_strings = appa_parse_preset(serialObj, sensor_frame_int)
-    else:
-        output_strings = ""
+    output_strings = appa_parse_preset(serialObj, sensor_frame_int)
 
     with open( "output/appa_preset_data.txt", 'w' ) as file:
         for line in output_strings:
