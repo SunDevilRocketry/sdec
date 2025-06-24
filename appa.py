@@ -21,8 +21,6 @@ import hw_commands
 # Global Variables                                                                 #
 ####################################################################################
 
-preset_size = 80
-
 appa_data_bitmasks = {
     "raw": (2 ^ 0),
     "conv": (2 ^ 1),
@@ -198,7 +196,7 @@ preset_data_bitmask = None
         {"delete" : index to delete up until}
     ]
 """
-
+preset_size = 80
 parse_preset_output_strings = {
     "APPA" : [
         {"header":  "==CONFIG DATA=="},
@@ -394,6 +392,7 @@ def preset(Args, serialObj):
 def download_preset(Args, serialObj):
     print("Download Preset")
     serialObj.sendByte(b'\x02')
+    serialObj.serialObj.reset_input_buffer()
 
     # Read serial data
     rx_bytes = serialObj.readBytes(preset_size)
