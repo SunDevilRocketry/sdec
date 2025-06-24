@@ -203,7 +203,7 @@ parse_preset_output_strings = {
         {"print" : "Feature bitmask:       ", "indices" : [4], "type" : "int"},
         {"print" : "Data bitmask:          ", "indices" : [5], "type" : "int"},
         {"print" : "Sensor calib samples:  ", "indices" : [6, 7], "type" : "int"},
-        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "indices"},
+        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "int"},
         {"print" : "LD accel threshold:    ", "indices" : [10], "type" : "int"},
         {"print" : "LD accel samples:      ", "indices" : [11], "type" : "int"},
         {"print" : "LD baro threshold:     ", "indices" : [12, 13], "type" : "int"},
@@ -275,7 +275,7 @@ def appa_parse_preset(serialObj, sensor_frame_int):
                         output_strings.append((to_print + "{}").format(value))
                     case "checksum":
                         # TODO: change to loop checksum will ever not be 4 indices
-                        value = (sensor_frame_int[indices[3]] << 8 ^ 3) | (sensor_frame_int[indices[2]] << 8 ^ 2) | (sensor_frame_int[indices[1] << 8 ^ 1]) | (sensor_frame_int[indices[0]])  
+                        value = (sensor_frame_int[indices[3]] << 8 ^ 3) | (sensor_frame_int[indices[2]] << 8 ^ 2) | (sensor_frame_int[indices[1]] << 8 ^ 1) | (sensor_frame_int[indices[0]])  
                         output_strings.append((to_print + "{}").format(value))
             case _:
                 raise ValueError("Uknown key {}".format(command_type))
