@@ -187,89 +187,98 @@ appa_sensor_types = {
     }
 }
 
+"""
+    Note: The length of "thing to print" should be 23 chars.
+    "Firmmware version" : [
+        {"header" : "header to print"},
+        {"print" : "thing to print", "indices" : [byte indices of data], "type" : "data type"},
+        {"delete" : index to delete up until}
+    ]
+"""
+
+parse_preset_output_strings = {
+    "APPA" : [
+        {"header":  "==CONFIG DATA=="},
+        {"print" : "Checksum:              ", "indices" : [0, 1, 2, 3], "type" : "checksum"},
+        {"print" : "Feature bitmask:       ", "indices" : [4], "type" : "int"},
+        {"print" : "Data bitmask:          ", "indices" : [5], "type" : "int"},
+        {"print" : "Sensor calib samples:  ", "indices" : [6, 7], "type" : "int"},
+        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "indices"},
+        {"print" : "LD accel threshold:    ", "indices" : [10], "type" : "int"},
+        {"print" : "LD accel samples:      ", "indices" : [11], "type" : "int"},
+        {"print" : "LD baro threshold:     ", "indices" : [12, 13], "type" : "int"},
+        {"print" : "LD baro samples:       ", "indices" : [14], "type" : "int"},
+        {"print" : "AC max deflect angle:  ", "indices" : [15], "type" : "int"},
+        {"print" : "AC Roll PID P const:   ", "indices" : [16, 17, 18, 19], "type" : "float"},
+        {"print" : "AC Roll PID I const:   ", "indices" : [20, 21, 22, 23], "type" : "float"},
+        {"print" : "AC Roll PID D const:   ", "indices" : [24, 25, 26, 27], "type" : "float"},
+        {"print" : "AC P/Y PID P const:    ", "indices" : [28, 29, 30, 31], "type" : "float"},
+        {"print" : "AC P/Y PID I const:    ", "indices" : [32, 33, 34, 35], "type" : "float"},
+        {"print" : "AC P/Y PID D const:    ", "indices" : [36, 37, 38, 39], "type" : "float"},
+        {"print" : "AR Delay after launch: ", "indices" : [40, 41], "type" : "int"},
+        {"print" : "Minimum Frame Delta:   ", "indices" : [42], "type" : "int"},
+        {"delete": 44}, # Index 43 empty due to padding
+        {"header" : "==IMU OFFSETS=="},
+        {"print" : "Accel x offset:        ", "indices" : [0, 1, 2, 3], "type" : "float"},
+        {"print" : "Accel y offset:        ", "indices" : [4, 5, 6, 7], "type" : "float"},
+        {"print" : "Accel z offset:        ", "indices" : [8, 9, 10, 11], "type" : "float"},
+        {"print" : "Gyro x offset:         ", "indices" : [12, 13, 14, 15], "type" : "float"},
+        {"print" : "Gyro y offset:         ", "indices" : [16, 17, 18, 19], "type" : "float"},
+        {"print" : "Gryo z offset:         ", "indices" : [20, 21, 22, 23], "type" : "float"},
+        {"header" : "==BARO OFFSETS=="},
+        {"print" : "Baro pres offset:      ", "indices" : [24, 25, 26, 27], "type" : "float"},
+        {"print" : "Baro temp offset:      ", "indices" : [28, 29, 30, 31], "type" : "float"},
+        {"header" : "==SERVO REF PTS=="},
+        {"print" : "Servo 1 RP:            ", "indices" : [32], "type" : "int"},
+        {"print" : "Servo 2 RP:            ", "indices" : [33], "type" : "int"},
+        {"print" : "Servo 3 RP:            ", "indices" : [34], "type" : "int"},
+        {"print" : "Servo 4 RP:            ", "indices" : [35], "type" : "int"}
+    ]
+}
+
 # Note: there should be 23 chars before the value. Keep that number consistent.
 def appa_parse_preset(serialObj, sensor_frame_int):
-
     output_strings = []
 
-    output_strings.append("==CONFIG DATA==")
-    output_strings.append("Checksum:              {value}".format(value= (sensor_frame_int[3] << 8 ^ 3) | (sensor_frame_int[2] << 8 ^ 2) | (sensor_frame_int[1] << 8 ^ 1) | (sensor_frame_int[0])))
-    output_strings.append("Feature bitmask:       {value}".format(value= sensor_frame_int[4]))
-    output_strings.append("Data bitmask:          {value}".format(value=sensor_frame_int[5]))
-    output_strings.append("Sensor calib samples:  {value}".format(value=(sensor_frame_int[7] << 8) | sensor_frame_int[6]))
-    output_strings.append("LD timeout:            {value}".format(value= (sensor_frame_int[9] << 8) | sensor_frame_int[8]))
-    output_strings.append("LD accel threshold:    {value}".format(value= sensor_frame_int[10]))
-    output_strings.append("LD accel samples:      {value}".format(value= sensor_frame_int[11]))
-    output_strings.append("LD baro threshold:     {value}".format(value= (sensor_frame_int[13] << 8)| sensor_frame_int[12]))
-    output_strings.append("LD baro samples:       {value}".format(value= sensor_frame_int[14]))
-    output_strings.append("AC max deflect angle:  {value}".format(value= sensor_frame_int[15]))
-    pid_p_const = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
-    output_strings.append("AC Roll PID P const:   {value}".format(value= hw_commands.byte_array_to_float(pid_p_const)))
-    pid_i_const = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
-    output_strings.append("AC Roll PID I const:   {value}".format(value= hw_commands.byte_array_to_float(pid_i_const)))
-    pid_d_const = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
-    output_strings.append("AC Roll PID D const:   {value}".format(value= hw_commands.byte_array_to_float(pid_d_const)))
-    p_pid_p_const = [sensor_frame_int[28].to_bytes(1, 'big' ), sensor_frame_int[29].to_bytes(1, 'big' ), sensor_frame_int[30].to_bytes(1, 'big' ), sensor_frame_int[31].to_bytes(1, 'big' )]
-    output_strings.append("AC P/Y PID P const:    {value}".format(value= hw_commands.byte_array_to_float(p_pid_p_const)))
-    p_pid_i_const = [sensor_frame_int[32].to_bytes(1, 'big' ), sensor_frame_int[33].to_bytes(1, 'big' ), sensor_frame_int[34].to_bytes(1, 'big' ), sensor_frame_int[35].to_bytes(1, 'big' )]
-    output_strings.append("AC P/Y PID I const:    {value}".format(value= hw_commands.byte_array_to_float(p_pid_i_const)))
-    p_pid_d_const = [sensor_frame_int[36].to_bytes(1, 'big' ), sensor_frame_int[37].to_bytes(1, 'big' ), sensor_frame_int[38].to_bytes(1, 'big' ), sensor_frame_int[39].to_bytes(1, 'big' )]
-    output_strings.append("AC P/Y PID D const:    {value}".format(value= hw_commands.byte_array_to_float(p_pid_d_const)))
-    output_strings.append("AR Delay after launch: {value}".format(value= (sensor_frame_int[41] << 8)| sensor_frame_int[40]))
-    output_strings.append("Minimum Frame Delta:   {value}".format(value= sensor_frame_int[42]))
-    # idx 43 is empty due to padding
-    del sensor_frame_int[:44]
+    # TODO: get firmware version
+    firmware_version = "APPA"
+    preset_output_strings = parse_preset_output_strings[firmware_version]
 
-    accel_x_bytes = [sensor_frame_int[0].to_bytes(1, 'big' ), sensor_frame_int[1].to_bytes(1, 'big' ), sensor_frame_int[2].to_bytes(1, 'big' ), sensor_frame_int[3].to_bytes(1, 'big' )]
-    accel_y_bytes = [sensor_frame_int[4].to_bytes(1, 'big' ), sensor_frame_int[5].to_bytes(1, 'big' ), sensor_frame_int[6].to_bytes(1, 'big' ), sensor_frame_int[7].to_bytes(1, 'big' )]
-    accel_z_bytes = [sensor_frame_int[8].to_bytes(1, 'big' ), sensor_frame_int[9].to_bytes(1, 'big' ), sensor_frame_int[10].to_bytes(1, 'big' ), sensor_frame_int[11].to_bytes(1, 'big' )]
-    
-    gyro_x_bytes = [sensor_frame_int[12].to_bytes(1, 'big' ), sensor_frame_int[13].to_bytes(1, 'big' ), sensor_frame_int[14].to_bytes(1, 'big' ), sensor_frame_int[15].to_bytes(1, 'big' )]
-    gyro_y_bytes = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
-    gyro_z_bytes = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
+    for command in preset_output_strings:
+        command_type = next(iter(command))
 
-    baro_pres_bytes = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
-    baro_temp_bytes = [sensor_frame_int[28].to_bytes(1, 'big' ), sensor_frame_int[29].to_bytes(1, 'big' ), sensor_frame_int[30].to_bytes(1, 'big' ), sensor_frame_int[31].to_bytes(1, 'big' )]
+        match command_type:
+            case "header":
+                output_strings.append(command["header"])
+            case "delete":
+                del sensor_frame_int[:command["delete"]]
+            case "print":
+                to_print = command["print"]
+                indices = command["indices"]
+                data_type = command["type"]
 
-    accel_x_float = hw_commands.byte_array_to_float(accel_x_bytes)
-    accel_y_float = hw_commands.byte_array_to_float(accel_y_bytes)
-    accel_z_float = hw_commands.byte_array_to_float(accel_z_bytes)
-
-    gyro_x_float = hw_commands.byte_array_to_float(gyro_x_bytes)
-    gyro_y_float = hw_commands.byte_array_to_float(gyro_y_bytes)
-    gyro_z_float = hw_commands.byte_array_to_float(gyro_z_bytes)
-
-    baro_pres_float = hw_commands.byte_array_to_float(baro_pres_bytes)
-    baro_temp_float = hw_commands.byte_array_to_float(baro_temp_bytes)
-
-    output_strings.append("==IMU OFFSETS==")
-    output_strings.append("Accel x offset:        {value}".format(value= accel_x_float))
-    output_strings.append("Accel y offset:        {value}".format(value= accel_y_float))
-    output_strings.append("Accel z offset:        {value}".format(value= accel_z_float))
-    output_strings.append("Gyro x offset:         {value}".format(value= gyro_x_float))
-    output_strings.append("Gyro y offset:         {value}".format(value= gyro_y_float))
-    output_strings.append("Gyro z offset:         {value}".format(value= gyro_z_float))
-    output_strings.append("==BARO OFFSETS==")
-    output_strings.append("Baro pres offset:      {value}".format(value= baro_pres_float))
-    output_strings.append("Baro temp offset:      {value}".format(value= baro_temp_float))
-    output_strings.append("==SERVO REF PTS==")
-
-    # Servo 1 Reference point
-    rp_servo1 = sensor_frame_int[32]
-
-    # Servo 2 Reference point
-    rp_servo2 = sensor_frame_int[33]
-
-    # Servo 3 Reference point
-    rp_servo3 = sensor_frame_int[34]
-
-    # Servo 4 Reference point
-    rp_servo4 = sensor_frame_int[35]
-
-    output_strings.append("Servo 1 RP:            {value}".format(value= rp_servo1))
-    output_strings.append("Servo 2 RP:            {value}".format(value= rp_servo2))
-    output_strings.append("Servo 3 RP:            {value}".format(value= rp_servo3))
-    output_strings.append("Servo 4 RP:            {value}".format(value= rp_servo4))
+                match data_type:
+                    case "int":
+                        if len(indices) == 1:
+                            value = sensor_frame_int[indices[0]]
+                        else:
+                            # TODO: change to loop if int will ever be longer than 2 indices
+                            value = (sensor_frame_int[indices[1]] << 8) | sensor_frame_int[indices[0]]
+                            output_strings.append((to_print + "{}").format(value)) 
+                    case "float":
+                        # TODO: change to loop if float will ever not be 4 indices
+                        value = [sensor_frame_int[indices[0]].to_bytes(1, "big"),
+                                 sensor_frame_int[indices[1]].to_bytes(1, "big"),
+                                 sensor_frame_int[indices[2]].to_bytes(1, "big"),
+                                 sensor_frame_int[indices[3]].to_bytes(1, "big")]
+                        value = hw_commands.byte_array_to_float(value)
+                        output_strings.append((to_print + "{}").format(value))
+                    case "checksum":
+                        # TODO: change to loop checksum will ever not be 4 indices
+                        value = (sensor_frame_int[indices[3]] << 8 ^ 3) | (sensor_frame_int[indices[2]] << 8 ^ 2) | (sensor_frame_int[indices[1] << 8 ^ 1]) | (sensor_frame_int[indices[0]])  
+                        output_strings.append((to_print + "{}").format(value))
+            case _:
+                raise ValueError("Uknown key {}".format(command_type))
 
     return output_strings
 
