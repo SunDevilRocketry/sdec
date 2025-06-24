@@ -241,9 +241,7 @@ parse_preset_output_strings = {
 def appa_parse_preset(serialObj, sensor_frame_int):
     output_strings = []
 
-    # TODO: get firmware version
-    firmware_version = "APPA"
-    preset_output_strings = parse_preset_output_strings[firmware_version]
+    preset_output_strings = parse_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
         command_type = next(iter(command))
@@ -278,9 +276,9 @@ def appa_parse_preset(serialObj, sensor_frame_int):
 
                         output_strings.append((to_print + "{}").format(value))
                     case _:
-                        raise ValueError("Unkown key {}".format(data_type))
+                        raise ValueError("Unknown key {}".format(data_type))
             case _:
-                raise ValueError("Uknown key {}".format(command_type))
+                raise ValueError("Unknown key {}".format(command_type))
 
     return output_strings
 
@@ -403,7 +401,10 @@ def download_preset(Args, serialObj):
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
 
-    output_strings = appa_parse_preset(serialObj, sensor_frame_int)
+    if serialObj.firmware == "APPA": 
+        output_strings = appa_parse_preset(serialObj, sensor_frame_int)
+    else:
+        output_strings = ""
 
     with open( "output/appa_preset_data.txt", 'w' ) as file:
         for line in output_strings:
