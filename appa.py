@@ -187,6 +187,9 @@ appa_sensor_types = {
     }
 }
 
+# Hold the data bitmask from parsing the preset
+preset_data_bitmask = None
+
 """
     Note: The length of "thing to print" should be 23 chars.
     "Firmmware version" : [
@@ -199,11 +202,11 @@ appa_sensor_types = {
 parse_preset_output_strings = {
     "APPA" : [
         {"header":  "==CONFIG DATA=="},
-        {"print" : "Checksum:              ", "indices" : [0, 1, 2, 3], "type" : "checksum"},
+        {"print" : "Checksum:              ", "indices" : [0, 1, 2, 3], "type" : "int"},
         {"print" : "Feature bitmask:       ", "indices" : [4], "type" : "int"},
         {"print" : "Data bitmask:          ", "indices" : [5], "type" : "int"},
         {"print" : "Sensor calib samples:  ", "indices" : [6, 7], "type" : "int"},
-        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "int"},
+        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "indices"},
         {"print" : "LD accel threshold:    ", "indices" : [10], "type" : "int"},
         {"print" : "LD accel samples:      ", "indices" : [11], "type" : "int"},
         {"print" : "LD baro threshold:     ", "indices" : [12, 13], "type" : "int"},
@@ -259,24 +262,25 @@ def appa_parse_preset(serialObj, sensor_frame_int):
 
                 match data_type:
                     case "int":
-                        if len(indices) == 1:
-                            value = sensor_frame_int[indices[0]]
-                        else:
-                            # TODO: change to loop if int will ever be longer than 2 indices
-                            value = (sensor_frame_int[indices[1]] << 8) | sensor_frame_int[indices[0]]
-                            output_strings.append((to_print + "{}").format(value)) 
+                        value = 0
+                        for i in range(len(indices) - 1, 0, -1):
+                            index = indices[i]
+                            value = value | (sensor_frame_int[index] << (8 * i))
+                        value = value | sensor_frame_int[indices[0]]
+
+                        # Check indices length first to reduce string in string checks
+                        if len(indices) == 1 and "Data bitmask" in to_print: preset_data_bitmask = value
+                        output_strings.append((to_print + "{}").format(value)) 
                     case "float":
-                        # TODO: change to loop if float will ever not be 4 indices
                         value = [sensor_frame_int[indices[0]].to_bytes(1, "big"),
                                  sensor_frame_int[indices[1]].to_bytes(1, "big"),
                                  sensor_frame_int[indices[2]].to_bytes(1, "big"),
                                  sensor_frame_int[indices[3]].to_bytes(1, "big")]
                         value = hw_commands.byte_array_to_float(value)
+
                         output_strings.append((to_print + "{}").format(value))
-                    case "checksum":
-                        # TODO: change to loop checksum will ever not be 4 indices
-                        value = (sensor_frame_int[indices[3]] << 8 ^ 3) | (sensor_frame_int[indices[2]] << 8 ^ 2) | (sensor_frame_int[indices[1]] << 8 ^ 1) | (sensor_frame_int[indices[0]])  
-                        output_strings.append((to_print + "{}").format(value))
+                    case _:
+                        raise ValueError("Unkown key {}".format(data_type))
             case _:
                 raise ValueError("Uknown key {}".format(command_type))
 
