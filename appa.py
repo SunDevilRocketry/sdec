@@ -365,7 +365,7 @@ def preset(Args, serialObj):
                             )
     
     # Return if firmware version is incompatible 
-    if serialObj.firemware != "APPA":
+    if serialObj.firmware != "APPA":
         print("Incompatible firmware version")
         return serialObj
     
@@ -459,7 +459,7 @@ def upload_preset(Args, serialObj):
         print(f"An error occurred: {e}")
         return []
     
-    print( data_list )
+    # print( data_list )
 
     raw_data = [0,0] # Start with no features and no data
 
@@ -502,17 +502,16 @@ def upload_preset(Args, serialObj):
 
     raw_data.append(0)
 
-
     checksum = crc32c.crc32(bytearray(raw_data[4:]))  # Skip first 4 bytes which will hold the checksum
     checksum_bytes = checksum.to_bytes(4, 'little')   # Little-endian format
-    raw_data[0:0] = checksum_bytes                    # Prepend to the raw_data
+    raw_data = checksum_bytes + bytes(raw_data)                    # Prepend to the raw_data
 
-    print( raw_data )
+    print( list(raw_data) )
 
     serialObj.sendByte(b'\x24')
 
     serialObj.sendByte(b'\x01')
 
-    serialObj.sendBytes(bytearray(raw_data))
+    serialObj.sendBytes(raw_data)
 
     return serialObj

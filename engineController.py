@@ -41,8 +41,8 @@ valve_nums = {
 			"fuelPurge": 6,
 			"oxVent"   : 3,
 			"fuelVent" : 4,
-			"oxMain"   : 7,
-			"fuelMain" : 8
+			"oxMain"   : 8,
+			"fuelMain" : 7
              }
 
 # Valve on/off states
