@@ -316,11 +316,15 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     for sensor_byte in rx_byte_blocks:
         sensor_frame_int.append( ord( sensor_byte ) )
 
+    print(sensor_frame_int)
+
     preset_int = []
     for i in range(0, preset_size):
         preset_int.append(sensor_frame_int[i])
     
     preset_strings = appa_parse_preset(serialObj, preset_int)
+
+    print(preset_int)
 
     # Write presets to file
     with open( "output/appa_preset_data.txt", 'w' ) as file:
@@ -330,7 +334,15 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     # Get data bitmask (idx 5)
     data_bitmask = preset_int[5]
 
+    print(data_bitmask)
+
     sensor_frame_size, numFrames = calculate_sensor_frame_size(data_bitmask)
+
+    # sensor_frame_int = sensor_frame_int[preset_size:]
+
+    # TODO: figure out how to get sensor data
+    # TODO: figure out how to parse through sensor data in link with the sensor dicts
+    # TODO: figure out bitmask format so I can use it for extracting the data
 
     # This is where the fun begins
 
