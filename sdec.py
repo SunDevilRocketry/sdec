@@ -37,6 +37,7 @@ import flightComputer   # flight computer commands
 import canard_fc        # active roll application commands
 from   config import *  # global settings
 import parser
+import appa
 
 
 ####################################################################################
@@ -77,7 +78,8 @@ command_list = {
                  "read-preset": canard_fc.read_preset            ,
                  "save-preset": canard_fc.save_preset            ,
                  "parse-output": parser.parse_output             ,
-                 "servo": flightComputer.servo
+                 "servo"      : flightComputer.servo             ,
+                 "preset"     : appa.preset
                 }
 
 

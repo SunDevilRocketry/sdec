@@ -1,3 +1,4 @@
+
 import crc32c #specific library for the checksum algorithm in Python
 import struct #turns data into byte-sized packets
 

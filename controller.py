@@ -61,7 +61,8 @@ firmware_ids = {
 				b'\x02': "Data Logger",
 				b'\x03': "Dual Deploy",
                 b'\x04': "Hotfire",
-                b'\x05': "Active Roll"
+                b'\x05': "Active Roll",
+                b'\x06': "APPA"
                }
 			
 # Boards that report firmware ids with the connect command
