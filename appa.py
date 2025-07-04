@@ -13,6 +13,7 @@
 ####################################################################################
 import csv
 import struct
+import numpy as np
 
 import commands
 import hw_commands
@@ -185,6 +186,16 @@ appa_sensor_types = {
     }
 }
 
+# Turn a 2D list into a 1D list
+def flatten_list(list):
+    to_return = []
+
+    for row in list:
+        for item in row:
+            to_return.append(item)
+
+    return to_return
+
 # Hold the data bitmask from parsing the preset
 preset_data_bitmask = None
 
@@ -240,7 +251,7 @@ parse_preset_output_strings = {
 # Note: there should be 23 chars before the value. Keep that number consistent.
 def appa_parse_preset(serialObj, sensor_frame_int):
     output_strings = []
-
+    sensor_frame_int = flatten_list(sensor_frame_int)
     preset_output_strings = parse_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
