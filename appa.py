@@ -251,7 +251,6 @@ parse_preset_output_strings = {
 # Note: there should be 23 chars before the value. Keep that number consistent.
 def appa_parse_preset(serialObj, sensor_frame_int):
     output_strings = []
-    sensor_frame_int = flatten_list(sensor_frame_int)
     preset_output_strings = parse_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
@@ -326,13 +325,13 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     sensor_frame_int = []
     for sensor_byte in rx_byte_blocks:
         sensor_frame_int.append( ord( sensor_byte ) )
+    sensor_frame_int = flatten_list(sensor_frame_int)
 
-    print(sensor_frame_int)
+    # print(sensor_frame_int)
 
     preset_int = []
     for i in range(0, preset_size):
         preset_int.append(sensor_frame_int[i])
-    
     preset_strings = appa_parse_preset(serialObj, preset_int)
 
     print(preset_int)
@@ -348,18 +347,16 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     print(data_bitmask)
 
     sensor_frame_size, numFrames = calculate_sensor_frame_size(data_bitmask)
+    sensor_frame_int = sensor_frame_int[preset_size:]
 
-    # sensor_frame_int = sensor_frame_int[preset_size:]
+    with open("output/appa_sensor_data.txt", "w") as f:
+        for i in range(numFrames):
+            for j in range(sensor_frame_size):
+                val = sensor_frame_int[j + i * sensor_frame_size]
+                file.write(val + "\t")
+            file.write("\n")
 
-    # TODO: figure out how to get sensor data
-    # TODO: figure out how to parse through sensor data in link with the sensor dicts
-    # TODO: figure out bitmask format so I can use it for extracting the data
-
-    # This is where the fun begins
-
-    ## TODO
-
-
+    return serialObj
 
 
 ################################################################################
