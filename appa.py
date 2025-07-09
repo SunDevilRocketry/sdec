@@ -196,29 +196,30 @@ preset_data_bitmask = None
         {"delete" : index to delete up until}
     ]
 """
-preset_size = 80
+preset_size = 88
 parse_preset_output_strings = {
     "APPA" : [
         {"header":  "==CONFIG DATA=="},
         {"print" : "Checksum:              ", "indices" : [0, 1, 2, 3], "type" : "int"},
-        {"print" : "Feature bitmask:       ", "indices" : [4], "type" : "int"},
-        {"print" : "Data bitmask:          ", "indices" : [5], "type" : "int"},
-        {"print" : "Sensor calib samples:  ", "indices" : [6, 7], "type" : "int"},
-        {"print" : "LD timeout             ", "indices" : [8, 9], "type" : "int"},
-        {"print" : "LD accel threshold:    ", "indices" : [10], "type" : "int"},
-        {"print" : "LD accel samples:      ", "indices" : [11], "type" : "int"},
-        {"print" : "LD baro threshold:     ", "indices" : [12, 13], "type" : "int"},
-        {"print" : "LD baro samples:       ", "indices" : [14], "type" : "int"},
-        {"print" : "AC max deflect angle:  ", "indices" : [15], "type" : "int"},
-        {"print" : "AC Roll PID P const:   ", "indices" : [16, 17, 18, 19], "type" : "float"},
-        {"print" : "AC Roll PID I const:   ", "indices" : [20, 21, 22, 23], "type" : "float"},
-        {"print" : "AC Roll PID D const:   ", "indices" : [24, 25, 26, 27], "type" : "float"},
-        {"print" : "AC P/Y PID P const:    ", "indices" : [28, 29, 30, 31], "type" : "float"},
-        {"print" : "AC P/Y PID I const:    ", "indices" : [32, 33, 34, 35], "type" : "float"},
-        {"print" : "AC P/Y PID D const:    ", "indices" : [36, 37, 38, 39], "type" : "float"},
-        {"print" : "AR Delay after launch: ", "indices" : [40, 41], "type" : "int"},
-        {"print" : "Minimum Frame Delta:   ", "indices" : [42], "type" : "int"},
-        {"delete": 44}, # Index 43 empty due to padding
+        {"print" : "Feature bitmask:       ", "indices" : [4, 5, 6, 7], "type" : "int"},
+        {"print" : "Data bitmask:          ", "indices" : [8, 9, 10, 11], "type" : "int"},
+        {"print" : "Sensor calib samples:  ", "indices" : [12, 13], "type" : "int"},
+        {"print" : "LD timeout             ", "indices" : [14, 15], "type" : "int"},
+        {"print" : "LD baro threshold:     ", "indices" : [16, 17], "type" : "int"},
+        {"print" : "LD accel threshold:    ", "indices" : [18], "type" : "int"},
+        {"print" : "LD accel samples:      ", "indices" : [19], "type" : "int"},
+        {"print" : "LD baro samples:       ", "indices" : [20], "type" : "int"},
+        {"print" : "Minimum Frame Delta:   ", "indices" : [21], "type" : "int"},
+        {"print" : "AC max deflect angle:  ", "indices" : [25], "type" : "int"},
+        {"print" : "AR Delay after launch: ", "indices" : [26, 27], "type" : "int"},
+        {"print" : "AC Roll PID P const:   ", "indices" : [28, 29, 30, 31], "type" : "float"},
+        {"print" : "AC Roll PID I const:   ", "indices" : [32, 33, 34, 35], "type" : "float"},
+        {"print" : "AC Roll PID D const:   ", "indices" : [36, 37, 38, 39], "type" : "float"},
+        {"print" : "AC P/Y PID P const:    ", "indices" : [40, 41, 42, 43], "type" : "float"},
+        {"print" : "AC P/Y PID I const:    ", "indices" : [44, 45, 46, 47], "type" : "float"},
+        {"print" : "AC P/Y PID D const:    ", "indices" : [48, 49, 50, 51], "type" : "float"},
+        {"delete": 52}, # Index 43 empty due to padding
+        {"header" : "-=This point on doesn't work. TODO: Fix.=-"},
         {"header" : "==IMU OFFSETS=="},
         {"print" : "Accel x offset:        ", "indices" : [0, 1, 2, 3], "type" : "float"},
         {"print" : "Accel y offset:        ", "indices" : [4, 5, 6, 7], "type" : "float"},
@@ -363,7 +364,7 @@ def preset(Args, serialObj):
                             )
     
     # Return if firmware version is incompatible 
-    if serialObj.firemware != "APPA":
+    if serialObj.firmware != "APPA":
         print("Incompatible firmware version")
         return serialObj
     
@@ -449,48 +450,54 @@ def upload_preset(Args, serialObj):
         print(f"An error occurred: {e}")
         return []
     
-    print( data_list )
+    # print( data_list )
 
-    raw_data = [0,0] # Start with no features and no data
+    raw_data = [0,0,0,0,0,0,0,0] # Start with no features and no data
 
     # Construct the feature and data flags
     for i in range(1,8):
         raw_data[0] += (int(data_list[i][4]) << (i - 1))
-        raw_data[1] += (int(data_list[i+8][4]) << (i - 1))
+        raw_data[4] += (int(data_list[i+32][4]) << (i - 1))
+
+    # print(raw_data)
 
     # Sensor Calibration
-    raw_data.append(int(data_list[17][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[17][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(data_list[65][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(data_list[65][4]) & int('FF00', 16)) >> 8) # MSB
 
     # Launch Detect
-    raw_data.append(int(data_list[18][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[18][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(data_list[66][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(data_list[66][4]) & int('FF00', 16)) >> 8) # MSB
 
-    raw_data.append(int(data_list[19][4]))
+    raw_data.append(int(data_list[67][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(data_list[67][4]) & int('FF00', 16)) >> 8) # MSB
 
-    raw_data.append(int(data_list[20][4]))
+    raw_data.append(int(data_list[68][4]))
 
-    raw_data.append(int(data_list[21][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[21][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(data_list[69][4]))
 
-    raw_data.append(int(data_list[22][4]))
-    
+    raw_data.append(int(data_list[70][4]))
+
+    # Minimum time for frame
+    raw_data.append(int(data_list[71][4]))
+
+    raw_data.append(0)
+    raw_data.append(0)
+    raw_data.append(0)
+
     # Active Roll
-    raw_data.append(int(data_list[23][4]))
+    raw_data.append(int(data_list[72][4]))
+
+    raw_data.append(int(data_list[73][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(data_list[73][4]) & int('FF00', 16)) >> 8) # MSB
 
     # 24 bytes of floats
-    for i in range(24,30):
+    for i in range(74,80):
         ba = bytearray(struct.pack("f", float(data_list[i][4])))
         raw_data.append(int(ba[0]))
         for j in range(1, 4):
             raw_data.append(int(ba[j]))
 
-    raw_data.append(int(data_list[30][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[30][4]) & int('FF00', 16)) >> 8) # MSB
-
-    raw_data.append(int(data_list[31][4]))
-
-    raw_data.append(0)
     raw_data.insert(0, 0)
     raw_data.insert(0, 1)
     raw_data.insert(0, 2)
