@@ -1,3 +1,4 @@
+
 ####################################################################################
 #                                                                                  #
 # appa.py -- Contains functions related to APPA prototype                          #
@@ -13,6 +14,7 @@
 ####################################################################################
 import csv
 import struct
+import crc32c #specific library for the checksum algorithm in Python
 
 import commands
 import hw_commands
@@ -430,6 +432,14 @@ def verify_preset(Args, serialObj):
     else:
         print("Valid Checksum.")
 
+def crc32_checksum(data_config):
+    data_format = f'<{len(data_config)}f' #defines formatting based on size based of data_config file
+    data_bytes = struct.pack(data_format, *data_config) #serializes data_config into bytes
+    checksum = crc32c.crc32(data_bytes) #computes the checksum
+    checksum_bytes = struct.pack('>I',checksum) #serializing checksum, checking big-endians
+    payload = checksum_bytes+data_bytes #prepend the checksum to the data to form the final payload
+    return payload
+
 def upload_preset(Args, serialObj):
     print("Upload Preset")
     filename = input( "Enter filename: " )
@@ -498,17 +508,16 @@ def upload_preset(Args, serialObj):
         for j in range(1, 4):
             raw_data.append(int(ba[j]))
 
-    raw_data.insert(0, 0)
-    raw_data.insert(0, 1)
-    raw_data.insert(0, 2)
-    raw_data.insert(0, 3)
+    checksum = crc32c.crc32(bytearray(raw_data[4:]))  # Skip first 4 bytes which will hold the checksum
+    checksum_bytes = checksum.to_bytes(4, 'little')   # Little-endian format
+    raw_data = checksum_bytes + bytes(raw_data)                    # Prepend to the raw_data
 
-    print( raw_data )
+    print( list(raw_data) )
 
     serialObj.sendByte(b'\x24')
 
     serialObj.sendByte(b'\x01')
 
-    serialObj.sendBytes(bytearray(raw_data))
+    serialObj.sendBytes(raw_data)
 
     return serialObj
