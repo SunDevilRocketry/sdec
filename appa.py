@@ -453,43 +453,42 @@ def upload_preset(Args, serialObj):
 
     raw_data = [0,0] # Start with no features and no data
 
-    # Construct the feature and data flags
-    for i in range(1,8):
-        raw_data[0] += (int(data_list[i][4]) << (i - 1))
-        raw_data[1] += (int(data_list[i+8][4]) << (i - 1))
+    for row in data_list:
+        # Skip row if it's a label row
+        if all(":" in entry for entry in row): continue
 
-    # Sensor Calibration
-    raw_data.append(int(data_list[17][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[17][4]) & int('FF00', 16)) >> 8) # MSB
+        # Extract data from row
+        entry_type = row[0]
+        data_type = row[2]
+        data = row[-1]
 
-    # Launch Detect
-    raw_data.append(int(data_list[18][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[18][4]) & int('FF00', 16)) >> 8) # MSB
+        # Counters for storing bit counts
+        enabled_ft_ctr = 0
+        enabled_data_ctr = 0
 
-    raw_data.append(int(data_list[19][4]))
+        match data_type:
+            case "bit":
+                match entry_type:
+                    case "Enabled Features":
+                        raw_data[0] += (int(data << enabled_ft_ctr))
+                        enabled_ft_ctr += 1
+                    case "Enabled Data":
+                        raw_data[1] += (int(data << enabled_data_ctr))
+                        enabled_data_ctr += 1
+                    case _:
+                        raise ValueError("Unknown entry type {}".format(entry_type))
+            case "uint8_t":
+                raw_data.append(int(data))
+            case "uint16_t":
+                raw_data.append(int(data) & int("00FF", 16))
+                raw_data.append(int(data) & int("FF00", 16 >> 8))
+            case "float":
+                byte_array = bytearray(struct.pack("f", float(data)))
+                for i in range(4): raw_data.append(int(byte_array[i]))
+            case _:
+                raise ValueError("Unknown data type {}".format(data_type))
 
-    raw_data.append(int(data_list[20][4]))
-
-    raw_data.append(int(data_list[21][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[21][4]) & int('FF00', 16)) >> 8) # MSB
-
-    raw_data.append(int(data_list[22][4]))
-    
-    # Active Roll
-    raw_data.append(int(data_list[23][4]))
-
-    # 24 bytes of floats
-    for i in range(24,30):
-        ba = bytearray(struct.pack("f", float(data_list[i][4])))
-        raw_data.append(int(ba[0]))
-        for j in range(1, 4):
-            raw_data.append(int(ba[j]))
-
-    raw_data.append(int(data_list[30][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[30][4]) & int('FF00', 16)) >> 8) # MSB
-
-    raw_data.append(int(data_list[31][4]))
-
+    # TODO: remove?
     raw_data.append(0)
     raw_data.insert(0, 0)
     raw_data.insert(0, 1)
