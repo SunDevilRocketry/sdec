@@ -488,7 +488,6 @@ def upload_preset(Args, serialObj):
             case _:
                 raise ValueError("Unknown data type {}".format(data_type))
 
-    # TODO: remove?
     raw_data.append(0)
     raw_data.insert(0, 0)
     raw_data.insert(0, 1)
