@@ -4,18 +4,19 @@ from hw_commands import byte_array_to_float
 
 import time
 
+
 # "print"       : "thing to print",
 # "index start" : [first index of the data in the sensor frame], 
-# "bytes"       : [amount of bytes for each value],  
+# "bytes"       : [amount of bytes for each value],
 # "values"      : [amount of values for each part of the data], 
 # "type"        : "data type"
 read_preset_output_strings = {
     "APPA" : [
-        {"header":  "Data Receive:"},
-        {"print" : "Acceleration:  ", "index start": 0,  "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
-        {"print" : "Gyro:          ", "index start": 12, "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
-        {"print" : "Baro:          ", "index start": 24, "bytes" : 4, "values" : 2, "type" : "float"}, # pres, temp
-        {"print" : "Servo:         ", "index start": 32, "bytes" : 1, "values" : 4, "type" : "int"},   # Servo reference point
+        {"header":  "Data Receive:\n"},
+        {"print" : "Acceleration: ", "index start": 0,  "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
+        {"print" : "Gyro:         ", "index start": 12, "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
+        {"print" : "Baro:         ", "index start": 24, "bytes" : 4, "values" : 2, "type" : "float"}, # pres, temp
+        {"print" : "Servo:        ", "index start": 32, "bytes" : 1, "values" : 4, "type" : "int"},   # Servo reference point
         # Pad bytes 37, 38
     ]
 }
@@ -73,8 +74,6 @@ def read_preset(Args, serialObj):
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
 
-    output_strings = []
-
     preset_output_strings = read_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
@@ -82,16 +81,17 @@ def read_preset(Args, serialObj):
 
         match command_type:
             case "header":
-                output_strings.append(command["header"])
+                print(command["header"])
             case "print":
                 to_print        = command["print"]
                 bytes_per_value = command["bytes"]
                 index           = command["index start"]
                 num_values      = command["values"]
-                data_type       = command["data type"]
+                data_type       = command["type"]
 
                 match data_type:
                     case "float":
+                        list_to_print = []
                         for _ in range(num_values):
                             single_value = []
                             for i in range (index, index + bytes_per_value):
@@ -99,11 +99,12 @@ def read_preset(Args, serialObj):
 
                             index += bytes_per_value
                             single_value = (byte_array_to_float(single_value))
-                            to_print += f" {single_value}"
+                            list_to_print.append(single_value)
 
-                        print(f"{to_print}\n")
+                        print(f"{to_print} {list_to_print}\n")
 
                     case "int":
+                        list_to_print = []
                         for _ in range(num_values):
                             single_value = 0
                             for offset in range(bytes_per_value - 1, -1, -1):
@@ -111,9 +112,9 @@ def read_preset(Args, serialObj):
                                 single_value = single_value | shifted_byte
 
                             index += bytes_per_value
-                            to_print += f" {single_value}"
+                            list_to_print.append(single_value)
 
-                        print(f"{to_print}\n")
+                        print(f"{to_print} {list_to_print}\n")
 
                     case _:
                         raise ValueError(f"Unknown key {data_type}")
