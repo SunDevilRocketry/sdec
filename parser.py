@@ -10,16 +10,30 @@ data = []
 
 length = len(data)
 
+def int_type_validation(value, names_array_length: int):
+    while True:
+        try:
+            if int(value) >= 1 and int(value) <= names_array_length:
+                return int(value)
+            else:
+                raise ValueError
+        except ValueError:
+            value = input(f"Please enter a number in range of 1-{names_array_length}. \n") 
+
 def converter(txt_File, output_File):
     hardware = ""
     for i in range(0, len(controller_names)):
         print(str(i + 1) + ". " + controller_names[i])
-    number = input("Which Hardware would you like to select? Enter a number. \n")
+
+    hardware_selection_input = input("Which Hardware would you like to select? Enter a number. \n")
+    number = int_type_validation(hardware_selection_input, len(controller_names))
     
     firmware_names = list(firmware_ids.values())
     for i in range(0, len(firmware_names)):
         print(str(i + 1) + ". " + firmware_names[i])
-    firmware_num = int(input("Which Firmware would you like to select? Enter a number. \n"))
+    
+    firmware_selection_input = input("Which Firmware would you like to select? Enter a number. \n")
+    firmware_num = int_type_validation(firmware_selection_input, len(firmware_names))
     
     hardware = controller_names[int(number) - 1]
     firmware = firmware_names[firmware_num - 1]
