@@ -15,6 +15,7 @@
 import csv
 import struct
 import crc32c #specific library for the checksum algorithm in Python
+import numpy as np
 
 import commands
 import hw_commands
@@ -187,6 +188,16 @@ appa_sensor_types = {
     }
 }
 
+# Turn a 2D list into a 1D list
+def flatten_list(list):
+    to_return = []
+
+    for row in list:
+        for item in row:
+            to_return.append(item)
+
+    return to_return
+
 # Hold the data bitmask from parsing the preset
 preset_data_bitmask = None
 
@@ -243,7 +254,6 @@ parse_preset_output_strings = {
 # Note: there should be 23 chars before the value. Keep that number consistent.
 def appa_parse_preset(serialObj, sensor_frame_int):
     output_strings = []
-
     preset_output_strings = parse_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
@@ -318,11 +328,11 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     sensor_frame_int = []
     for sensor_byte in rx_byte_blocks:
         sensor_frame_int.append( ord( sensor_byte ) )
+    sensor_frame_int = flatten_list(sensor_frame_int)
 
     preset_int = []
     for i in range(0, preset_size):
         preset_int.append(sensor_frame_int[i])
-    
     preset_strings = appa_parse_preset(serialObj, preset_int)
 
     # Write presets to file
@@ -334,12 +344,42 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     data_bitmask = preset_int[5]
 
     sensor_frame_size, numFrames = calculate_sensor_frame_size(data_bitmask)
+    sensor_frame_int = sensor_frame_int[preset_size:]
 
-    # This is where the fun begins
+    with open("output/appa_sensor_data.txt", "w") as f:
+        index = 0 # This is the current index of sensor_frame_int
+        for bit, sensor_group in zip(data_bitmask, appa_sensor_names):
+            if bit == "0": pass # Skip current sensor type if bitmask indicates it is not included
 
-    ## TODO
+            # Get the sensor sizes and data types for the raw, conv, state_estim, gps, or canard group
+            sensor_sizes = appa_sensor_sizes[sensor_group]
+            sensor_types = appa_sensor_types[sensor_group]
 
+            # Parse the sizes and types to extract them from sensor_frame_int
+            for size, data_type, in zip(sensor_sizes.values(), sensor_types.values()):
+                if data_type is int:
+                    value = 0
+                    value_index = index + (size - 1) 
+                    for i in range(value_index, index, -1):
+                        value = value | sensor_frame_int[i] << (8 * (value_index - index))
+                    value = value | sensor_frame_int[index]
 
+                    index += size # Increment current sensor_frame_int index by the size we just extracted
+                elif data_type is float:
+                    value = [sensor_frame_int[index].to_bytes(1, "big"),
+                             sensor_frame_int[index + 1].to_bytes(1, "big"),
+                             sensor_frame_int[index + 2].to_bytes(1, "big"),
+                             sensor_frame_int[index + 3].to_bytes(1, "big")]
+                    value = hw_commands.byte_array_to_float(value)
+
+                    index += size # Increment current sensor_frame_int index by 4 (size of a float)
+                else:
+                    raise ValueError("Uknown type")
+                
+                f.write(str(value) + "\t")
+            f.write("\n")
+
+    return serialObj
 
 
 ################################################################################
