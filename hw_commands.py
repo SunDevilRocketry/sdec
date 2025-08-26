@@ -1345,12 +1345,14 @@ def flash(Args, serialObj):
     # Subcommand: flash extract                                                    #
     ################################################################################
     elif ( user_subcommand == "extract" ):
-
         # Send flash opcode 
         serialObj.sendByte( opcode )
 
         # Send flash extract subcommand code 
         serialObj.sendByte( flash_extract_base_code )
+
+        # Flush Buffer
+        serialObj.serialObj.reset_input_buffer()
 
         # Start timer
         start_time = time.perf_counter()

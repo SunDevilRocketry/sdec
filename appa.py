@@ -27,11 +27,11 @@ import sensor_conv
 ####################################################################################
 
 appa_data_bitmasks = {
-    "raw": (2 ^ 0),
-    "conv": (2 ^ 1),
-    "state_estim": (2 ^ 2),
-    "gps": (2 ^ 3),
-    "canard": (2 ^ 4)
+    "raw": (2 ** 0),
+    "conv": (2 ** 1),
+    "state_estim": (2 ** 2),
+    "gps": (2 ** 3),
+    "canard": (2 ** 4)
 }
 
 appa_sensor_names = {
@@ -298,7 +298,49 @@ def appa_parse_preset(serialObj, sensor_frame_int):
 
     return output_strings
 
+def appa_parse_data_final(data: list[int], group: str) -> str:
+    out_str = ""
+    index = 0
+
+    # Get the sensor sizes and data types for the raw, conv, state_estim, gps, or canard group
+    sensor_sizes = appa_sensor_sizes[group]
+    sensor_types = appa_sensor_types[group]
+
+    # Parse the sizes and types to extract them from sensor_frame_int
+    for size, data_type, key in zip(sensor_sizes.values(), sensor_types.values(), sensor_sizes.keys()):
+        if data_type is int:
+            value = 0
+            value_index = index + (size - 1) 
+            for i in range(value_index, index, -1):
+                value = value | data[i] << (8 * (value_index - index))
+            value = value | data[index]
+            
+            # Apply conversions if applicable
+            if key == "accX" or key == "accY" or key == "accZ":
+                value = sensor_conv.imu_accel(value)
+            if key == "gyroX" or key == "gyroY" or key == "gyroZ":
+                value = sensor_conv.imu_gyro(value)
+
+            out_str += (str(value) + ",")
+
+            index += size # Increment current data index by the size we just extracted
+        elif data_type is float:
+            value = [data[index].to_bytes(1, "big"),
+                        data[index + 1].to_bytes(1, "big"),
+                        data[index + 2].to_bytes(1, "big"),
+                        data[index + 3].to_bytes(1, "big")]
+            value = hw_commands.byte_array_to_float(value)
+            out_str += (str(value) + ",")
+
+            index += size # Increment current data index by 4 (size of a float)
+        else:
+            raise ValueError("Unknown type")
+        
+    return out_str
+
+
 def appa_parse_frame(frame: list[int], dataBitmask: int):
+    # Exists in all
     out_line = ""
     out_line += str(frame[0]) + ","
     out_line += str(frame[1]) + ","
@@ -315,35 +357,20 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
     del frame[0:6]
 
     if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
-        for i in range(3):
-            cnv = 0
-            cnv += (int(frame[0]) & int('00FF', 16)) # LSB
-            cnv += ((int(frame[1]) & int('FF00', 16)) >> 8) # MSB
-            out_line += str(sensor_conv.imu_accel(cnv)) + ","
-
-        for i in range(3):
-            cnv = 0
-            cnv += (int(frame[0]) & int('00FF', 16)) # LSB
-            cnv += ((int(frame[1]) & int('FF00', 16)) >> 8) # MSB
-            out_line += (str(sensor_conv.imu_gyro(cnv)) + ",")
-
-        for i in range(3):
-            cnv = 0
-            cnv += (int(frame[0]) & int('00FF', 16)) # LSB
-            cnv += ((int(frame[1]) & int('FF00', 16)) >> 8) # MSB
-            out_line += (str(cnv) + ",")
-    '''
+        out_line += appa_parse_data_final(frame[0:28], "raw")
+        del frame[0:28]
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        size += 6 * 4 # IMU conv
+        out_line += appa_parse_data_final(frame[0:24], "conv")
+        del frame[0:24]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
-        size += 9 * 4 # IMU state estims
-        size += 2 * 4 # Baro state estims
+        out_line += appa_parse_data_final(frame[0:44], "state_estim")
+        del frame[0:44]
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
-        size += 5 * 4 # GPS floats
-        size += 4 * 1 # GPS chars
+        out_line += appa_parse_data_final(frame[0:24], "gps")
+        del frame[0:24]
     if ( dataBitmask & appa_data_bitmasks.get("canard") != 0 ):
-        size += 1 * 4 # canard feedback
-    '''
+        out_line += appa_parse_data_final(frame[0:4], "canard")
+        del frame[0:4]
 
     return out_line
 
@@ -401,9 +428,7 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
             sensor_frame_int.append( ord( sensor_byte ) )
 
     preset_int = []
-    for i in range(2, preset_size + 2):
-        preset_int.append(sensor_frame_int[i])
-    preset_strings = appa_parse_preset(serialObj, preset_int)
+    preset_strings = appa_parse_preset(serialObj, sensor_frame_int[2:preset_size + 2])
 
     print(str(preset_data_bitmask))
 
@@ -417,26 +442,22 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
         print("Failed to parse preset data bitmask.")
         return serialObj
 
-    sensor_frame_size, numFrames = calculate_sensor_frame_size(preset_data_bitmask)
+    sensor_frame_size, num_preset_frames = calculate_sensor_frame_size(preset_data_bitmask)
 
     print( str(sensor_frame_size) )
 
     # This is where the fun begins
     # start = math.ceil(preset_size, sensor_frame_size)
-    start = int( math.ceil(preset_size / sensor_frame_size) * sensor_frame_size )
+    start = num_preset_frames * sensor_frame_size
     stop = int( start + sensor_frame_size )
     print( str( start ) + " | " + str( stop ) )
     with open("output/appa_sensor_data.csv", "w") as outfile:
         outfile.write(flash_extract_keys(preset_data_bitmask) + "\n")
         # magic number should be moved
-        for frame in range(524288 // sensor_frame_size):
-            if start < frame * sensor_frame_size:
-                start += sensor_frame_size
-                stop += sensor_frame_size
-            else:
-                outfile.write(appa_parse_frame(sensor_frame_int[start:stop], preset_data_bitmask) + "\n")
-                start += sensor_frame_size
-                stop += sensor_frame_size
+        while stop < 524288:
+            outfile.write(appa_parse_frame(sensor_frame_int[start:stop], preset_data_bitmask) + "\n")
+            start += sensor_frame_size
+            stop += sensor_frame_size
 
     return serialObj
 
