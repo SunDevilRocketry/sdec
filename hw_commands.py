@@ -1385,6 +1385,7 @@ def flash(Args, serialObj):
             # Call the APPA specific parser if applicable
             if ( serialObj.firmware == 'APPA' ):
                 appa.flash_extract_parse(serialObj, rx_byte_blocks)
+                return serialObj
 
             # Otherwise, check preset_frames
             num_preset_frames = preset_frames[serialObj.firmware]
