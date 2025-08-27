@@ -15,20 +15,23 @@
 import csv
 import struct
 import crc32c #specific library for the checksum algorithm in Python
+import math
+import numpy as np
 
 import commands
 import hw_commands
+import sensor_conv
 
 ####################################################################################
 # Global Variables                                                                 #
 ####################################################################################
 
 appa_data_bitmasks = {
-    "raw": (2 ^ 0),
-    "conv": (2 ^ 1),
-    "state_estim": (2 ^ 2),
-    "gps": (2 ^ 3),
-    "canard": (2 ^ 4)
+    "raw": (2 ** 0),
+    "conv": (2 ** 1),
+    "state_estim": (2 ** 2),
+    "gps": (2 ** 3),
+    "canard": (2 ** 4)
 }
 
 appa_sensor_names = {
@@ -187,8 +190,18 @@ appa_sensor_types = {
     }
 }
 
+# Turn a 2D list into a 1D list
+def flatten_list(list):
+    to_return = []
+
+    for row in list:
+        for item in row:
+            to_return.append(item)
+
+    return to_return
+
 # Hold the data bitmask from parsing the preset
-preset_data_bitmask = None
+preset_data_bitmask = 0
 
 """
     Note: The length of "thing to print" should be 23 chars.
@@ -220,30 +233,29 @@ parse_preset_output_strings = {
         {"print" : "AC P/Y PID P const:    ", "indices" : [40, 41, 42, 43], "type" : "float"},
         {"print" : "AC P/Y PID I const:    ", "indices" : [44, 45, 46, 47], "type" : "float"},
         {"print" : "AC P/Y PID D const:    ", "indices" : [48, 49, 50, 51], "type" : "float"},
-        {"delete": 52}, # Index 43 empty due to padding
-        {"header" : "-=This point on doesn't work. TODO: Fix.=-"},
         {"header" : "==IMU OFFSETS=="},
-        {"print" : "Accel x offset:        ", "indices" : [0, 1, 2, 3], "type" : "float"},
-        {"print" : "Accel y offset:        ", "indices" : [4, 5, 6, 7], "type" : "float"},
-        {"print" : "Accel z offset:        ", "indices" : [8, 9, 10, 11], "type" : "float"},
-        {"print" : "Gyro x offset:         ", "indices" : [12, 13, 14, 15], "type" : "float"},
-        {"print" : "Gyro y offset:         ", "indices" : [16, 17, 18, 19], "type" : "float"},
-        {"print" : "Gryo z offset:         ", "indices" : [20, 21, 22, 23], "type" : "float"},
+        {"print" : "Accel x offset:        ", "indices" : [52, 53, 54, 55], "type" : "float"},
+        {"print" : "Accel y offset:        ", "indices" : [56, 57, 58, 59], "type" : "float"},
+        {"print" : "Accel z offset:        ", "indices" : [60, 61, 62, 63], "type" : "float"},
+        {"print" : "Gyro x offset:         ", "indices" : [64, 65, 66, 67], "type" : "float"},
+        {"print" : "Gyro y offset:         ", "indices" : [68, 69, 70, 71], "type" : "float"},
+        {"print" : "Gryo z offset:         ", "indices" : [72, 73, 74, 75], "type" : "float"},
         {"header" : "==BARO OFFSETS=="},
-        {"print" : "Baro pres offset:      ", "indices" : [24, 25, 26, 27], "type" : "float"},
-        {"print" : "Baro temp offset:      ", "indices" : [28, 29, 30, 31], "type" : "float"},
+        {"print" : "Baro pres offset:      ", "indices" : [76, 77, 78, 79], "type" : "float"},
+        {"print" : "Baro temp offset:      ", "indices" : [80, 81, 82, 83], "type" : "float"},
         {"header" : "==SERVO REF PTS=="},
-        {"print" : "Servo 1 RP:            ", "indices" : [32], "type" : "int"},
-        {"print" : "Servo 2 RP:            ", "indices" : [33], "type" : "int"},
-        {"print" : "Servo 3 RP:            ", "indices" : [34], "type" : "int"},
-        {"print" : "Servo 4 RP:            ", "indices" : [35], "type" : "int"}
+        {"print" : "Servo 1 RP:            ", "indices" : [84], "type" : "int"},
+        {"print" : "Servo 2 RP:            ", "indices" : [85], "type" : "int"},
+        {"print" : "Servo 3 RP:            ", "indices" : [86], "type" : "int"},
+        {"print" : "Servo 4 RP:            ", "indices" : [87], "type" : "int"}
     ]
 }
 
 # Note: there should be 23 chars before the value. Keep that number consistent.
 def appa_parse_preset(serialObj, sensor_frame_int):
+    global preset_data_bitmask
+    
     output_strings = []
-
     preset_output_strings = parse_preset_output_strings["APPA"]
 
     for command in preset_output_strings:
@@ -268,7 +280,8 @@ def appa_parse_preset(serialObj, sensor_frame_int):
                         value = value | sensor_frame_int[indices[0]]
 
                         # Check indices length first to reduce string in string checks
-                        if len(indices) == 1 and "Data bitmask" in to_print: preset_data_bitmask = value
+                        if len(indices) == 4 and "Data bitmask" in to_print: 
+                            preset_data_bitmask = value
                         output_strings.append((to_print + "{}").format(value)) 
                     case "float":
                         value = [sensor_frame_int[indices[0]].to_bytes(1, "big"),
@@ -284,6 +297,82 @@ def appa_parse_preset(serialObj, sensor_frame_int):
                 raise ValueError("Unknown key {}".format(command_type))
 
     return output_strings
+
+def appa_parse_data_final(data: list[int], group: str) -> str:
+    out_str = ""
+    index = 0
+
+    # Get the sensor sizes and data types for the raw, conv, state_estim, gps, or canard group
+    sensor_sizes = appa_sensor_sizes[group]
+    sensor_types = appa_sensor_types[group]
+
+    # Parse the sizes and types to extract them from sensor_frame_int
+    for size, data_type, key in zip(sensor_sizes.values(), sensor_types.values(), sensor_sizes.keys()):
+        if data_type is int:
+            value = 0
+            value_index = index + (size - 1) 
+            for i in range(value_index, index, -1):
+                value = value | data[i] << (8 * (value_index - index))
+            value = value | data[index]
+            
+            # Apply conversions if applicable
+            if key == "accX" or key == "accY" or key == "accZ":
+                value = sensor_conv.imu_accel(value)
+            if key == "gyroX" or key == "gyroY" or key == "gyroZ":
+                value = sensor_conv.imu_gyro(value)
+
+            out_str += (str(value) + ",")
+
+            index += size # Increment current data index by the size we just extracted
+        elif data_type is float:
+            value = [data[index].to_bytes(1, "big"),
+                        data[index + 1].to_bytes(1, "big"),
+                        data[index + 2].to_bytes(1, "big"),
+                        data[index + 3].to_bytes(1, "big")]
+            value = hw_commands.byte_array_to_float(value)
+            out_str += (str(value) + ",")
+
+            index += size # Increment current data index by 4 (size of a float)
+        else:
+            raise ValueError("Unknown type")
+        
+    return out_str
+
+
+def appa_parse_frame(frame: list[int], dataBitmask: int):
+    # Exists in all
+    out_line = ""
+    out_line += str(frame[0]) + ","
+    out_line += str(frame[1]) + ","
+
+    # Time of frame measurement
+    time = ( ( frame[2]       ) + 
+             ( frame[3] << 8  ) + 
+             ( frame[4] << 16 ) +
+             ( frame[5] << 24 ) )
+    
+    # Conversion to seconds
+    out_line += str( time / 1000 ) + ","
+
+    del frame[0:6]
+
+    if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
+        out_line += appa_parse_data_final(frame[0:28], "raw")
+        del frame[0:28]
+    if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
+        out_line += appa_parse_data_final(frame[0:24], "conv")
+        del frame[0:24]
+    if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
+        out_line += appa_parse_data_final(frame[0:44], "state_estim")
+        del frame[0:44]
+    if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
+        out_line += appa_parse_data_final(frame[0:24], "gps")
+        del frame[0:24]
+    if ( dataBitmask & appa_data_bitmasks.get("canard") != 0 ):
+        out_line += appa_parse_data_final(frame[0:4], "canard")
+        del frame[0:4]
+
+    return out_line
 
 
 def calculate_sensor_frame_size(dataBitmask):
@@ -304,26 +393,44 @@ def calculate_sensor_frame_size(dataBitmask):
     
     # Calculate
     sensor_frame_size = size
+    preset_frame_size = size
     numFrames = 1
-    while ( sensor_frame_size < preset_size + 2 ):
-        sensor_frame_size += size
+    while ( preset_frame_size < preset_size + 2 ):
+        preset_frame_size += size
         numFrames += 1
 
     return sensor_frame_size, numFrames
 
+def flash_extract_keys(dataBitmask):
+    header_row = "save_bit,fc_state,time,"
+    if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
+        header_row += "accX,accY,accZ,gyroX,gyroY,gyroZ,magX,magY,magZ,imut,pres,temp,"
+    if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
+        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,"
+    if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
+        header_row += "rollDeg,pitchDeg,rollRate,pitchRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
+    if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
+        header_row += "altg,speedg,utc_time,long,lat,ns,ew,gll_s,rmc_s,"
+    if ( dataBitmask & appa_data_bitmasks.get("canard") != 0 ):
+        header_row += "feedback,"
+
+    return header_row[:-1]
+
 
 def flash_extract_parse(serialObj, rx_byte_blocks):
+    global preset_data_bitmask
+
     # Parse contents into bytes
     # TODO: THIS IS PROBABLY WRONG!!
     sensor_frame_int = []
-    for sensor_byte in rx_byte_blocks:
-        sensor_frame_int.append( ord( sensor_byte ) )
+    for sensor_block in rx_byte_blocks:
+        for sensor_byte in sensor_block:
+            sensor_frame_int.append( ord( sensor_byte ) )
 
     preset_int = []
-    for i in range(0, preset_size):
-        preset_int.append(sensor_frame_int[i])
-    
-    preset_strings = appa_parse_preset(serialObj, preset_int)
+    preset_strings = appa_parse_preset(serialObj, sensor_frame_int[2:preset_size + 2])
+
+    print(str(preset_data_bitmask))
 
     # Write presets to file
     with open( "output/appa_preset_data.txt", 'w' ) as file:
@@ -331,16 +438,28 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
             file.write(line + '\n')
 
     # Get data bitmask (idx 5)
-    data_bitmask = preset_int[5]
+    if( preset_data_bitmask == 0 or preset_data_bitmask == None ):
+        print("Failed to parse preset data bitmask.")
+        return serialObj
 
-    sensor_frame_size, numFrames = calculate_sensor_frame_size(data_bitmask)
+    sensor_frame_size, num_preset_frames = calculate_sensor_frame_size(preset_data_bitmask)
+
+    print( str(sensor_frame_size) )
 
     # This is where the fun begins
+    # start = math.ceil(preset_size, sensor_frame_size)
+    start = num_preset_frames * sensor_frame_size
+    stop = int( start + sensor_frame_size )
+    print( str( start ) + " | " + str( stop ) )
+    with open("output/appa_sensor_data.csv", "w") as outfile:
+        outfile.write(flash_extract_keys(preset_data_bitmask) + "\n")
+        # magic number should be moved
+        while stop < 524288:
+            outfile.write(appa_parse_frame(sensor_frame_int[start:stop], preset_data_bitmask) + "\n")
+            start += sensor_frame_size
+            stop += sensor_frame_size
 
-    ## TODO
-
-
-
+    return serialObj
 
 ################################################################################
 # Command: Preset                                                              #

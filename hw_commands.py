@@ -1345,12 +1345,14 @@ def flash(Args, serialObj):
     # Subcommand: flash extract                                                    #
     ################################################################################
     elif ( user_subcommand == "extract" ):
-
         # Send flash opcode 
         serialObj.sendByte( opcode )
 
         # Send flash extract subcommand code 
         serialObj.sendByte( flash_extract_base_code )
+
+        # Flush Buffer
+        serialObj.serialObj.reset_input_buffer()
 
         # Start timer
         start_time = time.perf_counter()
@@ -1385,6 +1387,7 @@ def flash(Args, serialObj):
             # Call the APPA specific parser if applicable
             if ( serialObj.firmware == 'APPA' ):
                 appa.flash_extract_parse(serialObj, rx_byte_blocks)
+                return serialObj
 
             # Otherwise, check preset_frames
             num_preset_frames = preset_frames[serialObj.firmware]
