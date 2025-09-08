@@ -225,6 +225,8 @@ parse_preset_output_strings = {
         {"print" : "LD accel samples:      ", "indices" : [19], "type" : "int"},
         {"print" : "LD baro samples:       ", "indices" : [20], "type" : "int"},
         {"print" : "Minimum Frame Delta:   ", "indices" : [21], "type" : "int"},
+        {"print" : "Apogee detect samples: ", "indices" : [22], "type" : "int"},
+        {"print" : "Pad bits:              ", "indices" : [23, 24], "type" : "int"},
         {"print" : "AC max deflect angle:  ", "indices" : [25], "type" : "int"},
         {"print" : "AR Delay after launch: ", "indices" : [26, 27], "type" : "int"},
         {"print" : "AC Roll PID P const:   ", "indices" : [28, 29, 30, 31], "type" : "float"},
@@ -516,8 +518,8 @@ def preset(Args, serialObj):
 
 def download_preset(Args, serialObj):
     print("Download Preset")
-    serialObj.sendByte(b'\x02')
     serialObj.serialObj.reset_input_buffer()
+    serialObj.sendByte(b'\x02')
 
     # Read serial data
     rx_bytes = serialObj.readBytes(preset_size)
@@ -610,18 +612,18 @@ def upload_preset(Args, serialObj):
     # Minimum time for frame
     raw_data.append(int(data_list[71][4]))
 
-    raw_data.append(0)
+    raw_data.append(int(data_list[72][4])) # apogee detect
     raw_data.append(0)
     raw_data.append(0)
 
     # Active Roll
-    raw_data.append(int(data_list[72][4]))
+    raw_data.append(int(data_list[73][4]))
 
-    raw_data.append(int(data_list[73][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[73][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(data_list[74][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(data_list[74][4]) & int('FF00', 16)) >> 8) # MSB
 
     # 24 bytes of floats
-    for i in range(74,80):
+    for i in range(75,81):
         ba = bytearray(struct.pack("f", float(data_list[i][4])))
         raw_data.append(int(ba[0]))
         for j in range(1, 4):
