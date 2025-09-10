@@ -3,7 +3,7 @@
 #                                                                                  #
 # appa.py -- Contains functions related to APPA prototype                          #
 #                                                                                  #
-# Author: Eli Sells                                                                #
+# Author(s): Eli Sells, Journey Hancock, Joseph Hawkins, Nicholas Armistead        #
 # Date: 05/17/2025                                                                 #
 # Sun Devil Rocketry Avionics                                                      #
 #                                                                                  #
