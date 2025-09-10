@@ -35,7 +35,7 @@ Enabled Data,STORE_RAW,bit,N/A,1
 ,STORE_CONV,bit,N/A,1
 ,STORE_STATE_ESTIM,bit,N/A,1
 ,STORE_GPS,bit,N/A,1
-,STORE_CANARD_DATA,bit,N/A,1
+,STORE_CANARD_DATA,bit,N/A,0
 ,(empty),bit,N/A,1
 ,(empty),bit,N/A,1
 ,(empty),bit,N/A,1
@@ -64,7 +64,7 @@ Enabled Data,STORE_RAW,bit,N/A,1
 ,(empty),bit,N/A,1
 ,(empty),bit,N/A,1
 Sensor Calibration,sensor_calibration_samples,uint16_t,N/A,1000
-Launch Detect,launch_detect_timeout,uint16_t,ms,30000
+Launch Detect,launch_detect_timeout,uint16_t,ms,15000
 ,launch_detect_baro_threshold,uint16_t,Pa,300
 ,launch_detect_accel_threshold,uint8_t,g,2
 ,launch_detect_accel_samples,uint8_t,N/A,5
