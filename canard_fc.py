@@ -11,7 +11,7 @@ import time
 # "values"      : [amount of values for each part of the data], 
 # "type"        : "data type"
 read_preset_output_strings = {
-    "APPA" : [
+    "Active Roll" : [
         {"header":  "Data Receive:\n"},
         {"print" : "Acceleration: ", "index start": 0,  "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
         {"print" : "Gyro:         ", "index start": 12, "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
@@ -65,6 +65,11 @@ def fin_setup(Args, serialObj):
 
 def read_preset(Args, serialObj):
     print("Read Preset")
+
+    if ( serialObj.firmware == None or serialObj.firmware != 'Active Roll' ):
+        print("Error: unsupported firmware")
+        return serialObj
+    
     serialObj.sendByte(b'\x26')
 
     # Read serial data
@@ -74,7 +79,7 @@ def read_preset(Args, serialObj):
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
 
-    preset_output_strings = read_preset_output_strings["APPA"]
+    preset_output_strings = read_preset_output_strings["Active Roll"]
 
     for command in preset_output_strings:
         command_type = next(iter(command))
