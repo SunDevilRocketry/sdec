@@ -300,7 +300,7 @@ def appa_parse_preset(serialObj, sensor_frame_int):
 
     return output_strings
 
-def appa_parse_data_final(data: list[int], group: str) -> str:
+def appa_parse_telemetry_data(data: list[int], group: str) -> str:
     out_str = ""
     index = 0
 
@@ -359,19 +359,19 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
     del frame[0:6]
 
     if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
-        out_line += appa_parse_data_final(frame[0:28], "raw")
+        out_line += appa_parse_telemetry_data(frame[0:28], "raw")
         del frame[0:28]
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        out_line += appa_parse_data_final(frame[0:24], "conv")
+        out_line += appa_parse_telemetry_data(frame[0:24], "conv")
         del frame[0:24]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
-        out_line += appa_parse_data_final(frame[0:44], "state_estim")
+        out_line += appa_parse_telemetry_data(frame[0:44], "state_estim")
         del frame[0:44]
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
-        out_line += appa_parse_data_final(frame[0:24], "gps")
+        out_line += appa_parse_telemetry_data(frame[0:24], "gps")
         del frame[0:24]
     if ( dataBitmask & appa_data_bitmasks.get("canard") != 0 ):
-        out_line += appa_parse_data_final(frame[0:4], "canard")
+        out_line += appa_parse_telemetry_data(frame[0:4], "canard")
         del frame[0:4]
 
     return out_line
@@ -423,7 +423,6 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     global preset_data_bitmask
 
     # Parse contents into bytes
-    # TODO: THIS IS PROBABLY WRONG!!
     sensor_frame_int = []
     for sensor_block in rx_byte_blocks:
         for sensor_byte in sensor_block:
@@ -568,12 +567,12 @@ def upload_preset(Args, serialObj):
     if filename == "":
         filename = "input/appa_config.csv"
 
-    data_list = []
+    preset_list = []
     try:
       with open( filename, 'r' ) as file:
         csv_reader = csv.reader( file )
         for row in csv_reader:
-            data_list.append( row )
+            preset_list.append( row )
     except FileNotFoundError:
         print(f"Error: File not found: { filename }")
         return []
@@ -581,50 +580,50 @@ def upload_preset(Args, serialObj):
         print(f"An error occurred: {e}")
         return []
     
-    # print( data_list )
+    # print( preset_list )
 
     raw_data = [0,0,0,0,0,0,0,0] # Start with no features and no data
 
     # Construct the feature and data flags
     for i in range(1,8):
-        raw_data[0] += (int(data_list[i][4]) << (i - 1))
-        raw_data[4] += (int(data_list[i+32][4]) << (i - 1))
+        raw_data[0] += (int(preset_list[i][4]) << (i - 1))
+        raw_data[4] += (int(preset_list[i+32][4]) << (i - 1))
 
     # print(raw_data)
 
     # Sensor Calibration
-    raw_data.append(int(data_list[65][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[65][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(preset_list[65][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(preset_list[65][4]) & int('FF00', 16)) >> 8) # MSB
 
     # Launch Detect
-    raw_data.append(int(data_list[66][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[66][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(preset_list[66][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(preset_list[66][4]) & int('FF00', 16)) >> 8) # MSB
 
-    raw_data.append(int(data_list[67][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[67][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(preset_list[67][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(preset_list[67][4]) & int('FF00', 16)) >> 8) # MSB
 
-    raw_data.append(int(data_list[68][4]))
+    raw_data.append(int(preset_list[68][4]))
 
-    raw_data.append(int(data_list[69][4]))
+    raw_data.append(int(preset_list[69][4]))
 
-    raw_data.append(int(data_list[70][4]))
+    raw_data.append(int(preset_list[70][4]))
 
     # Minimum time for frame
-    raw_data.append(int(data_list[71][4]))
+    raw_data.append(int(preset_list[71][4]))
 
-    raw_data.append(int(data_list[72][4])) # apogee detect
+    raw_data.append(int(preset_list[72][4])) # apogee detect
     raw_data.append(0)
     raw_data.append(0)
 
     # Active Roll
-    raw_data.append(int(data_list[73][4]))
+    raw_data.append(int(preset_list[73][4]))
 
-    raw_data.append(int(data_list[74][4]) & int('00FF', 16)) # LSB
-    raw_data.append((int(data_list[74][4]) & int('FF00', 16)) >> 8) # MSB
+    raw_data.append(int(preset_list[74][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(preset_list[74][4]) & int('FF00', 16)) >> 8) # MSB
 
     # 24 bytes of floats
     for i in range(75,81):
-        ba = bytearray(struct.pack("f", float(data_list[i][4])))
+        ba = bytearray(struct.pack("f", float(preset_list[i][4])))
         raw_data.append(int(ba[0]))
         for j in range(1, 4):
             raw_data.append(int(ba[j]))
@@ -635,9 +634,11 @@ def upload_preset(Args, serialObj):
 
     print( list(raw_data) )
 
-    serialObj.sendByte(b'\x24')
+    serialObj.sendByte(b'\x24') # Preset opcode (we wait until the data is parsed 
+                                # to tell the flight computer to listen for it)
 
-    serialObj.sendByte(b'\x01')
+    serialObj.sendByte(b'\x01') # Upload subcommand
+
 
     serialObj.sendBytes(raw_data)
 
