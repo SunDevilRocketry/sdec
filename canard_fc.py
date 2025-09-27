@@ -4,6 +4,24 @@ from hw_commands import byte_array_to_float
 
 import time
 
+
+# "print"       : "thing to print",
+# "index start" : [first index of the data in the sensor frame], 
+# "bytes"       : [amount of bytes for each value],
+# "values"      : [amount of values for each part of the data], 
+# "type"        : "data type"
+read_preset_output_strings = {
+    "Active Roll" : [
+        {"header":  "Data Receive:\n"},
+        {"print" : "Acceleration: ", "index start": 0,  "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
+        {"print" : "Gyro:         ", "index start": 12, "bytes" : 4, "values" : 3, "type" : "float"}, # x, y, z
+        {"print" : "Baro:         ", "index start": 24, "bytes" : 4, "values" : 2, "type" : "float"}, # pres, temp
+        {"print" : "Servo:        ", "index start": 32, "bytes" : 1, "values" : 4, "type" : "int"},   # Servo reference point
+        # Pad bytes 37, 38
+    ]
+}
+
+
 def idle(Args, serialObj):
     print("IDLE")
     serialObj.sendByte(b'\x20')
@@ -47,6 +65,11 @@ def fin_setup(Args, serialObj):
 
 def read_preset(Args, serialObj):
     print("Read Preset")
+
+    if ( serialObj.firmware == None or serialObj.firmware != 'Active Roll' ):
+        print("Error: unsupported firmware")
+        return serialObj
+    
     serialObj.sendByte(b'\x26')
 
     # Read serial data
@@ -56,50 +79,53 @@ def read_preset(Args, serialObj):
     for sensor_byte in rx_bytes:
         sensor_frame_int.append( ord( sensor_byte ) )
 
-    accel_x_bytes = [sensor_frame_int[0].to_bytes(1, 'big' ), sensor_frame_int[1].to_bytes(1, 'big' ), sensor_frame_int[2].to_bytes(1, 'big' ), sensor_frame_int[3].to_bytes(1, 'big' )]
-    accel_y_bytes = [sensor_frame_int[4].to_bytes(1, 'big' ), sensor_frame_int[5].to_bytes(1, 'big' ), sensor_frame_int[6].to_bytes(1, 'big' ), sensor_frame_int[7].to_bytes(1, 'big' )]
-    accel_z_bytes = [sensor_frame_int[8].to_bytes(1, 'big' ), sensor_frame_int[9].to_bytes(1, 'big' ), sensor_frame_int[10].to_bytes(1, 'big' ), sensor_frame_int[11].to_bytes(1, 'big' )]
-    
-    gyro_x_bytes = [sensor_frame_int[12].to_bytes(1, 'big' ), sensor_frame_int[13].to_bytes(1, 'big' ), sensor_frame_int[14].to_bytes(1, 'big' ), sensor_frame_int[15].to_bytes(1, 'big' )]
-    gyro_y_bytes = [sensor_frame_int[16].to_bytes(1, 'big' ), sensor_frame_int[17].to_bytes(1, 'big' ), sensor_frame_int[18].to_bytes(1, 'big' ), sensor_frame_int[19].to_bytes(1, 'big' )]
-    gyro_z_bytes = [sensor_frame_int[20].to_bytes(1, 'big' ), sensor_frame_int[21].to_bytes(1, 'big' ), sensor_frame_int[22].to_bytes(1, 'big' ), sensor_frame_int[23].to_bytes(1, 'big' )]
+    preset_output_strings = read_preset_output_strings["Active Roll"]
 
-    baro_pres_bytes = [sensor_frame_int[24].to_bytes(1, 'big' ), sensor_frame_int[25].to_bytes(1, 'big' ), sensor_frame_int[26].to_bytes(1, 'big' ), sensor_frame_int[27].to_bytes(1, 'big' )]
-    baro_temp_bytes = [sensor_frame_int[28].to_bytes(1, 'big' ), sensor_frame_int[29].to_bytes(1, 'big' ), sensor_frame_int[30].to_bytes(1, 'big' ), sensor_frame_int[31].to_bytes(1, 'big' )]
+    for command in preset_output_strings:
+        command_type = next(iter(command))
 
-    accel_x_float = byte_array_to_float(accel_x_bytes)
-    accel_y_float = byte_array_to_float(accel_y_bytes)
-    accel_z_float = byte_array_to_float(accel_z_bytes)
+        match command_type:
+            case "header":
+                print(command["header"])
+            case "print":
+                to_print        = command["print"]
+                bytes_per_value = command["bytes"]
+                index           = command["index start"]
+                num_values      = command["values"]
+                data_type       = command["type"]
 
-    gyro_x_float = byte_array_to_float(gyro_x_bytes)
-    gyro_y_float = byte_array_to_float(gyro_y_bytes)
-    gyro_z_float = byte_array_to_float(gyro_z_bytes)
+                match data_type:
+                    case "float":
+                        list_to_print = []
+                        for _ in range(num_values):
+                            single_value = []
+                            for i in range (index, index + bytes_per_value):
+                                single_value.append(sensor_frame_int[i].to_bytes(1, 'big'))
 
-    baro_pres_float = byte_array_to_float(baro_pres_bytes)
-    baro_temp_float = byte_array_to_float(baro_temp_bytes)
+                            index += bytes_per_value
+                            single_value = (byte_array_to_float(single_value))
+                            list_to_print.append(single_value)
 
-    # Servo 1 Reference point
-    rp_servo1 = sensor_frame_int[32]
+                        print(f"{to_print} {list_to_print}\n")
 
-    # Servo 2 Reference point
-    rp_servo2 = sensor_frame_int[33]
+                    case "int":
+                        list_to_print = []
+                        for _ in range(num_values):
+                            single_value = 0
+                            for offset in range(bytes_per_value - 1, -1, -1):
+                                shifted_byte = (sensor_frame_int[index + offset] << (8 * offset))
+                                single_value = single_value | shifted_byte
 
-    # Servo 3 Reference point
-    rp_servo3 = sensor_frame_int[34]
+                            index += bytes_per_value
+                            list_to_print.append(single_value)
 
-    # Servo 4 Reference point
-    rp_servo4 = sensor_frame_int[35]
+                        print(f"{to_print} {list_to_print}\n")
 
-    # Pad bits
-    #pad1 = sensor_frame_int[36]
-    #pad2 = sensor_frame_int[37]
-
-    print(f"Data receive:\n")
-    print(f"Acceleration: {[accel_x_float, accel_y_float, accel_z_float]}\n")
-    print(f"Gyro: {[gyro_x_float, gyro_y_float, gyro_z_float]}\n")
-    print(f"Baro: {[baro_pres_float, baro_temp_float]}\n")
-    print(f"Servo: {[rp_servo1, rp_servo2, rp_servo3, rp_servo4]}\n")
-
+                    case _:
+                        raise ValueError(f"Unknown key {data_type}")
+                    
+            case _:
+                raise ValueError(f"Unknown key {command_type}")
 
     return serialObj
 
