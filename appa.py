@@ -542,6 +542,7 @@ def download_preset(Args, serialObj):
 
 def verify_preset(Args, serialObj):
     print("Verify Preset")
+    serialObj.serialObj.reset_input_buffer()
     serialObj.sendByte(b'\x03')
 
     # Read serial data
@@ -628,9 +629,12 @@ def upload_preset(Args, serialObj):
         for j in range(1, 4):
             raw_data.append(int(ba[j]))
 
-    checksum = crc32c.crc32(bytearray(raw_data[4:]))  # Skip first 4 bytes which will hold the checksum
+    print(len(raw_data))
+    checksum = crc32c.crc32(bytearray(raw_data))  # Skip first 4 bytes which will hold the checksum
     checksum_bytes = checksum.to_bytes(4, 'little')   # Little-endian format
     raw_data = checksum_bytes + bytes(raw_data)                    # Prepend to the raw_data
+
+    print( "Checksum: " + str( struct.unpack('>I', checksum_bytes)[0] ) )
 
     print( list(raw_data) )
 
