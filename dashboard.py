@@ -76,7 +76,7 @@ def dashboard_dump( Args, serialObj ):
                                                 sensor               ,
                                                 serialObj.sensor_readouts[sensor]
                                                 )
-        print( readout_formatted )
+        # print( readout_formatted )
         readouts.append(readout_formatted)
         
     return serialObj, serialObj.sensor_readouts
