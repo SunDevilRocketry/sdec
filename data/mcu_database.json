@@ -1,0 +1,11 @@
+{
+    "nickname": "BadIGN",
+    "PCB": "A0002",
+    "revision": 2,
+    "UID": {
+        "wafer_coords": 0,
+        "lot_num_1": "aaa",
+        "wafer_num": 0,
+        "lot_num_2": 0
+    }
+}
