@@ -79,6 +79,7 @@ command_list = {
                  "save-preset": canard_fc.save_preset            ,
                  "parse-output": parser.parse_output             ,
                  "dashboard-dump": dashboard.dashboard_dump      ,
+                 "aes-keygen": dashboard.aes_keygen
                 }
 
 

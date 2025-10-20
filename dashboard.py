@@ -12,6 +12,9 @@
 # Imports                                                                          #
 ####################################################################################
 
+# Package imports
+import secrets
+
 # Project imports
 import hw_commands
 
@@ -42,6 +45,18 @@ sensor_numbers = [
     "ns",
     "ew"
     ]
+
+def aes_keygen( Args, serialObj ):
+    # Generate a 256-bit (32-byte) AES key
+    aes_key = secrets.token_bytes(32)
+    with open("sdec/input/aes.key", 'wb') as f:
+        f.write(aes_key)
+
+    with open("sdec/input/aes.key", 'rb') as f:
+        key = f.read(32)
+        print(key)
+        print(len(key))
+
 
 def dashboard_dump( Args, serialObj ):
     # Locals
