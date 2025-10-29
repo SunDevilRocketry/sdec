@@ -1481,10 +1481,11 @@ def ignite(Args, serialObj):
     opcode = b'\x20' 
 
     # Subcommand codes
-    ignite_fire_code     = b'\x01'
-    ignite_cont_code     = b'\x02'
-    ignite_main_code     = b'\x03'
-    ignite_drogue_code   = b'\x04'
+    ignite_fire_code            = b'\x01'
+    ignite_cont_code            = b'\x02'
+    ignite_main_code            = b'\x03'
+    ignite_drogue_code          = b'\x04'
+    ignite_switch_disable_code  = b'\x05'
 
     # Response codes, correspond to enum values in ignition.h
     ignite_success_code            = b'\x41'
@@ -1742,6 +1743,45 @@ def ignite(Args, serialObj):
                 print("Nozzle Wire:           Disconnected")
 
         elif ( "Flight Computer" in serialObj.controller ):
+
+            # Switch continuity
+            if ((ign_status_int >> 0) & 1):
+                print("Switch:        Connected")
+            else: 
+                print("Switch:        Disconnected")
+
+            # Main ematch continuity
+            if ((ign_status_int >> 1) & 1):
+                print("Main Ematch:   Connected")
+            else: 
+                print("Main Ematch:   Disconnected")
+
+            # Nozzle wire continuity
+            if ((ign_status_int >> 2) & 1):
+                print("Drogue Ematch: Connected")
+            else: 
+                print("Drogue Ematch: Disconnected")
+
+        # Exit
+        return serialObj
+    
+    elif (user_subcommand == "disable_switch"):
+        # Send ignite opcode
+        serialObj.sendByte(opcode)
+
+        # Send subcommand code
+        serialObj.sendByte(ignite_switch_disable_code)
+
+        # Get ignition status code
+        ign_status = serialObj.readByte()
+
+        # Parse response code
+        ign_status_int = ord(ign_status)
+
+        print("Test mode enabled; arming disabled.")
+        print("To return to normal mode, reset the flight computer.")
+
+        if ( "Flight Computer" in serialObj.controller ):
 
             # Switch continuity
             if ((ign_status_int >> 0) & 1):
