@@ -1459,7 +1459,8 @@ def ignite(Args, serialObj):
                     'main'  : {},
                     'drogue': {},
                     'cont'  : {},
-                    'help'  : {}
+                    'help'  : {},
+                    'disable_switch' : {}
                     }
     
     # Maximum number of arguments
