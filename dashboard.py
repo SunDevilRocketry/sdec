@@ -18,7 +18,7 @@ import hw_commands
 ####################################################################################
 # Global Variables                                                                 #
 ####################################################################################
-dashboard_dump_size = 66 # constant
+dashboard_dump_size = 72 # constant
 dashboard_dump_opcode = b'\x30'
 
 # List of sensors used in the dashboard dump
@@ -31,16 +31,16 @@ sensor_numbers = [
     "gyroZconv",
     "rollDeg",
     "pitchDeg",
+    "yawDeg",
     "rollRate",
     "pitchRate",
+    "yawRate",
     "pres",
     "temp",
     "alt",
     "bvelo",
     "long",
-    "lat",
-    "ns",
-    "ew"
+    "lat"
     ]
 
 def dashboard_dump( Args, serialObj ):
