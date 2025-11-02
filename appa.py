@@ -586,9 +586,11 @@ def upload_preset(Args, serialObj):
     raw_data = [0,0,0,0,0,0,0,0] # Start with no features and no data
 
     # Construct the feature and data flags
-    for i in range(1,8):
-        raw_data[0] += (int(preset_list[i][4]) << (i - 1))
-        raw_data[4] += (int(preset_list[i+32][4]) << (i - 1))
+    for byte_idx in range(0,4):
+        for i in range(1,9):
+            preset_list_row = i + 8 * byte_idx
+            raw_data[byte_idx] += (int(preset_list[preset_list_row][4]) << (i - 1))
+            raw_data[byte_idx + 4] += (int(preset_list[preset_list_row + 32][4]) << (i - 1))
 
     # print(raw_data)
 
