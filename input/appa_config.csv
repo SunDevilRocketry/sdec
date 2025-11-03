@@ -69,7 +69,7 @@ Launch Detect,launch_detect_timeout,uint16_t,ms,15000
 ,launch_detect_accel_threshold,uint8_t,g,2
 ,launch_detect_accel_samples,uint8_t,N/A,5
 ,launch_detect_baro_samples,uint8_t,N/A,5
-Flash,minimum_time_for_frame,uint8_t,ms,0
+Flash,rate_limit,uint16_t,hz,9999
 Apogee Detect,apogee_detect_samples,uint8_t,N/A,10
 Active Roll,control_max_deflection_angle,uint8_t,deg,10
 ,control_delay_after_launch,uint16_t,ms,4000
