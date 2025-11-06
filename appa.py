@@ -60,8 +60,10 @@ appa_sensor_names = {
     "state_estim": {
         "rollDeg"    :   "Roll Body Angle",
         "pitchDeg"    :  "Pitch Body Angle",
+        "yawDeg"    :  "Pitch Body Angle",
         "rollRate"    :  "Roll Body Rate",
         "pitchRate"    : "Pitch Body Rate",
+        "yawRate"    : "Pitch Body Rate",
         "velo"   :       "Velocity",
         "velo_x" :       "Velo X",
         "velo_y" :       "Velo Y",
@@ -112,8 +114,10 @@ appa_sensor_sizes = {
     "state_estim": {
         "rollDeg"    :   4,
         "pitchDeg"    :  4,
+        "yawDeg"    :    4,
         "rollRate"    :  4,
         "pitchRate"    : 4,
+        "yawRate"    :   4,
         "velo"   :       4,
         "velo_x" :       4,
         "velo_y" :       4,
@@ -164,8 +168,10 @@ appa_sensor_types = {
     "state_estim": {
         "rollDeg"    :   float,
         "pitchDeg"    :  float,
+        "yawDeg"       : float,
         "rollRate"    :  float,
         "pitchRate"    : float,
+        "yawRate"      : float,
         "velo"   :       float,
         "velo_x" :       float,
         "velo_y" :       float,
@@ -365,8 +371,8 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
         out_line += appa_parse_telemetry_data(frame[0:24], "conv")
         del frame[0:24]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
-        out_line += appa_parse_telemetry_data(frame[0:44], "state_estim")
-        del frame[0:44]
+        out_line += appa_parse_telemetry_data(frame[0:52], "state_estim")
+        del frame[0:52]
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:24], "gps")
         del frame[0:24]
@@ -385,7 +391,7 @@ def calculate_sensor_frame_size(dataBitmask):
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
         size += 6 * 4 # IMU conv
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
-        size += 9 * 4 # IMU state estims
+        size += 11 * 4 # IMU state estims
         size += 2 * 4 # Baro state estims
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
         size += 5 * 4 # GPS floats
@@ -410,7 +416,7 @@ def flash_extract_keys(dataBitmask):
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
         header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,"
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
-        header_row += "rollDeg,pitchDeg,rollRate,pitchRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
+        header_row += "rollDeg,pitchDeg,yawDeg,rollRate,pitchRate,yawRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
         header_row += "altg,speedg,utc_time,long,lat,ns,ew,gll_s,rmc_s,"
     if ( dataBitmask & appa_data_bitmasks.get("canard") != 0 ):
