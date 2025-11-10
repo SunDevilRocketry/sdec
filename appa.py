@@ -340,7 +340,7 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
     del frame[0:6]
 
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        out_line += appa_parse_telemetry_data(frame[0:24], "conv")
+        out_line += appa_parse_telemetry_data(frame[0:48], "conv")
         del frame[0:48]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:52], "state_estim")
@@ -382,7 +382,7 @@ def calculate_sensor_frame_size(dataBitmask):
 def flash_extract_keys(dataBitmask):
     header_row = "save_bit,fc_state,time,"
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,magXconv,magYconv,magZconv,magHall,pres,temp"
+        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,magXconv,magYconv,magZconv,magHall,pres,temp,"
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         header_row += "rollDeg,pitchDeg,yawDeg,rollRate,pitchRate,yawRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
