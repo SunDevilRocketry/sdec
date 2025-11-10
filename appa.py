@@ -27,35 +27,26 @@ import sensor_conv
 ####################################################################################
 
 appa_data_bitmasks = {
-    "raw": (2 ** 0),
-    "conv": (2 ** 1),
-    "state_estim": (2 ** 2),
-    "gps": (2 ** 3),
-    "canard": (2 ** 4)
+    "conv": (2 ** 0),
+    "state_estim": (2 ** 1),
+    "gps": (2 ** 2),
+    "canard": (2 ** 3)
 }
 
 appa_sensor_names = {
-    "raw": {
-        "accX" :         "Accelerometer X       ",
-        "accY" :         "Accelerometer Y       ",
-        "accZ" :         "Accelerometer Z       ",
-        "gyroX":         "gyroscope X           ",
-        "gyroY":         "gyroscope Y           ",
-        "gyroZ":         "gyroscope Z           ",
-        "magX" :         "Magnetometer X        ",
-        "magY" :         "Magnetometer Y        ",
-        "magZ" :         "Magnetometer Z        ",
-        "imut" :         "IMU Die Temperature   ",
-        "pres" :         "Barometric Pressure   ",
-        "temp" :         "Barometric Temperature"
-    },
     "conv": {
         "accXconv" :     "Pre-converted Accel X",
         "accYconv" :     "Pre-converted Accel Y",
         "accZconv" :     "Pre-converted Accel Z",
         "gyroXconv" :    "Pre-converted Gyro X",
         "gyroYconv" :    "Pre-converted Gyro Y",
-        "gyroZconv" :    "Pre-converted Gyro Z"
+        "gyroZconv" :    "Pre-converted Gyro Z",
+        "magXconv" :    "Pre-converted Mag X",
+        "magYconv" :    "Pre-converted Mag Y",
+        "magZconv" :    "Pre-converted Mag Z",
+        "magHall" :  "Pre-converted Mag Hall",
+        "pres" :         "Barometric Pressure   ",
+        "temp" :         "Barometric Temperature"
     },
     "state_estim": {
         "rollDeg"    :   "Roll Body Angle",
@@ -89,27 +80,19 @@ appa_sensor_names = {
 }
 
 appa_sensor_sizes = {
-    "raw": {
-        "accX" :         2,
-        "accY" :         2,
-        "accZ" :         2,
-        "gyroX":         2,
-        "gyroY":         2,
-        "gyroZ":         2,
-        "magX" :         2,
-        "magY" :         2,
-        "magZ" :         2,
-        "imut" :         2,
-        "pres" :         4,
-        "temp" :         4
-    },
     "conv": {
         "accXconv" :     4,
         "accYconv" :     4,
         "accZconv" :     4,
         "gyroXconv" :    4,
         "gyroYconv" :    4,
-        "gyroZconv" :    4
+        "gyroZconv" :    4,
+        "magXconv" :     4,
+        "magYconv" :     4,
+        "magZconv" :     4,
+        "magHall" :  4,
+        "pres" :         4,
+        "temp" :         4
     },
     "state_estim": {
         "rollDeg"    :   4,
@@ -143,27 +126,19 @@ appa_sensor_sizes = {
 }
 
 appa_sensor_types = {
-    "raw": {
-        "accX" :         int,
-        "accY" :         int,
-        "accZ" :         int,
-        "gyroX":         int,
-        "gyroY":         int,
-        "gyroZ":         int,
-        "magX" :         int,
-        "magY" :         int,
-        "magZ" :         int,
-        "imut" :         int,
-        "pres" :         float,
-        "temp" :         float
-    },
     "conv": {
         "accXconv" :     float,
         "accYconv" :     float,
         "accZconv" :     float,
         "gyroXconv" :    float,
         "gyroYconv" :    float,
-        "gyroZconv" :    float
+        "gyroZconv" :    float,
+        "magXconv" :     float,
+        "magYconv" :     float,
+        "magZconv" :     float,
+        "magHall" :      float,
+        "pres" :         float,
+        "temp" :         float
     },
     "state_estim": {
         "rollDeg"    :   float,
@@ -310,7 +285,7 @@ def appa_parse_telemetry_data(data: list[int], group: str) -> str:
     out_str = ""
     index = 0
 
-    # Get the sensor sizes and data types for the raw, conv, state_estim, gps, or canard group
+    # Get the sensor sizes and data types for the conv, state_estim, gps, or canard group
     sensor_sizes = appa_sensor_sizes[group]
     sensor_types = appa_sensor_types[group]
 
@@ -364,12 +339,9 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
 
     del frame[0:6]
 
-    if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
-        out_line += appa_parse_telemetry_data(frame[0:28], "raw")
-        del frame[0:28]
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:24], "conv")
-        del frame[0:24]
+        del frame[0:48]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:52], "state_estim")
         del frame[0:52]
@@ -385,11 +357,9 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
 
 def calculate_sensor_frame_size(dataBitmask):
     size = 6
-    if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
-        size += 10 * 2 # IMU raw
-        size += 2 * 4 # Baro raw
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        size += 6 * 4 # IMU conv
+        size += 10 * 4 # IMU conv
+        size += 2 * 4 # Baro raw
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         size += 11 * 4 # IMU state estims
         size += 2 * 4 # Baro state estims
@@ -411,10 +381,8 @@ def calculate_sensor_frame_size(dataBitmask):
 
 def flash_extract_keys(dataBitmask):
     header_row = "save_bit,fc_state,time,"
-    if ( dataBitmask & appa_data_bitmasks.get("raw") != 0 ):
-        header_row += "accX,accY,accZ,gyroX,gyroY,gyroZ,magX,magY,magZ,imut,pres,temp,"
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,"
+        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,magXconv,magYconv,magZconv,magHall,pres,temp"
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         header_row += "rollDeg,pitchDeg,yawDeg,rollRate,pitchRate,yawRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
