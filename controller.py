@@ -28,7 +28,9 @@ controller_codes = [
                   b'\x05', # Flight Computer,      Rev 2.0
                   b'\x06', # Flight Computer Lite, Rev 1.0
                   b'\x07', # Valve Controller,     Rev 3.0
-                  b'\x08'  # Engine Controller,    Rev 5.0
+                  b'\x08', # Engine Controller,    Rev 5.0
+                  b'\x09', # Ground Station,       Rev 2.0
+                  b'\x10', # Ground Station,       Rev 1.0
                    ]
 
 # Controller Names
@@ -40,7 +42,9 @@ controller_names = [
                    "Flight Computer (A0002 Rev 2.0)"         ,
                    "Flight Computer Lite (A0007 Rev 1.0)"    ,
                    "Valve Controller (L0005 Rev 3.0)"        , 
-                   "Liquid Engine Controller (L0002 Rev 5.0)"
+                   "Liquid Engine Controller (L0002 Rev 5.0)",
+                   "Ground Station (A0005 Rev 2.0)"          ,
+                   "Ground Station (A0005 Rev 1.0)"
                    ]
 
 # Controller descriptions from identification codes
@@ -52,7 +56,9 @@ controller_descriptions = {
                   b'\x05': "Flight Computer (A0002 Rev 2.0)"         ,
                   b'\x06': "Flight Computer Lite (A0007 Rev 1.0)"    ,
                   b'\x07': "Valve Controller (L0005 Rev 3.0)"        ,
-                  b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)"
+                  b'\x08': "Liquid Engine Controller (L0002 Rev 5.0)",
+                  b'\x09': "Ground Station (A0005 Rev 2.0)"          ,
+                  b'\x10': "Ground Station (A0005 Rev 1.0)"
                           }
 
 # Firmware Ids
@@ -62,14 +68,22 @@ firmware_ids = {
 				b'\x03': "Dual Deploy",
                 b'\x04': "Hotfire",
                 b'\x05': "Active Roll",
-                b'\x06': "APPA"
+                b'\x06': "APPA",
+                b'\x11': "Receiver"
                }
 			
 # Boards that report firmware ids with the connect command
 firmware_id_supported_boards = [
                 controller_names[4], # Flight Computer Rev 2.0
-                controller_names[6]  # Valve Controller Rev 3.0
+                controller_names[6], # Valve Controller Rev 3.0
+                controller_names[9], # Ground Station Rev 1.0
                                ]
+
+# Boards that support the dashboard dump command for wireless telemetry
+dashboard_dump_supported_boards = [
+    controller_names[4], # Flight Computer Rev 2.0
+    controller_names[9], # Ground Station Rev 1.0
+]
 
 # Lists of sensors on each controller
 controller_sensors = {
