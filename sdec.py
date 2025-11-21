@@ -79,7 +79,8 @@ command_list = {
                  "save-preset": canard_fc.save_preset            ,
                  "parse-output": parser.parse_output             ,
                  "dashboard-dump": dashboard.dashboard_dump      ,
-                 "lora-recieve-next": dashboard.lora_recieve_next
+                 "lora-recieve-next": dashboard.lora_recieve_next,
+                 "telem": dashboard.telem_cmd_handler
                 }
 
 

@@ -15,10 +15,12 @@
 # Global imports
 from queue import PriorityQueue
 import math
+import secrets
 
 # Project imports
 import hw_commands
 import controller
+import commands
 
 ####################################################################################
 # Global Variables                                                                 #
@@ -164,3 +166,105 @@ def dashboard_parse_dump( sensor_bytes_list, serialObj ):
             serialObj.sensor_readouts[key] = 999999
         
     return serialObj, serialObj.sensor_readouts
+
+# Command handler for the telemetry system
+def telem_cmd_handler( Args, serialObj ):
+
+    # Standard command handler setup for extensibility
+    telem_inputs= { 
+        'upload'  : {
+            'file' : 'A file name for telemetry configs.'
+                    },
+        'generate': {
+                    }
+    }
+
+    command_type = 'subcommand'
+    
+    parse_check = commands.parseArgs(
+                            Args,
+                            2,
+                            telem_inputs,
+                            command_type 
+                            )
+
+    # Return if user input fails parse checks
+    if ( not parse_check ):
+        return serialObj 
+    
+    # Command opcode
+    user_command = b'\x31'
+
+    # Set subcom
+    user_subcommand = Args[0]
+
+    match user_subcommand:
+        case 'upload':
+            filename = Args[1]
+            return telem_upload( serialObj, user_command, b'\x01', filename )
+        case 'generate':
+            filename = Args[1]
+            return telem_generate( serialObj, filename )
+        
+    return serialObj, False
+
+def telem_upload( serialObj, user_command, user_subcommand, filename ):
+    file = filename
+
+    with open(file, "r") as f:
+        key = bytes.fromhex(f.readline())
+        freq = int(f.readline()).to_bytes(4, byteorder='little')
+        spread = int(f.readline()).to_bytes(1, byteorder='little')
+        bandwidth = int(f.readline()).to_bytes(1, byteorder='little')
+
+        print( str( key + freq + spread + bandwidth ) )
+
+        serialObj.sendByte( user_command )
+        serialObj.sendByte( user_subcommand )
+
+    return serialObj, True # Stubbed for now
+
+# Generate telemetry presets
+def telem_generate( serialObj, filename ):
+    print("Beginning interactive telemetry preset generation.")
+
+    file = filename
+
+    print("\nGenerating AES key...")
+    key = secrets.token_hex(16)
+
+    # input = float. take this float and mult by 1000 to get KHz. truncate remaining decimals.
+    freq = int(1000 * float(input("\nEnter selected frequency (in MHz w/ decimals): ")))
+    if freq > 928000 or freq < 902000:
+        print("The selected frequency is outside of the legal ISM band. Exiting.")
+        return serialObj, False
+
+    spread = int(input("\nEnter spreading factor (6-12): "))
+    if spread > 12 or spread < 6:
+        print("Invalid spreading factor. Exiting (try again).")
+        return serialObj, False
+    
+    print("\nAvailable bandwidths:")
+    print("  0 - 7.8 kHz")
+    print("  1 - 10.4 kHz")
+    print("  2 - 15.6 kHz")
+    print("  3 - 20.8 kHz")
+    print("  4 - 31.25 kHz")
+    print("  5 - 41.7 kHz")
+    print("  6 - 62.5 kHz")
+    print("  7 - 125 kHz")
+    print("  8 - 250 kHz")
+    print("  9 - 500 kHz")
+    bandwidth = int(input("Select your bandwidth setting: "))
+    if bandwidth < 0 or bandwidth > 9:
+        print("Invalid bandwidth selection. Exiting.")
+        return serialObj, False
+    
+    print("\nWriting to file...")
+
+    with open(file, "w") as f:
+        f.write(key + "\n" + str(freq) + "\n" + str(spread) + "\n" + str(bandwidth))
+
+    print("\nDone!")
+    
+    return serialObj, True
