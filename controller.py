@@ -121,7 +121,7 @@ controller_sensors = {
                            "gyroZconv" :    "Pre-converted Gyro Z",
                            "rollDeg"    :   "Roll Body Angle",
                            "pitchDeg"    :  "Pitch Body Angle",
-                           "yawRate"    :   "Yaw Body Angle",
+                           "yawDeg"    :   "Yaw Body Angle",
                            "rollRate"    :  "Roll Body Rate",
                            "pitchRate"    : "Pitch Body Rate",
                            "yawRate"    :   "Yaw Body Rate",
