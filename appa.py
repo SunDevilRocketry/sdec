@@ -230,9 +230,9 @@ parse_preset_output_strings = {
         {"print" : "LD accel threshold:    ", "indices" : [18], "type" : "int"},
         {"print" : "LD accel samples:      ", "indices" : [19], "type" : "int"},
         {"print" : "LD baro samples:       ", "indices" : [20], "type" : "int"},
-        {"print" : "Minimum Frame Delta:   ", "indices" : [21], "type" : "int"},
-        {"print" : "Apogee detect samples: ", "indices" : [22], "type" : "int"},
-        {"print" : "Pad bits:              ", "indices" : [23, 24], "type" : "int"},
+        {"print" : "Pad byte:              ", "indices" : [21], "type" : "int"},
+        {"print" : "Flash rate limit:      ", "indices" : [22, 23], "type" : "int"},
+        {"print" : "Apogee detect samples: ", "indices" : [24], "type" : "int"},
         {"print" : "AC max deflect angle:  ", "indices" : [25], "type" : "int"},
         {"print" : "AR Delay after launch: ", "indices" : [26, 27], "type" : "int"},
         {"print" : "AC Roll PID P const:   ", "indices" : [28, 29, 30, 31], "type" : "float"},
@@ -617,12 +617,13 @@ def upload_preset(Args, serialObj):
 
     raw_data.append(int(preset_list[70][4]))
 
-    # Minimum time for frame
-    raw_data.append(int(preset_list[71][4]))
+    raw_data.append(0) # pad byte
+
+    # Rate limit
+    raw_data.append(int(preset_list[71][4]) & int('00FF', 16)) # LSB
+    raw_data.append((int(preset_list[71][4]) & int('FF00', 16)) >> 8) # MSB
 
     raw_data.append(int(preset_list[72][4])) # apogee detect
-    raw_data.append(0)
-    raw_data.append(0)
 
     # Active Roll
     raw_data.append(int(preset_list[73][4]))
