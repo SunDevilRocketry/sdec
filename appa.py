@@ -44,7 +44,6 @@ appa_sensor_names = {
         "magXconv" :    "Pre-converted Mag X",
         "magYconv" :    "Pre-converted Mag Y",
         "magZconv" :    "Pre-converted Mag Z",
-        "magHall" :  "Pre-converted Mag Hall",
         "pres" :         "Barometric Pressure   ",
         "temp" :         "Barometric Temperature"
     },
@@ -90,7 +89,6 @@ appa_sensor_sizes = {
         "magXconv" :     4,
         "magYconv" :     4,
         "magZconv" :     4,
-        "magHall" :  4,
         "pres" :         4,
         "temp" :         4
     },
@@ -136,7 +134,6 @@ appa_sensor_types = {
         "magXconv" :     float,
         "magYconv" :     float,
         "magZconv" :     float,
-        "magHall" :      float,
         "pres" :         float,
         "temp" :         float
     },
@@ -341,7 +338,7 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
 
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:48], "conv")
-        del frame[0:48]
+        del frame[0:44]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:52], "state_estim")
         del frame[0:52]
@@ -358,7 +355,7 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
 def calculate_sensor_frame_size(dataBitmask):
     size = 6
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        size += 10 * 4 # IMU conv
+        size += 9 * 4 # IMU conv
         size += 2 * 4 # Baro raw
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         size += 11 * 4 # IMU state estims
@@ -382,7 +379,7 @@ def calculate_sensor_frame_size(dataBitmask):
 def flash_extract_keys(dataBitmask):
     header_row = "save_bit,fc_state,time,"
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,magXconv,magYconv,magZconv,magHall,pres,temp,"
+        header_row += "accXconv,accYconv,accZconv,gyroXconv,gyroYconv,gyroZconv,magXconv,magYconv,magZconv,pres,temp,"
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         header_row += "rollDeg,pitchDeg,yawDeg,rollRate,pitchRate,yawRate,velo,velo_x,velo_y,velo_z,pos,alt,bvelo,"
     if ( dataBitmask & appa_data_bitmasks.get("gps") != 0 ):
