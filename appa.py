@@ -402,7 +402,7 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
     preset_int = []
     preset_strings = appa_parse_preset(serialObj, sensor_frame_int[2:preset_size + 2])
 
-    print(str(preset_data_bitmask))
+    #print(str(preset_data_bitmask))
 
     # Write presets to file
     with open( "output/appa_preset_data.txt", 'w' ) as file:
@@ -416,13 +416,13 @@ def flash_extract_parse(serialObj, rx_byte_blocks):
 
     sensor_frame_size, num_preset_frames = calculate_sensor_frame_size(preset_data_bitmask)
 
-    print( str(sensor_frame_size) )
+    #print( str(sensor_frame_size) )
 
     # This is where the fun begins
     # start = math.ceil(preset_size, sensor_frame_size)
     start = num_preset_frames * sensor_frame_size
     stop = int( start + sensor_frame_size )
-    print( str( start ) + " | " + str( stop ) )
+    #print( str( start ) + " | " + str( stop ) )
     with open("output/appa_sensor_data.csv", "w") as outfile:
         outfile.write(flash_extract_keys(preset_data_bitmask) + "\n")
         # magic number should be moved
