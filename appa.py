@@ -337,7 +337,7 @@ def appa_parse_frame(frame: list[int], dataBitmask: int):
     del frame[0:6]
 
     if ( dataBitmask & appa_data_bitmasks.get("conv") != 0 ):
-        out_line += appa_parse_telemetry_data(frame[0:48], "conv")
+        out_line += appa_parse_telemetry_data(frame[0:44], "conv")
         del frame[0:44]
     if ( dataBitmask & appa_data_bitmasks.get("state_estim") != 0 ):
         out_line += appa_parse_telemetry_data(frame[0:52], "state_estim")
