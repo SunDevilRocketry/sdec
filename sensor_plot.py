@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) 2025 Sun Devil Rocketry
+
 import time
 import numpy                    as np
 from   matplotlib import pyplot as plt

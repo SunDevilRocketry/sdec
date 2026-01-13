@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) 2025 Sun Devil Rocketry
+
 import matplotlib.pyplot
 import pandas as pd
 import matplotlib

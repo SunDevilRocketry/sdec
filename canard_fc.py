@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) 2025 Sun Devil Rocketry
+
 from pynput.keyboard import Key, Listener
 from functools import partial
 from hw_commands import byte_array_to_float
