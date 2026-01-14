@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) 2025 Sun Devil Rocketry
+
 ####################################################################################
 #                                                                                  #
 # engineController.py -- module with engine controller specific command line       #
