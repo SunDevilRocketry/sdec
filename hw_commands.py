@@ -40,6 +40,8 @@ if ( sdr_debug ):
 else:
     default_timeout = 1   # 1 second timeout
 
+# If running SDEC with Flight Computer Emulator
+emulator = False
 
 ####################################################################################
 # Shared Procedures                                                                #
@@ -70,18 +72,20 @@ def get_bit( num, bit_index ):
 #                                                                                  #
 # DESCRIPTION:                                                                     #
 #         Returns an integer corresponding the hex number passed into the function #
-#       as a byte array. Assumes least significant bytes are first                 #
+#       as a byte array. Assumes least significant bytes are first. Changes        #
+#       to using the system's byte order if emulator flag is True.                 #
 #                                                                                  #
 ####################################################################################
 def byte_array_to_int( byte_array ):
-    int_val   = 0 # Intermediate computation value
-    result    = 0 # Final result integer
-    num_bytes = len( byte_array )
-    for i, byte in enumerate( byte_array ):
-        int_val = int.from_bytes( byte, 'big')
-        int_val = int_val << 8*i
-        result += int_val
-    return result
+    # Cast to a bytes object for easy conversion
+    bytes_object = bytes( byte_array )
+
+    # If running SDEC with the Flight Computer Emulator use the host's byte order
+    # Otherwise use little-endian (Flight Computer default)
+    if emulator:
+        return int.from_bytes( bytes_object, byteorder=sys.byteorder )
+    else:
+        return int.from_bytes( bytes_object, byteorder="little" )
 ## byte_array_to_int ##
 
 
@@ -93,7 +97,8 @@ def byte_array_to_int( byte_array ):
 # DESCRIPTION:                                                                     #
 #         Returns an floating point number corresponding the hex number passed     # 
 #         into the function as a byte array. Assumes least significant bytes are   # 
-#         first                                                                    #
+#         first. Changes to using the system's byte order if emulator flag is      #
+#         True.                                                                    #
 #                                                                                  #
 ####################################################################################
 def byte_array_to_float( byte_array ):
@@ -101,7 +106,14 @@ def byte_array_to_float( byte_array ):
     if ( byte_array == [b'\xFF', b'\xFF', b'\xFF', b'\xFF'] ):
         byte_array = [b'\x00', b'\x00', b'\x00', b'\x00']
     byte_array_joined = b''.join( byte_array )
-    return struct.unpack( 'f', byte_array_joined )[0]
+
+    # If running SDEC with the Flight Computer Emulator use the host's byte order
+    # Otherwise use little-endian (Flight Computer default)
+    if emulator:
+        byte_order = "<" if sys.byteorder == "little" else ">"
+        return struct.unpack( f'{byte_order}f', byte_array_joined )[0]
+    else:
+        return struct.unpack( '<f', byte_array_joined )[0]
 ## byte_array_to_float ##
 
 

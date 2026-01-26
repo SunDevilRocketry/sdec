@@ -22,6 +22,8 @@ __credits_2023__ = ["Nick Nguyen"       ,
 ####################################################################################
 # Standard Imports                                                                 #
 ####################################################################################
+import argparse
+import sys
 import time
 import serial
 import serial.tools.list_ports
@@ -252,9 +254,33 @@ def parseInput(userin):
     return parseInput(userin)
 
 ####################################################################################
+#                                                                                  #
+# PROCEDURE:                                                                       #
+# 		parseInput                                                                 #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		checks user input against command list options                             #
+#                                                                                  #
+####################################################################################
+
+####################################################################################
 # Application Entry Point                                                          #
 ####################################################################################
 if __name__ == '__main__':
+    
+    # Create argument parsing for if running SDEC with the Flight Computer Emulator
+    parser = argparse.ArgumentParser( description="Sun Devil Embedded Control" )
+    parser.add_argument( 
+        "--emulator", 
+        action="store_true",
+        help="indicate running SDEC with the Flight Computer Emulator"
+    )
+    args = parser.parse_args()
+
+    if args.emulator:
+        print( "SDEC running for use with Flight Computer Emulator" )
+        print( f"Flight Computer Emulator using {sys.byteorder}-endian" )
+        hw_commands.emulator = True
     
     # Initialize Serial Port Object
     terminalSerObj = terminalData()
