@@ -78,7 +78,7 @@ def get_bit( num, bit_index ):
 ####################################################################################
 def byte_array_to_int( byte_array ):
     # Cast to a bytes object for easy conversion
-    bytes_object = bytes( byte_array )
+    bytes_object = b"".join( byte_array )
 
     # If running SDEC with the Flight Computer Emulator use the host's byte order
     # Otherwise use little-endian (Flight Computer default)
