@@ -1,11 +1,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2025 Sun Devil Rocketry
 
-from pynput.keyboard import Key, Listener
 from functools import partial
 from hw_commands import byte_array_to_float
 
 import time
+from prompt_toolkit.application import Application
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import Layout
+from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.layout.containers import Window
 
 def idle(Args, serialObj):
     print("IDLE")
@@ -41,11 +45,55 @@ def fin_setup(Args, serialObj):
     print( "Press q to exit" )
     serialObj.sendByte(b'\x21')
     handle = partial(fin_handle_key_press, serialObj=serialObj)
-    with Listener(
-        supress=True,
-        on_press=handle,
-    ) as listener:
-        listener.join()
+    kb = KeyBindings()
+
+    @kb.add('f')
+    def _(event):
+        handle('f')
+
+    @kb.add('d')
+    def _(event):
+        handle('d')
+
+    @kb.add('k')
+    def _(event):
+        handle('k')
+
+    @kb.add('j')
+    def _(event):
+        handle('j')
+
+    @kb.add('r')
+    def _(event):
+        handle('r')
+
+    @kb.add('e')
+    def _(event):
+        handle('e')
+
+    @kb.add('i')
+    def _(event):
+        handle('i')
+
+    @kb.add('u')
+    def _(event):
+        handle('u')
+
+    @kb.add('s')
+    def _(event):
+        handle('s')
+
+    @kb.add('q')
+    def _(event):
+        handle('q')
+        event.app.exit()
+
+    app = Application(
+        layout=Layout(Window(FormattedTextControl("Fin control active. Press q to exit."))),
+        key_bindings=kb,
+        full_screen=False,
+    )
+    app.run()
     return serialObj
 
 def read_preset(Args, serialObj):
@@ -113,7 +161,7 @@ def save_preset(Args, serialObj):
     return serialObj
 
 def fin_handle_key_press(key, serialObj):
-    match key.char:
+    match key:
         case 'f': # Servo 1 -
             serialObj.sendByte(b'\x10')
         case 'd': # Servo 1 +
