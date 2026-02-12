@@ -71,6 +71,7 @@ command_list = {
                  "stophotfire": engineController.stop_hotfire    ,
                  "stoppurge"  : engineController.stop_purge      ,
                  "loxpurge"   : engineController.lox_purge       ,
+                 "send-sequence" : engineController.send_sequence,
                  "dual-deploy": flightComputer.dual_deploy       ,
                  "idle"       : canard_fc.idle                   ,
                  "imu-calibrate": canard_fc.imu_calibrate        ,

@@ -18,6 +18,7 @@
 ####################################################################################
 import serial.tools.list_ports
 import time
+import os
 
 
 ####################################################################################
@@ -27,6 +28,7 @@ import commands
 import hw_commands
 import controller
 from   config   import *
+from liquid_sequence_scheduler import parsing, serializing
 
 
 ####################################################################################
@@ -963,7 +965,103 @@ def manual( Args, serialObj, show_output = True ):
 	return serialObj
 ## lox_purge ## 
 
+####################################################################################
+#                                                                                  #
+# COMMAND:                                                                         #
+# 		send_sequence															   #
+#                                                                                  #
+# DESCRIPTION:                                                                     #
+# 		Sends a custom serial sequence to the liquid engine						   #
+#                                                                                  #
+####################################################################################
+def send_sequence( Args, serialObj):
+	################################################################################
+    # Local Variables                                                              #
+	################################################################################
 
+	# Inputs
+	send_sequence_inputs = {
+		'path': {
+			'-p' : 'path to CSV file of engine sequence'
+		}
+	}
+
+	# Maximum number of arguments
+	max_args = 3
+
+	# Command type -- command function
+	command_type = 'subcommand'
+
+	# Command opcode
+	opcode = b'\xFF' # TODO: update with serialize opcode once implemented 
+
+	################################################################################
+	# Basic Inputs Parsing                                                         #
+	################################################################################
+	parse_check = commands.parseArgs(
+                                    Args,
+                                    max_args,
+                                    send_sequence_inputs,
+                                    command_type 
+                                    )
+
+	# Return if user input fails parse checks
+	if ( not parse_check ):
+		return serialObj 
+
+	# Set args
+	path = ""
+	try:
+		path = Args[2]
+	except IndexError:
+		print( "Error no path file path provided" )
+
+	################################################################################
+	# Command-Specific Checks                                                      #
+	################################################################################
+
+	# Verify Engine Controller Connection
+	if ( not ( serialObj.controller in supported_boards ) ):
+		print("Error: The send-sequence command requires a valid "  + 
+              "serial connection to an engine controller "    + 
+              "device. Run the \"connect\" command to "       +
+              "establish a valid connection.")
+		return serialObj
+	
+	# Verify file exists
+	if ( not ( os.path.exists( path ) ) ):
+		print( f"Error { path } does not exist" )
+		return serialObj
+
+	################################################################################
+	# Command Implementation                                                       #
+	################################################################################
+
+	# Parse seqeuence from given csv
+	sequence_list = parsing.parse_CSV( path )
+	syntax_result = parsing.syntax_checking( sequence_list )
+
+	# Verify engine sequence
+	if (not syntax_result.result):
+		print( f"Syntax Error: <{ syntax_result.message }> at command number: { syntax_result.line }" )
+		return serialObj
+	print( "Syntax checking passed" )
+
+	# Format sequence into a list with objects of stricter typing
+	sequence = parsing.format_sequence( sequence_list )
+	
+	# Convert sequence into bytes
+	serial_sequence = serializing.serialize_sequence(sequence)
+
+	# Send opcode
+	serialObj.sendByte( opcode )
+
+	# Send serial sequence by node
+	for i, node in enumerate( serial_sequence ):
+		serialObj.sendBytes( node.pack_to_bytes() )
+		print( f"Sent node { i+1 }")
+	
+## send_sequence ## 
 
 ####################################################################################
 # END OF FILE                                                                      #
