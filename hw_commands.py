@@ -727,8 +727,16 @@ def sensor( Args, serialObj, show_readouts = True ):
         serialObj.sendByte( sensor_poll_cmds['START'] )
 
         # Canard Add-on feature: Logging data during poll
-        filename = "canard_" + str(datetime.now()) + ".txt"
-        file = open("canard/" + filename, "w")
+        log_file = None
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = "poll_" + timestamp + ".txt"
+        log_dir = "poll_data"
+        os.makedirs(log_dir, exist_ok=True)
+        try:
+            log_file = open(os.path.join(log_dir, filename), "w")
+        except OSError as err:
+            print("Warning: unable to open canard log file: " + str(err))
+            print("Warning: continuing sensor poll without file logging")
         
 
         # Receive and display sensor readouts 
@@ -750,8 +758,10 @@ def sensor( Args, serialObj, show_readouts = True ):
                                                             sensor_readouts[sensor] 
                                                             )
                     print( readout_formated + '\t', end='' )
-                    file.write(readout_formated + '\t')
-                file.write("\n")
+                    if ( log_file != None ):
+                        log_file.write(readout_formated + '\t')
+                if ( log_file != None ):
+                    log_file.write("\n")
                 print()
                 # Pause for readibility
                 serialObj.sendByte( sensor_poll_cmds['WAIT'] )
@@ -763,7 +773,8 @@ def sensor( Args, serialObj, show_readouts = True ):
             print("\nPoll exited!")    
             serialObj.sendByte( sensor_poll_cmds['STOP'] )
 
-        file.close()
+        if ( log_file != None ):
+            log_file.close()
 
         return serialObj
 
